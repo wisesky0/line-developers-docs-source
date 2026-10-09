@@ -100,7 +100,7 @@ liff.permission.query("profile").then((permissionStatus) => {
 
 "검증 화면"은 사용자가 LINE MINI App을 처음 여는 시점이 아니라, `openid` 스코프 이외의 스코프(예: [`profile` 스코프 또는 `chat_message.write` 스코프](https://developers.line.biz/en/docs/liff/registering-liff-apps/#registering-liff-app) 등)의 권한이 필요해지는 시점에 처음 표시됩니다.
 
-따라서 사용자가 LINE MINI App에 접근하자마자 `liff.getProfile()` 메서드처럼 `openid` 스코프 이외의 권한이 필요한 요청을 실행하도록 LINE MINI App을 설계하면, 채널 동의 화면이 건너뛰어지지 않고 표시되는 것처럼 보일 수 있습니다. 가능한 경우, `openid` 스코프 이외의 권한이 필요한 요청은 실제로 필요한 시점에만 실행되도록 LINE MINI App을 구현하는 것을 권장합니다.
+따라서 사용자가 LINE MINI App에 접근하자마자 [`liff.getProfile()`](https://developers.line.biz/en/reference/liff/#get-profile) 메서드처럼 `openid` 스코프 이외의 권한이 필요한 요청을 실행하도록 LINE MINI App을 설계하면, 채널 동의 화면이 건너뛰어지지 않고 표시되는 것처럼 보일 수 있습니다. 가능한 경우, `openid` 스코프 이외의 권한이 필요한 요청은 실제로 필요한 시점에만 실행되도록 LINE MINI App을 구현하는 것을 권장합니다.
 
 <!-- tip end -->
 

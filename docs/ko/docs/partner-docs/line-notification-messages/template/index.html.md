@@ -86,7 +86,7 @@ API를 사용하여 LINE 알림 메시지(템플릿)의 발송 수를 확인할 
 
 ## 버튼 
 
-버튼의 키(`Key`)를 지정하여 템플릿에 여러 버튼을 포함할 수 있습니다. 버튼을 누렀을 때 이동할 대상으로는 원하는 URL을 설정할 수 있습니다.
+버튼의 키(`Key`)를 지정하여 템플릿에 여러 버튼을 포함할 수 있습니다. 버튼을 눌렀을 때 이동할 대상으로는 원하는 URL을 설정할 수 있습니다.
 
 ![](https://developers.line.biz/media/line-notification-message/notification-messages-template-buttons.webp)
 

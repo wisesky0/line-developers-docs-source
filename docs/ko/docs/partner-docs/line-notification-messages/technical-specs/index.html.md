@@ -139,7 +139,7 @@ LINE 공식 계정을 차단한 사용자에게 LINE 알림 메시지 API로 발
 
 LINE 공식 계정을 차단하지 않은 사용자에게 LINE 알림 메시지 API 요청에 성공(HTTP 상태 코드 `200` 또는 `202` 수신)했지만 LINE 알림 메시지가 실제로 발송되지 않은 경우, 다음과 같은 이유가 있을 수 있습니다.
 
-- LINE 알림 메시지API 요청 시 지정한 전화번호와 연결된 사용자가 [LINE 알림 메시지 수신 설정](https://developers.line.biz/en/docs/partner-docs/line-notification-messages/flow-when-receiving-message/#user-consent-flow-for-receiving-line-notification-messages-1)을 하지 않았고, 수신 설정 요청을 받았을 때 "거부"로 변경한 경우
+- LINE 알림 메시지 API 요청 시 지정한 전화번호와 연결된 사용자가 [LINE 알림 메시지 수신 설정](https://developers.line.biz/en/docs/partner-docs/line-notification-messages/flow-when-receiving-message/#user-consent-flow-for-receiving-line-notification-messages-1)을 하지 않았고, 수신 설정 요청을 받았을 때 "거부"로 변경한 경우
 - LINE 알림 메시지 API 요청 시 지정한 전화번호와 연결된 사용자가 [LINE 알림 메시지 수신 설정](https://developers.line.biz/en/docs/partner-docs/line-notification-messages/flow-when-receiving-message/#user-consent-flow-for-receiving-line-notification-messages-1)을 하지 않았고, 수신 설정 요청을 받았을 때 설정을 하지 않은 상태로 두었던 경우
 - LINE 알림 메시지 API 요청 시 지정한 전화번호와 연결된 사용자에게 SMS 인증이 필요하지만, [전화번호 인증](https://developers.line.biz/en/docs/partner-docs/line-notification-messages/flow-when-receiving-message/#user-consent-flow-for-receiving-line-notification-messages-3) 메시지를 받았을 때 SMS 인증을 하지 않은 경우
 

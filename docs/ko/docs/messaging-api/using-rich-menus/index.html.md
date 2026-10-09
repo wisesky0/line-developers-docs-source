@@ -110,7 +110,7 @@ curl -v -X POST https://api.line.me/v2/bot/richmenu \
 
 - 사용자에게 연결된 리치 메뉴를 자동으로 열려면 요청 본문의 `selected` 속성을 `true`로 설정하세요.
 - 채팅 바의 텍스트를 설정하려면 요청 본문에 `chatBarText` 속성을 지정하세요.
-- 리치 메뉴를 만들기 전에 [리치 메뉴 객체의 유효성을 확인](https://developers.line.biz/en/reference/messaging-api/#validate-rich-menu-object)할 수 있습니다.
+- 리치 메뉴를 만들기 전에 [리치 메뉴 객체](https://developers.line.biz/en/reference/messaging-api/#rich-menu-object)의 [유효성을 확인](https://developers.line.biz/en/reference/messaging-api/#validate-rich-menu-object)할 수 있습니다.
 
 <!-- tip end -->
 
