@@ -31,9 +31,8 @@ md.renderer.rules.image = function(tokens, idx, options, env, self) {
   const token = tokens[idx];
   let src = token.attrGet('src');
 
-  // 상대 경로 처리
-  if (src && !src.startsWith('http') && !src.startsWith('/')) {
-    // 상대 경로 유지
+  if (src && src.startsWith('/media/')) {
+    src = 'https://developers.line.biz' + src;
   }
 
   return `<figure class="doc-figure">
@@ -67,6 +66,7 @@ function generateHtmlTemplate(title, content, lang = 'ko') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(title)} | LINE Developers</title>
+  <link rel="icon" href="data:,">
   <style>
     * {
       box-sizing: border-box;

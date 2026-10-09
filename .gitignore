@@ -1,2 +1,4 @@
 .DS_Store
 
+deploy/node_modules/
+__pycache__/
