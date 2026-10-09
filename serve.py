@@ -52,7 +52,18 @@ class ColoredFormatter(http.server.SimpleHTTPRequestHandler):
         print(message, flush=True)
 
     def end_headers(self):
-        """CORS 헤더 추가"""
+        """UTF-8 인코딩 설정 및 캐시 비활성화"""
+        # UTF-8 charset 명시
+        if self.path.endswith('.html'):
+            self.send_header('Content-Type', 'text/html; charset=utf-8')
+        elif self.path.endswith('.css'):
+            self.send_header('Content-Type', 'text/css; charset=utf-8')
+        elif self.path.endswith('.js'):
+            self.send_header('Content-Type', 'application/javascript; charset=utf-8')
+        elif self.path.endswith('.json'):
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+
+        # 캐시 비활성화
         self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
         self.send_header('Pragma', 'no-cache')
         self.send_header('Expires', '0')
