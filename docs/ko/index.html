@@ -1,0 +1,575 @@
+<title>LINE Developers 문서</title>
+
+<style>
+/* 레이아웃: 왼쪽 사이드바 + 오른쪽 메인 콘텐츠 */
+:root {
+  --bg: #FFFFFF;
+  --fg: #1A1A1A;
+  --fg-secondary: #595959;
+  --border: #E5E5E5;
+  --bg-secondary: #F5F5F7;
+  --accent: #0066FF;
+  --accent-hover: #0052CC;
+  --success: #00B900;
+
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F0F0F;
+    --fg: #F5F5F5;
+    --fg-secondary: #A6A6A6;
+    --border: #2D2D2D;
+    --bg-secondary: #1A1A1A;
+    --accent: #4D94FF;
+    --accent-hover: #6BA3FF;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0F0F0F;
+  --fg: #F5F5F5;
+  --fg-secondary: #A6A6A6;
+  --border: #2D2D2D;
+  --bg-secondary: #1A1A1A;
+  --accent: #4D94FF;
+  --accent-hover: #6BA3FF;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* 헤더 */
+header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.5rem;
+  padding-top: calc(1rem + env(safe-area-inset-top, 0px));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+header .logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+header .search {
+  flex: 1;
+  max-width: 300px;
+}
+
+header .search input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--fg);
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+}
+
+header .search input::placeholder {
+  color: var(--fg-secondary);
+}
+
+header .search input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--bg);
+}
+
+/* 메인 컨테이너 */
+.container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* 사이드바 */
+.sidebar {
+  width: 280px;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 1.5rem 0;
+  background: var(--bg-secondary);
+}
+
+.sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar > ul > li {
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-section-title {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--fg-secondary);
+  margin-top: 1rem;
+}
+
+.sidebar-section-title:first-child {
+  margin-top: 0;
+}
+
+.sidebar a {
+  display: block;
+  padding: 0.5rem 1.5rem;
+  color: var(--fg-secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.sidebar a:hover {
+  color: var(--accent);
+  background: rgba(0, 102, 255, 0.05);
+}
+
+.sidebar a.active {
+  color: var(--accent);
+  background: rgba(0, 102, 255, 0.05);
+  border-left-color: var(--accent);
+  font-weight: 500;
+}
+
+.sidebar .nested {
+  display: none;
+  padding-left: 1rem;
+}
+
+.sidebar li.expanded .nested {
+  display: block;
+}
+
+.sidebar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.sidebar li.expanded .sidebar-toggle::before {
+  content: '▼ ';
+}
+
+.sidebar li:not(.expanded) .sidebar-toggle::before {
+  content: '▶ ';
+}
+
+/* 메인 콘텐츠 */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+  max-width: 900px;
+  width: 100%;
+}
+
+.main h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--fg);
+}
+
+.main .breadcrumb {
+  font-size: 0.875rem;
+  color: var(--fg-secondary);
+  margin-bottom: 2rem;
+}
+
+.main .breadcrumb a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.main .breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.main p {
+  line-height: 1.7;
+  color: var(--fg-secondary);
+  margin: 1rem 0;
+}
+
+.main h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 2rem 0 1rem 0;
+  color: var(--fg);
+}
+
+.main h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.75rem 0;
+  color: var(--fg);
+}
+
+.main ul {
+  line-height: 1.8;
+  color: var(--fg-secondary);
+}
+
+.code-block {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: var(--fg);
+  line-height: 1.5;
+}
+
+.feature-box {
+  background: var(--bg-secondary);
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.feature-box h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.feature-box p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 0.95rem;
+}
+
+.button:hover {
+  background: var(--accent-hover);
+}
+
+.button.secondary {
+  background: var(--bg-secondary);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.button.secondary:hover {
+  background: rgba(0, 102, 255, 0.05);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    max-height: 50vh;
+    padding: 1rem 0;
+  }
+
+  .main {
+    padding: 1.5rem;
+  }
+
+  .main h1 {
+    font-size: 1.75rem;
+  }
+
+  .main h2 {
+    font-size: 1.25rem;
+  }
+
+  header {
+    flex-wrap: wrap;
+  }
+
+  header .search {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+
+  .sidebar-toggle {
+    display: inline-block;
+  }
+
+  .sidebar .nested {
+    display: none;
+  }
+
+  .sidebar li.expanded .nested {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 0.75rem 1rem;
+    padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+  }
+
+  .main {
+    padding: 1rem;
+  }
+
+  .main h1 {
+    font-size: 1.5rem;
+  }
+}
+</style>
+
+<header>
+  <a href="./" class="logo">📘 LINE Developers</a>
+  <div class="search">
+    <input type="text" placeholder="문서 검색...">
+  </div>
+</header>
+
+<div class="container">
+  <aside class="sidebar">
+    <div class="sidebar-section-title">시작하기</div>
+    <ul>
+      <li class="expanded">
+        <button class="sidebar-toggle"></button>
+        <a href="#" class="active">개요</a>
+        <ul class="nested">
+          <li><a href="./docs/basics/line-api-status/">LINE API 상태</a></li>
+          <li><a href="./docs/basics/user-profile/">사용자 프로필</a></li>
+          <li><a href="./docs/basics/channel-access-token/">채널 접근 토큰</a></li>
+        </ul>
+      </li>
+    </ul>
+
+    <div class="sidebar-section-title">메시징 API</div>
+    <ul>
+      <li>
+        <button class="sidebar-toggle"></button>
+        <a href="./docs/messaging-api/overview/">개요</a>
+        <ul class="nested">
+          <li><a href="./docs/messaging-api/getting-started/">시작하기</a></li>
+          <li><a href="./docs/messaging-api/message-types/">메시지 타입</a></li>
+          <li><a href="./docs/messaging-api/sending-messages/">메시지 발송</a></li>
+          <li><a href="./docs/messaging-api/receiving-messages/">메시지 수신</a></li>
+          <li><a href="./docs/messaging-api/building-bot/">봇 구축</a></li>
+        </ul>
+      </li>
+      <li><a href="./docs/messaging-api/using-flex-messages/">Flex 메시지</a></li>
+      <li><a href="./docs/messaging-api/using-rich-menus/">리치 메뉴</a></li>
+      <li><a href="./docs/messaging-api/using-quick-reply/">빠른 회신</a></li>
+      <li><a href="./docs/messaging-api/development-guidelines/">개발 가이드라인</a></li>
+    </ul>
+
+    <div class="sidebar-section-title">LINE Login</div>
+    <ul>
+      <li>
+        <button class="sidebar-toggle"></button>
+        <a href="./docs/line-login/overview/">개요</a>
+        <ul class="nested">
+          <li><a href="./docs/line-login/getting-started/">시작하기</a></li>
+          <li><a href="./docs/line-login/integrate-line-login/">로그인 연동</a></li>
+          <li><a href="./docs/line-login/managing-users/">사용자 관리</a></li>
+        </ul>
+      </li>
+      <li><a href="./docs/line-login/security-checklist/">보안 체크리스트</a></li>
+    </ul>
+
+    <div class="sidebar-section-title">LIFF</div>
+    <ul>
+      <li>
+        <button class="sidebar-toggle"></button>
+        <a href="./docs/liff/overview/">개요</a>
+        <ul class="nested">
+          <li><a href="./docs/liff/getting-started/">시작하기</a></li>
+          <li><a href="./docs/liff/developing-liff-apps/">LIFF 앱 개발</a></li>
+          <li><a href="./docs/liff/registering-liff-apps/">LIFF 앱 등록</a></li>
+        </ul>
+      </li>
+    </ul>
+
+    <div class="sidebar-section-title">LINE 미니앱</div>
+    <ul>
+      <li>
+        <button class="sidebar-toggle"></button>
+        <a href="./docs/line-mini-app/quickstart/">소개</a>
+        <ul class="nested">
+          <li><a href="./docs/line-mini-app/discover/introduction/">LINE 미니앱이란?</a></li>
+          <li><a href="./docs/line-mini-app/develop/develop-overview/">개발 개요</a></li>
+          <li><a href="./docs/line-mini-app/submission-guide/">제출 가이드</a></li>
+        </ul>
+      </li>
+    </ul>
+
+    <div class="sidebar-section-title">리소스</div>
+    <ul>
+      <li><a href="./reference/messaging-api/">메시징 API 참조</a></li>
+      <li><a href="./reference/line-login/">LINE Login 참조</a></li>
+      <li><a href="./reference/liff/">LIFF 참조</a></li>
+      <li><a href="./reference/line-mini-app/">LINE 미니앱 참조</a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="#home">홈</a> / <span>개요</span>
+    </div>
+
+    <h1>LINE Developers 문서</h1>
+
+    <p>LINE Developers 문서에 오신 것을 환영합니다. 여기서는 LINE이 제공하는 다양한 API와 플랫폼에 대한 종합 가이드를 제공합니다.</p>
+
+    <div class="feature-box">
+      <h4>💡 시작하기</h4>
+      <p>처음이라면 <strong>시작하기</strong> 섹션에서 기본 개념을 학습한 후, 필요한 API를 선택하여 개발을 시작하세요.</p>
+    </div>
+
+    <h2>주요 서비스</h2>
+
+    <h3>메시징 API</h3>
+    <p>LINE 봇을 구축하고 사용자와 상호작용하기 위한 핵심 API입니다. 메시지 발송, 수신, 리치 메뉴, Flex 메시지 등 다양한 기능을 제공합니다.</p>
+    <ul>
+      <li>텍스트, 이미지, 영상 등 다양한 메시지 타입 지원</li>
+      <li>Flex 메시지로 복잡한 레이아웃 구성</li>
+      <li>리치 메뉴를 통한 사용자 경험 향상</li>
+      <li>빠른 회신으로 사용자 상호작용 개선</li>
+    </ul>
+
+    <h3>LINE Login</h3>
+    <p>사용자 인증 및 프로필 정보 획득을 위한 OAuth 2.0 기반 로그인 서비스입니다.</p>
+    <ul>
+      <li>웹, 모바일 앱 등 다양한 플랫폼 지원</li>
+      <li>사용자 정보 안전하게 관리</li>
+      <li>통일된 로그인 경험 제공</li>
+    </ul>
+
+    <h3>LIFF (LINE Front-end Framework)</h3>
+    <p>LINE 앱 내에서 웹 기반 UI를 구현할 수 있는 프레임워크입니다. 웹 기술을 사용하여 네이티브 앱과 유사한 경험을 제공합니다.</p>
+    <ul>
+      <li>LINE 카메라, 위치 정보 등 기기 기능 접근</li>
+      <li>메시징 API와 통합으로 강화된 기능</li>
+      <li>개발자 친화적인 도구 및 라이브러리</li>
+    </ul>
+
+    <h3>LINE 미니앱</h3>
+    <p>LINE 내에서 실행되는 경량 애플리케이션 플랫폼입니다. 별도 설치 없이 빠르고 편리한 서비스를 사용자에게 제공할 수 있습니다.</p>
+    <ul>
+      <li>빠른 로딩과 부드러운 사용자 경험</li>
+      <li>결제 기능 통합 (국가별 지원)</li>
+      <li>네이티브 기기 기능 활용</li>
+    </ul>
+
+    <h2>개발 시작하기</h2>
+
+    <div class="feature-box">
+      <h4>✨ 필수 준비 사항</h4>
+      <p><strong>1. LINE Business 계정 생성</strong> → <strong>2. 채널 개설</strong> → <strong>3. 채널 접근 토큰 발급</strong> → <strong>4. 개발 시작</strong></p>
+    </div>
+
+    <h3>개발 환경 설정</h3>
+    <p>각 서비스별로 필요한 개발 환경이 다릅니다. 해당 가이드를 참고하여 준비하세요:</p>
+    <ul>
+      <li><a href="./docs/messaging-api/getting-started/">메시징 API 시작하기</a></li>
+      <li><a href="./docs/line-login/getting-started/">LINE Login 시작하기</a></li>
+      <li><a href="./docs/liff/getting-started/">LIFF 시작하기</a></li>
+    </ul>
+
+    <h2>지원 및 커뮤니티</h2>
+    <p>개발 과정에서 문제가 발생하거나 궁금한 점이 있으신가요?</p>
+    <ul>
+      <li>📖 <strong>문서 검색:</strong> 위의 검색창을 사용하여 원하는 정보를 빠르게 찾으세요</li>
+      <li>💬 <strong>커뮤니티:</strong> LINE Developers 커뮤니티에서 다른 개발자들과 소통</li>
+      <li>⚠️ <strong>오류 보고:</strong> 문서의 오류나 개선 사항을 알려주세요</li>
+    </ul>
+
+    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+      <p style="color: var(--fg-secondary); font-size: 0.875rem;">
+        📚 <strong>추가 정보:</strong> <a href="./reference/" style="color: var(--accent);">API 참조</a> | <a href="#" style="color: var(--accent);">커뮤니티</a>
+      </p>
+    </div>
+  </main>
+</div>
+
+<script>
+  // 간단한 네비게이션 토글 (모바일용)
+  document.querySelectorAll('.sidebar > ul > li').forEach(item => {
+    const toggle = item.querySelector('.sidebar-toggle');
+    if (toggle) {
+      toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        item.classList.toggle('expanded');
+      });
+    }
+  });
+
+  // 검색 기능 (간단한 예시)
+  const searchInput = document.querySelector('.search input');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const links = document.querySelectorAll('.sidebar a:not(.sidebar-toggle)');
+
+      links.forEach(link => {
+        const text = link.textContent.toLowerCase();
+        if (text.includes(searchTerm) || searchTerm === '') {
+          link.parentElement.style.display = 'block';
+        } else {
+          link.parentElement.style.display = 'none';
+        }
+      });
+    });
+  }
+</script>

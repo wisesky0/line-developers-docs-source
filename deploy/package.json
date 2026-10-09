@@ -1,0 +1,19 @@
+{
+  "name": "line-docs-builder",
+  "version": "1.0.0",
+  "description": "LINE Developers 문서 마크다운 to HTML 렌더러",
+  "main": "build.js",
+  "scripts": {
+    "build": "node build.js",
+    "build:ko": "node build.js ko",
+    "build:watch": "node build.js --watch"
+  },
+  "keywords": ["markdown", "html", "docs"],
+  "author": "LINE Developers",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "markdown-it": "^13.0.2",
+    "front-matter": "^4.0.2",
+    "highlight.js": "^11.9.0"
+  }
+}
