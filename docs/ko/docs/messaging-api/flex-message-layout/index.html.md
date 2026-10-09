@@ -914,20 +914,20 @@ LTR 텍스트 방향의 가로 box에서 `alignItems` 속성 값에 따라 하�
     </tr>
     <tr>
       <td rowspan="2"><code>offsetStart</code></td>
-      <td>[bubble](https://developers.line.biz/en/reference/messaging-api/#bubble)의 텍스트 방향이 LTR인 경우</td>
+      <td><a href="https://developers.line.biz/en/reference/messaging-api/#bubble">bubble</a>의 텍스트 방향이 LTR인 경우</td>
       <td>상위 컴포넌트의 왼쪽 끝에서 컴포넌트의 왼쪽 끝까지의 상대 위치를 지정합니다.</td>
     </tr>
     <tr>
-      <td>[bubble](https://developers.line.biz/en/reference/messaging-api/#bubble)의 텍스트 방향이 RTL인 경우</td>
+      <td><a href="https://developers.line.biz/en/reference/messaging-api/#bubble">bubble</a>의 텍스트 방향이 RTL인 경우</td>
       <td>상위 컴포넌트의 오른쪽 끝에서 컴포넌트의 오른쪽 끝까지의 상대 위치를 지정합니다.</td>
     </tr>
     <tr>
       <td rowspan="2"><code>offsetEnd</code></td>
-      <td>[bubble](https://developers.line.biz/en/reference/messaging-api/#bubble)의 텍스트 방향이 LTR인 경우</td>
+      <td><a href="https://developers.line.biz/en/reference/messaging-api/#bubble">bubble</a>의 텍스트 방향이 LTR인 경우</td>
       <td>상위 컴포넌트의 오른쪽 끝에서 컴포넌트의 오른쪽 끝까지의 상대 위치를 지정합니다.</td>
     </tr>
     <tr>
-      <td>[bubble](https://developers.line.biz/en/reference/messaging-api/#bubble)의 텍스트 방향이 RTL인 경우</td>
+      <td><a href="https://developers.line.biz/en/reference/messaging-api/#bubble">bubble</a>의 텍스트 방향이 RTL인 경우</td>
       <td>상위 컴포넌트의 왼쪽 끝에서 컴포넌트의 왼쪽 끝까지의 상대 위치를 지정합니다.</td>
     </tr>
   </tbody>

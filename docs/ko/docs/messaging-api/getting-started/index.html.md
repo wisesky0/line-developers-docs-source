@@ -59,7 +59,7 @@ LINE 공식 계정이 만들어졌는지 확인했다면 2단계를 진행하세
 
 [LINE 공식 계정 관리자](https://manager.line.biz/)에서 Messaging API 사용을 활성화하면 Messaging API 채널이 만들어집니다. 자세한 내용은 LINE for Business의 [Messaging API](https://www.lycbiz.com/jp/manual/OfficialAccountManager/account-settings_messaging_api/)(일본어만 제공)를 참고하세요.
 
-LINE 공식 계정 관리자에 로그인하는 데 사용한 계정이 [LINE Developers Console](https://developers.line.biz/console/)에서 한 번도 사용된 적이 없다면, 개발자 정보를 등록하는 화면이 나타납니다. 이름과 이메일을 입력하여 개발자 계정을 만드세요.
+[LINE 공식 계정 관리자](https://manager.line.biz/)에 로그인하는 데 사용한 계정이 [LINE Developers Console](https://developers.line.biz/console/)에서 한 번도 사용된 적이 없다면, 개발자 정보를 등록하는 화면이 나타납니다. 이름과 이메일을 입력하여 개발자 계정을 만드세요.
 
 ![개발자 등록 화면](https://developers.line.biz/media/messaging-api/getting-started/developer-registration-en.png)
 
@@ -90,7 +90,7 @@ LINE 공식 계정 관리자에 로그인하는 데 사용한 계정이 [LINE De
 
 ### 2-2단계. LINE Developers Console에 로그인 
 
-만들어진 Messaging API 채널은 LINE Developers Console에서 설정할 수 있습니다. LINE 공식 계정 관리자에 로그인할 때 사용한 계정으로 [LINE Developers Console](https://developers.line.biz/console/)에 로그인하세요.
+만들어진 Messaging API 채널은 LINE Developers Console에서 설정할 수 있습니다. [LINE 공식 계정 관리자](https://manager.line.biz/)에 로그인할 때 사용한 계정으로 [LINE Developers Console](https://developers.line.biz/console/)에 로그인하세요.
 
 ![로그인 대화상자](https://developers.line.biz/media/messaging-api/getting-started/login-dialog.png)
 
