@@ -62,7 +62,7 @@ Messaging API에서는 [사용자가 만료 기간을 지정하는 채널 액세
 
 ### 웹훅 이벤트 수신 
 
-봇 서버가 웹훅 이벤트를 받는지 확인하려면, 먼저 앞선 단계에서 추가한 LINE 공식 계정을 차단하세요. 그다음 서버 로그에서 봇 서버가 LINE Platform으로부터 [언팔로우 이벤트](https://developers.line.biz/en/reference/messaging-api/#unfollow-event)를 받았는지 확인하세요. 다음은 로그의 예시입니다.
+봇 서버가 웹훅 이벤트를 받는지 확인하려면, 먼저 [앞선 단계](https://developers.line.biz/en/docs/messaging-api/building-bot/#set-up-bot-on-line-developers-console)에서 추가한 LINE 공식 계정을 차단하세요. 그다음 서버 로그에서 봇 서버가 LINE Platform으로부터 [언팔로우 이벤트](https://developers.line.biz/en/reference/messaging-api/#unfollow-event)를 받았는지 확인하세요. 다음은 로그의 예시입니다.
 
 ```sh
 2017-07-21T09:18:46.755256+00:00 app[web.1]: 2017-07-21 09:18:46.737  INFO 4 --- [io-13386-exec-2] c.e.bot.spring.KitchenSinkController     : unfollowed this bot: UnfollowEvent(source=UserSource(userId=Uxxxxxxxxxx...), timestamp=2017-07-21T09:18:46.031Z)

@@ -54,7 +54,7 @@ LINE Social Plugins로 생성한 **친구 추가** 버튼을 사용하려면 [�
 
 웹 앱이나 네이티브 앱에서 이 LINE URL 스킴을 사용하여 사용자에게 LINE 공식 계정을 친구로 추가하도록 안내할 수 있습니다. 이 LINE URL 스킴은 LINE for iOS 또는 LINE for Android에서 탭하면 LINE 공식 계정의 비즈니스 프로필 페이지를 엽니다.
 
-- https://line.me/R/ti/p/`{퍼센트 인코딩된 LINE ID}`&nbsp;
+- https://line.me/R/ti/p/`{Percent-encoded LINE ID}`&nbsp;
 
 예를 들어 [`https://line.me/R/ti/p/%40linedevelopers`](https://line.me/R/ti/p/%40linedevelopers)는 LINE Developers의 LINE 공식 계정 비즈니스 프로필 페이지를 표시합니다. LINE URL 스킴에 대한 자세한 내용은 [LINE 공식 계정 공유하기](https://developers.line.biz/en/docs/messaging-api/using-line-url-scheme/#sharing-line-official-account)를 참고하십시오.
 
@@ -64,7 +64,7 @@ LINE Social Plugins로 생성한 **친구 추가** 버튼을 사용하려면 [�
 
 사용자가 이미 LINE 공식 계정을 친구로 추가했다면, 이 LINE URL 스킴을 사용하여 사용자가 LINE에서 친구에게 LINE 공식 계정을 추천하도록 유도할 수 있습니다.
 
-- https://line.me/R/nv/recommendOA/`{@가 붙은 LINE ID}`&nbsp;
+- https://line.me/R/nv/recommendOA/`{LINE ID with @}`&nbsp;
 
 예를 들어 이 LINE URL 스킴을 [리치 메뉴](https://developers.line.biz/en/docs/messaging-api/using-rich-menus/)의 [URI 액션 객체](https://developers.line.biz/en/reference/messaging-api/#uri-action)나 [템플릿 메시지](https://developers.line.biz/en/docs/messaging-api/message-types/#template-messages)에 지정할 수 있습니다. 이 LINE URL 스킴에 대한 자세한 내용은 [LINE 공식 계정 공유하기](https://developers.line.biz/en/docs/messaging-api/using-line-url-scheme/#sharing-line-official-account)를 참고하십시오.
 
