@@ -271,7 +271,7 @@ liff
 `Promise` 객체가 완료되기 전에 다음 URL 조작 중 하나라도 실행하면 LIFF 앱이 제대로 열리지 않을 수 있습니다.
 
 - [`Document.location`](https://developer.mozilla.org/en-US/docs/Web/API/Document/location) 속성 또는 [`Window.location`](https://developer.mozilla.org/en-US/docs/Web/API/Window/location) 속성으로 URL을 변경하는 경우
-- History API의 [`history.pushState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState) 메서드 또는 [`history.replaceState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState) 메서드로 URL을 변경하는 경우
+- [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)의 [`history.pushState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState) 메서드 또는 [`history.replaceState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState) 메서드로 URL을 변경하는 경우
 - 서버 측에서 상태 코드 `301` 또는 `302`를 반환하여 다른 URL로 리디렉션하는 경우
 
 #### 기본 리디렉션 URL 처리 시 주의하기 
@@ -350,7 +350,7 @@ console.log(liff.getLineVersion());
 
 ### 로그인 처리 수행하기 
 
-LINE의 인앱 브라우저와 외부 브라우저 모두에서 로그인 처리를 하려면 `liff.login()` 메서드를 호출하세요.
+LINE의 [인앱 브라우저](https://developers.line.biz/en/glossary/#line-iab)와 [외부 브라우저](https://developers.line.biz/en/glossary/#external-browser) 모두에서 로그인 처리를 하려면 `liff.login()` 메서드를 호출하세요.
 
 <!-- note start -->
 

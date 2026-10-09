@@ -214,9 +214,9 @@ class GreetPlugin {
 
 ##### `option` 
 
-`install()` 메서드의 두 번째 인자입니다. [`liff.use()`](https://developers.line.biz/en/reference/liff/#use) 메서드의 두 번째 인자로 지정한 값이 전달됩니다. `liff.use()` 메서드의 두 번째 인자를 지정하지 않으면 `option`의 값은 `undefined`가 됩니다.
+`install()` 메서드의 두 번째 인자입니다. [`liff.use()`](https://developers.line.biz/en/reference/liff/#use) 메서드의 두 번째 인자로 지정한 값이 전달됩니다. [`liff.use()`](https://developers.line.biz/en/reference/liff/#use) 메서드의 두 번째 인자를 지정하지 않으면 `option`의 값은 `undefined`가 됩니다.
 
-`liff.use()` 메서드에 인자를 전달하여 `option`을 사용하면 LIFF 플러그인의 동작을 커스터마이징할 수 있습니다.
+[`liff.use()`](https://developers.line.biz/en/reference/liff/#use) 메서드에 인자를 전달하여 `option`을 사용하면 LIFF 플러그인의 동작을 커스터마이징할 수 있습니다.
 
 ## 훅에 대하여 
 
