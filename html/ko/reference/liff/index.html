@@ -1,0 +1,2639 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LIFF API reference | LINE Developers</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#fff;--fg:#1a1a1a;--fg2:#595959;--border:#e5e5e5;--bg2:#f5f5f7;--accent:#0066ff;--code-bg:#f3f4f6;--hover:rgba(0,102,255,.07);--header-h:57px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Neo','Noto Sans KR',Roboto,sans-serif;line-height:1.6;margin:0}
+header{position:sticky;top:0;z-index:20;height:var(--header-h);background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;padding:0 1.25rem}
+.logo{font-weight:700;font-size:1.2rem;color:var(--fg);text-decoration:none;white-space:nowrap}
+.search{flex:1;max-width:320px;margin-left:auto}
+.search input{width:100%;padding:.45rem .75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--fg);font-size:.875rem}
+.search input:focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--bg)}
+.nav-btn{display:none;cursor:pointer;font-size:1.3rem;line-height:1;padding:.25rem .4rem;border:1px solid var(--border);border-radius:6px}
+#nav-toggle{position:absolute;opacity:0;pointer-events:none}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr)}
+.sidebar{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto;border-right:1px solid var(--border);background:var(--bg2);padding:.75rem 0 2rem;font-size:.875rem}
+.sidebar ul{list-style:none;margin:0;padding:0}
+.sidebar ul ul{padding-left:.9rem;border-left:1px solid var(--border);margin-left:1.1rem}
+.nav-title{padding:.9rem 1.25rem .35rem;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg2)}
+.sidebar a,.sidebar summary>span{display:inline-block;padding:.28rem .5rem;color:var(--fg2);text-decoration:none;border-radius:4px}
+.sidebar li>a{display:block;margin:0 .5rem 0 1rem}
+.sidebar a:hover{color:var(--accent);background:var(--hover)}
+.sidebar a.active{color:var(--accent);background:var(--hover);font-weight:600}
+.sidebar summary{cursor:pointer;padding:.1rem .75rem .1rem 1rem;list-style-position:inside}
+.sidebar summary>span{font-weight:600;color:var(--fg)}
+.sidebar summary a{padding-left:.2rem}
+.sidebar li.hidden{display:none}
+.content{min-width:0;padding:2rem 2.5rem 4rem}
+article{max-width:880px;margin:0 auto}
+h1,h2,h3,h4{line-height:1.3;color:var(--fg);text-wrap:balance}
+h1{font-size:2.1rem;margin:0 0 1rem}
+h2{font-size:1.5rem;margin:2.2rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.2rem;margin:1.6rem 0 .6rem}
+p,li{color:var(--fg2);line-height:1.75}
+a{color:var(--accent)}
+code{background:var(--code-bg);padding:.15em .4em;border-radius:3px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;line-height:1.5}
+pre code{background:none;padding:0;color:var(--fg)}
+blockquote{border-left:4px solid var(--accent);padding:.6rem 1.2rem;margin:1.2rem 0;background:var(--bg2);border-radius:4px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:1.2rem 0}
+th,td{padding:.6rem .8rem;border:1px solid var(--border);text-align:left;vertical-align:top}
+th{background:var(--bg2);color:var(--fg)}
+.doc-figure{margin:1.5rem 0;text-align:center}
+.doc-figure img{max-width:100%;height:auto;border:1px solid var(--border);border-radius:8px}
+.doc-figure figcaption{margin-top:.4rem;font-size:.85rem;color:var(--fg2)}
+.tip{background:var(--bg2);border-left:4px solid var(--accent);padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:4px}
+.feature-box{background:var(--bg2);border-left:4px solid var(--accent);border-radius:6px;padding:1rem 1.4rem;margin:1.2rem 0}
+.feature-box h4{margin:0 0 .4rem;color:var(--accent)}
+.feature-box p{margin:0}
+@media (max-width:860px){
+  .nav-btn{display:block}
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .sidebar{display:none;position:fixed;inset:var(--header-h) 0 0 0;height:auto;z-index:15;width:100%}
+  #nav-toggle:checked~.layout .sidebar{display:block}
+  .content{padding:1.25rem 1rem 3rem}
+  h1{font-size:1.6rem}
+  .search{max-width:none}
+}
+</style>
+</head>
+<body>
+<input type="checkbox" id="nav-toggle">
+<header>
+  <label for="nav-toggle" class="nav-btn" aria-label="메뉴">☰</label>
+  <a href="../../" class="logo">LINE Developers</a>
+  <div class="search"><input id="nav-search" type="search" placeholder="문서 검색..." aria-label="문서 검색"></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" aria-label="문서 목차"><div class="nav-section"><div class="nav-title">문서</div><ul><li><details><summary><span>기본</span></summary><ul><li><a href="../../docs/basics/channel-access-token/">채널 액세스 토큰</a></li><li><a href="../../docs/basics/line-api-status/">LINE Platform 가용성 확인 (LINE API Status)</a></li><li><a href="../../docs/basics/user-profile/">사용자 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LIFF</span></summary><ul><li><a href="../../docs/liff/overview/">LIFF 개요</a></li><li><a href="../../docs/liff/getting-started/">채널 생성하기</a></li><li><a href="../../docs/liff/cli-tool-create-liff-app/">Create LIFF App로 LIFF 앱 개발 환경 구축하기</a></li><li><a href="../../docs/liff/developing-liff-apps/">LIFF 앱 개발하기</a></li><li><a href="../../docs/liff/development-guidelines/">LIFF 앱 개발 가이드라인</a></li><li><a href="../../docs/liff/differences-between-liff-browser-and-external-browser/">LIFF 브라우저와 외부 브라우저의 차이</a></li><li><a href="../../docs/liff/differences-between-liff-browser-and-line-in-app-browser/">LIFF 브라우저와 LINE 인앱 브라우저의 차이</a></li><li><a href="../../docs/liff/liff-cli/">LIFF CLI</a></li><li><a href="../../docs/liff/liff-plugin/">LIFF 플러그인</a></li><li><a href="../../docs/liff/minimizing-liff-browser/">LIFF 브라우저 최소화</a></li><li><a href="../../docs/liff/opening-liff-app/">LIFF 앱 열기</a></li><li><a href="../../docs/liff/pluggable-sdk/">플러거블 SDK</a></li><li><a href="../../docs/liff/registering-liff-apps/">채널에 LIFF 앱 추가하기</a></li><li><a href="../../docs/liff/release-notes/">릴리스 노트</a></li><li><a href="../../docs/liff/trying-liff-app/">LIFF 스타터 앱 체험하기</a></li><li><a href="../../docs/liff/using-user-profile/">LIFF 앱 및 서버에서 사용자 데이터 사용하기</a></li><li><a href="../../docs/liff/versioning-policy/">버전 정책</a></li></ul></details></li><li><details><summary><span>LINE Ads API</span></summary><ul><li><a href="../../docs/line-ads-api/about/">LINE Ads API 소개</a></li><li><a href="../../docs/line-ads-api/development-guidelines/">LINE Ads API 개발 가이드라인</a></li></ul></details></li><li><a href="../../docs/line-conversion-api/">LINE Conversion API</a></li><li><details><summary><span>LINE Developers 콘솔</span></summary><ul><li><a href="../../docs/line-developers-console/overview/">LINE Developers Console 개요</a></li><li><a href="../../docs/line-developers-console/best-practices-for-provider-and-channel-management/">프로바이더 및 채널 관리 모범 사례</a></li><li><a href="../../docs/line-developers-console/delete-developer-account/">개발자 계정 삭제하기</a></li><li><a href="../../docs/line-developers-console/login-account/">LINE Developers Console에 로그인하기</a></li><li><a href="../../docs/line-developers-console/managing-roles/">역할 관리하기</a></li><li><a href="../../docs/line-developers-console/notification/">이메일 또는 알림 센터로 알림 받기</a></li></ul></details></li><li><details><summary><span>LINE 로그인</span></summary><ul><li><a href="../../docs/line-login/overview/">LINE Login 개요</a></li><li><a href="../../docs/line-login/getting-started/">LINE Login 시작하기</a></li><li><a href="../../docs/line-login/development-guidelines/">LINE Login 개발 가이드라인</a></li><li><a href="../../docs/line-login/how-to-handle-auto-login-failure/">자동 로그인 실패 처리 방법</a></li><li><a href="../../docs/line-login/integrate-line-login/">웹 앱에 LINE Login 연동하기</a></li><li><a href="../../docs/line-login/integrate-line-login-v2/">웹 앱에 LINE Login(v2.0) 연동하기</a></li><li><a href="../../docs/line-login/integrate-pkce/">LINE Login의 PKCE 지원</a></li><li><a href="../../docs/line-login/link-a-bot/">로그인 시 LINE 공식 계정을 친구로 추가하기(친구 추가 옵션)</a></li><li><a href="../../docs/line-login/login-button/">LINE Login 버튼 디자인 가이드라인</a></li><li><a href="../../docs/line-login/managing-access-tokens/">액세스 토큰 관리</a></li><li><a href="../../docs/line-login/managing-access-tokens-v2/">액세스 토큰 관리(LINE Login v2.0)</a></li><li><a href="../../docs/line-login/managing-authorized-apps/">승인된 앱 관리하기</a></li><li><a href="../../docs/line-login/managing-users/">사용자 관리</a></li><li><a href="../../docs/line-login/managing-users-v2/">사용자 관리(LINE Login v2.0)</a></li><li><a href="../../docs/line-login/secure-login-process/">앱과 서버 간의 안전한 로그인 프로세스 만들기</a></li><li><a href="../../docs/line-login/security-checklist/">LINE Login 보안 체크리스트</a></li><li><a href="../../docs/line-login/using-line-url-scheme/">LINE URL scheme을 사용하여 LINE 기능 이용하기</a></li><li><a href="../../docs/line-login/verify-id-token/">ID 토큰에서 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LINE 로그인 SDK</span></summary><ul><li><details><summary><span>Android SDK</span></summary><ul><li><a href="../../docs/line-login-sdks/android-sdk/overview/">LINE SDK for Android 개요</a></li><li><a href="../../docs/line-login-sdks/android-sdk/handling-errors/">오류 처리</a></li><li><a href="../../docs/line-login-sdks/android-sdk/integrate-line-login/">Android 앱에 LINE Login 통합하기</a></li><li><a href="../../docs/line-login-sdks/android-sdk/link-a-bot/">SDK로 친구 추가 옵션 활성화하기</a></li><li><a href="../../docs/line-login-sdks/android-sdk/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../docs/line-login-sdks/android-sdk/managing-users/">사용자 관리하기</a></li><li><a href="../../docs/line-login-sdks/android-sdk/release-notes/">LINE SDK for Android 릴리스 노트</a></li><li><a href="../../docs/line-login-sdks/android-sdk/try-line-login/">샘플 앱 체험하기</a></li></ul></details></li><li><a href="../../docs/line-login-sdks/flutter-sdk/">Flutter SDK</a></li><li><details><summary><span>iOS SDK</span></summary><ul><li><a href="../../docs/line-login-sdks/ios-sdk/release-notes/">LINE SDK for iOS 릴리스 노트</a></li><li><details><summary><span>Swift</span></summary><ul><li><a href="../../docs/line-login-sdks/ios-sdk/swift/overview/">LINE SDK for iOS Swift 개요</a></li><li><a href="../../docs/line-login-sdks/ios-sdk/swift/error-handling/">오류 처리하기</a></li><li><a href="../../docs/line-login-sdks/ios-sdk/swift/integrate-line-login/">iOS 앱에 LINE Login 통합하기</a></li><li><a href="../../docs/line-login-sdks/ios-sdk/swift/link-a-bot/">SDK로 추가 친구 옵션 활성화하기</a></li><li><a href="../../docs/line-login-sdks/ios-sdk/swift/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../docs/line-login-sdks/ios-sdk/swift/managing-users/">사용자 관리하기</a></li><li><a href="../../docs/line-login-sdks/ios-sdk/swift/migration-guide/">SDK 업그레이드하기</a></li><li><a href="../../docs/line-login-sdks/ios-sdk/swift/setting-up-project/">프로젝트 설정하기</a></li><li><a href="../../docs/line-login-sdks/ios-sdk/swift/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../docs/line-login-sdks/ios-sdk/swift/universal-links-support/">유니버설 링크 사용하기</a></li><li><a href="../../docs/line-login-sdks/ios-sdk/swift/using-objc/">Objective-C 코드에서 SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>Unity SDK</span></summary><ul><li><a href="../../docs/line-login-sdks/unity-sdk/overview/">LINE SDK for Unity 개요</a></li><li><a href="../../docs/line-login-sdks/unity-sdk/integrate-line-login/">Unity 게임에 LINE Login 통합하기</a></li><li><a href="../../docs/line-login-sdks/unity-sdk/project-setup/">프로젝트 설정하기</a></li><li><a href="../../docs/line-login-sdks/unity-sdk/release-notes/">LINE SDK for Unity 릴리스 노트</a></li><li><a href="../../docs/line-login-sdks/unity-sdk/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../docs/line-login-sdks/unity-sdk/using-sdk/">결과 처리와 기타 API에 LINE SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>LINE 미니앱</span></summary><ul><li><a href="../../docs/line-mini-app/quickstart/">LINE MINI App 시작하기</a></li><li><details><summary><span>Design</span></summary><ul><li><a href="../../docs/line-mini-app/design/landscape/">LINE MINI App의 안전 영역</a></li><li><a href="../../docs/line-mini-app/design/line-mini-app-icon/">LINE MINI App 아이콘 사양 및 가이드라인</a></li><li><a href="../../docs/line-mini-app/design/loading-icon/">로딩 아이콘</a></li></ul></details></li><li><details><summary><span>Develop</span></summary><ul><li><a href="../../docs/line-mini-app/develop/add-to-home-screen/">LINE MINI App의 바로가기를 사용자 기기의 홈 화면에 추가하기</a></li><li><a href="../../docs/line-mini-app/develop/channel-consent-simplification/">LINE MINI App 인증 흐름</a></li><li><a href="../../docs/line-mini-app/develop/configure-console/">LINE MINI App 사용자에게 표시되는 설정</a></li><li><a href="../../docs/line-mini-app/develop/custom-path/">커스텀 경로 설정하기</a></li><li><a href="../../docs/line-mini-app/develop/develop-overview/">시작하기</a></li><li><a href="../../docs/line-mini-app/develop/external-browser/">외부 브라우저에서 LINE MINI App 열기</a></li><li><a href="../../docs/line-mini-app/develop/payment/">결제 처리하기</a></li><li><a href="../../docs/line-mini-app/develop/performance-guidelines/">성능 가이드라인</a></li><li><a href="../../docs/line-mini-app/develop/permanent-links/">영구 링크 만들기</a></li><li><a href="../../docs/line-mini-app/develop/service-messages/">서비스 메시지 보내기</a></li><li><a href="../../docs/line-mini-app/develop/share-messages/">커스텀 액션 버튼 구현하기</a></li><li><a href="../../docs/line-mini-app/develop/share-messages-standard/">가이드라인을 따르는 JSON 파일 예시</a></li><li><a href="../../docs/line-mini-app/develop/web-to-mini-app/">운영 중인 웹 앱을 LINE MINI App으로 구현하기</a></li></ul></details></li><li><a href="../../docs/line-mini-app/development-guidelines/">LINE MINI App 개발 가이드라인</a></li><li><details><summary><span>Discover</span></summary><ul><li><a href="../../docs/line-mini-app/discover/introduction/">LINE MINI App 소개</a></li><li><a href="../../docs/line-mini-app/discover/builtin-features/">기본 제공 기능</a></li><li><a href="../../docs/line-mini-app/discover/console-guide/">LINE MINI App용 LINE Developers Console 가이드</a></li><li><a href="../../docs/line-mini-app/discover/custom-features/">커스텀 기능</a></li><li><a href="../../docs/line-mini-app/discover/native-mini/">네이티브 앱과 LINE MINI App의 차이</a></li><li><a href="../../docs/line-mini-app/discover/specifications/">LINE MINI App 사양</a></li><li><a href="../../docs/line-mini-app/discover/ui-components/">LINE MINI App UI 컴포넌트</a></li></ul></details></li><li><details><summary><span>In App Purchase</span></summary><ul><li><a href="../../docs/line-mini-app/in-app-purchase/overview/">인앱 결제 개요</a></li><li><a href="../../docs/line-mini-app/in-app-purchase/apple-mini-apps-partner-program/">Mini Apps Partner Program을 통한 App Store 수수료 인하</a></li><li><a href="../../docs/line-mini-app/in-app-purchase/iap-guidelines/">인앱 결제 개발 가이드라인</a></li><li><a href="../../docs/line-mini-app/in-app-purchase/iap-product-id/">인앱 결제로 구매 가능한 아이템의 상품 ID 목록</a></li><li><a href="../../docs/line-mini-app/in-app-purchase/iap-settings/">인앱 결제 설정</a></li><li><a href="../../docs/line-mini-app/in-app-purchase/implement-in-app-purchase/">인앱 결제 기능 연동</a></li><li><a href="../../docs/line-mini-app/in-app-purchase/request-iap-review/">인앱 결제 사용 신청</a></li></ul></details></li><li><details><summary><span>Quick Fill</span></summary><ul><li><a href="../../docs/line-mini-app/quick-fill/overview/">공통 프로필 Quick-fill 개요</a></li><li><a href="../../docs/line-mini-app/quick-fill/design-regulations/">공통 프로필 Quick-fill 디자인 규정</a></li></ul></details></li><li><details><summary><span>Service</span></summary><ul><li><a href="../../docs/line-mini-app/service/add-friend-option/">LINE MINI App에서 LINE 공식 계정을 친구로 추가하기 (친구 추가 옵션)</a></li><li><a href="../../docs/line-mini-app/service/business-manager-link/">LINE MINI App 채널을 Business Manager 조직에 연결하기</a></li><li><a href="../../docs/line-mini-app/service/line-mini-app-ads/">LINE MINI App에 광고 게재하기</a></li><li><a href="../../docs/line-mini-app/service/line-mini-app-oa/">LINE 공식 계정 활용하기</a></li><li><a href="../../docs/line-mini-app/service/service-operation/">서비스 운영하기</a></li><li><a href="../../docs/line-mini-app/service/update-service/">인증된 MINI App 업데이트 후 재심사</a></li></ul></details></li><li><details><summary><span>Submit</span></summary><ul><li><a href="../../docs/line-mini-app/submit/submission-guide/">LINE MINI App 제출하기</a></li></ul></details></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../../docs/line-mini-app/technicalcase/bravetechnology/">&#039;대기 줄 관리 솔루션이 LINE MINI App으로 확장되는 방식: &quot;matoca&quot;와 &quot;yoboca&quot;의 개발 사례&#039;</a></li><li><a href="../../docs/line-mini-app/technicalcase/classmethod/">모바일 주문 시스템 CX ORDER 사례 연구</a></li><li><a href="../../docs/line-mini-app/technicalcase/grandream/">GDL 플랫폼의 기술 사례 연구: 비용 효율성과 유연성을 함께 실현</a></li><li><a href="../../docs/line-mini-app/technicalcase/hakuhodo/">도야마현 아사히마치의 모빌리티 및 건강 증진을 위한 디지털 활성화 프로젝트 &quot;PoHUNT&quot; 개발 사례</a></li><li><a href="../../docs/line-mini-app/technicalcase/kirifuda-morikaranotegami/">놀이를 통한 자연 보호: LINE MINI App으로 출시한 &quot;Letters from the Forest&quot;의 기술 사례 연구</a></li></ul></details></li></ul></details></li><li><details><summary><span>Messaging API</span></summary><ul><li><a href="../../docs/messaging-api/overview/">Messaging API 개요</a></li><li><a href="../../docs/messaging-api/getting-started/">Messaging API 시작하기</a></li><li><a href="../../docs/messaging-api/actions/">액션</a></li><li><a href="../../docs/messaging-api/beacon-device-spec/">LINE Beacon 디바이스 사양</a></li><li><a href="../../docs/messaging-api/building-bot/">봇 만들기</a></li><li><a href="../../docs/messaging-api/check-webhook-error-statistics/">웹훅 오류 원인 및 통계 확인하기</a></li><li><a href="../../docs/messaging-api/create-flex-message-including-video/">동영상이 포함된 Flex Message 만들기</a></li><li><a href="../../docs/messaging-api/development-guidelines/">Messaging API 개발 가이드라인</a></li><li><a href="../../docs/messaging-api/download-bot-designer/">LINE Bot Designer 다운로드</a></li><li><a href="../../docs/messaging-api/flex-message-elements/">Flex Message 요소</a></li><li><a href="../../docs/messaging-api/flex-message-layout/">Flex Message 레이아웃</a></li><li><a href="../../docs/messaging-api/generate-json-web-token/">채널 액세스 토큰 v2.1 발급</a></li><li><a href="../../docs/messaging-api/get-quote-tokens/">인용 토큰 가져오기</a></li><li><a href="../../docs/messaging-api/getting-user-ids/">사용자 ID 가져오기</a></li><li><a href="../../docs/messaging-api/group-chats/">그룹 채팅 및 다인 채팅</a></li><li><a href="../../docs/messaging-api/icon-nickname-switch/">아이콘 및 표시 이름 설정하기</a></li><li><a href="../../docs/messaging-api/line-bot-sdk/">LINE Messaging API SDK</a></li><li><a href="../../docs/messaging-api/linking-accounts/">사용자 계정 연동</a></li><li><a href="../../docs/messaging-api/mark-as-read/">메시지를 읽음으로 표시하기</a></li><li><a href="../../docs/messaging-api/measure-impressions/">노출 수 측정하기</a></li><li><a href="../../docs/messaging-api/message-types/">메시지 타입</a></li><li><a href="../../docs/messaging-api/nodejs-sample/">튜토리얼 - 응답 봇 만들기</a></li><li><a href="../../docs/messaging-api/pricing/">Messaging API 요금</a></li><li><a href="../../docs/messaging-api/receiving-messages/">메시지 수신하기(웹훅)</a></li><li><a href="../../docs/messaging-api/retrying-api-request/">API 요청 재시도</a></li><li><a href="../../docs/messaging-api/rich-menus-overview/">리치 메뉴 개요</a></li><li><a href="../../docs/messaging-api/secure-message-sample/">보안 메시지 생성을 위한 샘플 코드와 데이터</a></li><li><a href="../../docs/messaging-api/send-coupons-to-users/">쿠폰을 만들어 사용자에게 보내기</a></li><li><a href="../../docs/messaging-api/sending-messages/">메시지 보내기</a></li><li><a href="../../docs/messaging-api/sharing-bot/">LINE 공식 계정 친구 늘리기</a></li><li><a href="../../docs/messaging-api/ssl-tls-spec-of-the-webhook-source/">웹훅 소스의 SSL/TLS 사양</a></li><li><a href="../../docs/messaging-api/stop-using-line-official-account/">LINE 공식 계정 사용 중단하기</a></li><li><a href="../../docs/messaging-api/stop-using-messaging-api/">Messaging API 사용 중단하기</a></li><li><a href="../../docs/messaging-api/switch-rich-menus/">리치 메뉴에서 탭 전환하기</a></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../../docs/messaging-api/technicalcase/boldly/">온디맨드 자율주행 버스 예약 시스템의 LINE MINI App 사례</a></li><li><a href="../../docs/messaging-api/technicalcase/evolany-ai/">anybot for ChatGPT 기술 사례 연구: ChatGPT를 적극 활용하여 더 원활한 커뮤니케이션 구현하기</a></li><li><a href="../../docs/messaging-api/technicalcase/heptagon/">이주 및 정착 관련 문의를 처리하는 LINE 봇 개발 사례 연구</a></li><li><a href="../../docs/messaging-api/technicalcase/playnext-lab/">Smart Public Lab 기술 사례 연구: 행정 디지털 전환을 지원하는 LINE 활용 전략</a></li><li><a href="../../docs/messaging-api/technicalcase/resortbaito-dive/">임시직 직원의 만족도를 높이기 위한 &quot;Resort Baito Dive&quot; 개발 사례</a></li><li><a href="../../docs/messaging-api/technicalcase/skillbox/">SkillBox 기술 사례 연구: 이메일 주소가 없는 직원까지 LINE 알림으로 참여도 설문 응답률을 크게 높이다</a></li><li><a href="../../docs/messaging-api/technicalcase/softbank/">인프라를 로우 코드로 도입하기: CNAP으로 개발 효율을 높인 LINE 기반 서비스 개발 사례</a></li></ul></details></li><li><a href="../../docs/messaging-api/text-character-count/">텍스트의 글자 수 세기</a></li><li><a href="../../docs/messaging-api/try-rich-menu/">리치 메뉴 체험하기</a></li><li><a href="../../docs/messaging-api/unit-based-statistics-aggregation/">발송한 메시지의 통계 조회하기</a></li><li><a href="../../docs/messaging-api/use-loading-indicator/">로딩 애니메이션 표시하기</a></li><li><a href="../../docs/messaging-api/use-membership-features/">멤버십 기능 사용하기</a></li><li><a href="../../docs/messaging-api/use-per-user-rich-menus/">사용자별 리치 메뉴 사용하기</a></li><li><a href="../../docs/messaging-api/user-consent/">사용자 프로필 정보 제공 동의</a></li><li><a href="../../docs/messaging-api/using-audience/">오디언스 사용하기</a></li><li><a href="../../docs/messaging-api/using-beacons/">LINE 비콘 사용하기</a></li><li><a href="../../docs/messaging-api/using-bot-designer/">LINE Bot Designer</a></li><li><a href="../../docs/messaging-api/using-flex-message-simulator/">튜토리얼 - Flex Message Simulator로 디지털 명함 만들기</a></li><li><a href="../../docs/messaging-api/using-flex-messages/">Flex Message 보내기</a></li><li><a href="../../docs/messaging-api/using-line-url-scheme/">LINE URL 스킴으로 LINE 기능 사용하기</a></li><li><a href="../../docs/messaging-api/using-quick-reply/">퀵 리플라이 사용하기</a></li><li><a href="../../docs/messaging-api/using-rich-menus/">리치 메뉴 사용하기</a></li><li><a href="../../docs/messaging-api/verify-webhook-signature/">웹훅 서명 검증하기</a></li><li><a href="../../docs/messaging-api/verify-webhook-url/">웹훅 URL 확인하기</a></li></ul></details></li><li><details><summary><span>파트너 문서</span></summary><ul><li><a href="../../docs/partner-docs/overview/">개요</a></li><li><a href="../../docs/partner-docs/api-policy-handbook/">LINE API 정책 핸드북</a></li><li><a href="../../docs/partner-docs/development-guidelines/">법인 고객을 위한 개발 가이드라인</a></li><li><a href="../../docs/partner-docs/error-notification/">오류 알림</a></li><li><a href="../../docs/partner-docs/line-beacon/">LINE Beacon</a></li><li><details><summary><span>Line Notification Messages</span></summary><ul><li><a href="../../docs/partner-docs/line-notification-messages/overview/">LINE 알림 메시지 개요</a></li><li><a href="../../docs/partner-docs/line-notification-messages/flow-when-receiving-message/">LINE 알림 메시지를 수신할 때의 흐름</a></li><li><a href="../../docs/partner-docs/line-notification-messages/message-sending-complete-webhook-event/">웹훅 발송 완료 이벤트</a></li><li><a href="../../docs/partner-docs/line-notification-messages/statistics/">LINE 알림 메시지 통계 가져오기</a></li><li><a href="../../docs/partner-docs/line-notification-messages/technical-specs/">LINE 알림 메시지 API 기술 사양</a></li><li><a href="../../docs/partner-docs/line-notification-messages/template/">LINE 알림 메시지(템플릿)</a></li></ul></details></li><li><a href="../../docs/partner-docs/line-profile-plus/">LINE Profile+</a></li><li><a href="../../docs/partner-docs/mark-as-read/">Mark as read API(이전 버전)</a></li><li><a href="../../docs/partner-docs/mission-stickers/">Mission Sticker API</a></li><li><a href="../../docs/partner-docs/module/">모듈</a></li><li><a href="../../docs/partner-docs/module-technical-attach-channel/">모듈 채널 연결</a></li><li><a href="../../docs/partner-docs/module-technical-chat-control/">채팅 주도권 제어(Chat Control)</a></li><li><a href="../../docs/partner-docs/module-technical-console/">모듈 채널 설정 구성</a></li><li><a href="../../docs/partner-docs/module-technical-using-messaging-api/">모듈 채널에서 Messaging API 사용하기</a></li><li><a href="../../docs/partner-docs/notice/">법인 고객 공지</a></li><li><a href="../../docs/partner-docs/provider-page/">Provider page</a></li></ul></details></li></ul></div><div class="nav-section"><div class="nav-title">레퍼런스</div><ul><li><a href="./" class="active" aria-current="page">LIFF API reference</a></li><li><a href="../liff-server/">Server API</a></li><li><a href="../line-login/">LINE Login v2.1 API reference</a></li><li><a href="../line-login-v2/">LINE Login API v2.0 reference</a></li><li><a href="../line-mini-app/">LINE MINI App API reference</a></li><li><a href="../line-notification-messages/">LINE notification messages API reference</a></li><li><a href="../messaging-api/">Messaging API reference</a></li><li><a href="../partner-docs/">Options for corporate customers API reference</a></li></ul></div></nav>
+  <main class="content"><article><h1>LIFF API reference</h1><h2>Common specifications</h2>
+<h3>Operating environment</h3>
+<p>LIFF가 지원하는 운영 환경에 대한 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/overview/">LIFF overview</a>를 참조하십시오.</p>
+<p>사용할 수 있는 기능은 LIFF 앱이 LIFF browser에서 열렸는지 외부 브라우저에서 열렸는지에 따라 달라집니다. 예를 들어 외부 브라우저에서는 <code>liff.scanCode()</code>를 사용할 수 없습니다. 자세한 내용은 각 client API의 설명을 참조하십시오.</p>
+<!-- note start -->
+<p><strong>LIFF apps are not compatible with OpenChat</strong></p>
+<p>예를 들어 LIFF 앱을 통해 사용자의 프로필 정보를 가져오는 것은 대부분의 경우 불가능합니다.</p>
+<!-- note end -->
+<h3>LIFF SDK errors</h3>
+<p>LIFF SDK 오류는 LiffError 객체로 반환됩니다.</p>
+<!-- note start -->
+<p><strong>When identifying errors, refer to both the error code and the error message</strong></p>
+<p>오류 메시지는 예고 없이 변경될 수 있으므로, 오류 메시지가 정확히 일치하는지만으로 오류를 식별하면 LIFF 앱이 오작동할 수 있습니다. 오류 메시지가 변경되더라도 LIFF 앱이 계속 올바르게 작동하도록 하려면 오류 코드와 오류 메시지를 모두 참조하여 오류를 식별하십시오.</p>
+<p>오류를 오류 코드만으로 고유하게 식별할 수 있도록 개선할 계획입니다.</p>
+<!-- note end -->
+<p><em>Example</em></p>
+<!-- tab start `json` -->
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;code&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;INIT_FAILED&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Failed to init LIFF SDK&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<!-- tab end -->
+<h4>LiffError object</h4>
+<!-- parameter start -->
+<p>code</p>
+<p>String</p>
+<p>오류 코드</p>
+<!-- parameter end -->
+<!-- parameter start (props: annotation="Not always included") -->
+<p>message</p>
+<p>String</p>
+<p>오류 메시지</p>
+<!-- parameter end -->
+<!-- parameter start (props: annotation="Not always included") -->
+<p>cause</p>
+<p>Unknown</p>
+<p>오류 원인</p>
+<!-- parameter end -->
+<h4>Error details</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Error code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>요청에 문제가 있습니다. 요청 파라미터와 JSON 형식을 확인하십시오.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authorization 헤더가 올바른지 확인하십시오.</td>
+</tr>
+<tr>
+<td>403</td>
+<td>API를 사용할 권한이 없습니다. 계정 또는 플랜이 API 사용 권한을 가지고 있는지 확인하십시오.</td>
+</tr>
+<tr>
+<td>429</td>
+<td>요청 rate limit 범위 안에서 요청하고 있는지 확인하십시오.</td>
+</tr>
+<tr>
+<td>500</td>
+<td>API 서버에서 일시적인 오류가 발생했습니다.</td>
+</tr>
+<tr>
+<td>INIT_FAILED</td>
+<td>LIFF SDK 초기화에 실패했습니다.</td>
+</tr>
+<tr>
+<td>INVALID_ARGUMENT</td>
+<td>잘못된 인자가 지정되었습니다.</td>
+</tr>
+<tr>
+<td>UNAUTHORIZED</td>
+<td><ul><li>사용자가 승인하지 않았습니다.</li><li>Access token 없이 server API를 호출했습니다.</li><li>로그인하기 전에 share target picker를 호출했습니다.</li></ul></td>
+</tr>
+<tr>
+<td>FORBIDDEN</td>
+<td><ul><li>필요한 권한이 없습니다.</li><li>지원되지 않는 환경에서 기능을 사용하려고 했습니다.</li></ul></td>
+</tr>
+<tr>
+<td>INVALID_CONFIG</td>
+<td>잘못된 설정입니다.<ul><li><a href="./#initialize-liff-app"><code>liff.init()</code></a>으로 LIFF 앱을 초기화하려면 liffId를 지정해야 합니다.</li><li><a href="./#permanent-link-create-url"><code>liff.permanentLink.createUrl()</code></a> 메서드를 실행하는 페이지의 URL이 <strong>Endpoint URL</strong>에 지정된 URL로 시작하지 않습니다.</li></ul></td>
+</tr>
+<tr>
+<td>INVALID_ID_TOKEN</td>
+<td>ID token 검증에 실패했습니다.</td>
+</tr>
+<tr>
+<td>EXCEPTION_IN_SUBWINDOW</td>
+<td>Subwindow에 문제가 있습니다. <ul><li>예를 들어 target picker(그룹 또는 친구 선택 화면)가 표시된 상태에서 10분 이상 유휴 상태였던 경우입니다.</li></ul></td>
+</tr>
+<tr>
+<td>UNKNOWN</td>
+<td>알 수 없는 오류입니다.</td>
+</tr>
+</tbody>
+</table></div>
+<h2>LIFF SDK properties</h2>
+<h3><a href="http://liff.id" target="_blank" rel="noopener noreferrer">liff.id</a></h3>
+<p><a href="./#initialize-liff-app"><code>liff.init()</code></a>에 전달된 LIFF 앱 ID(<code>String</code> 타입)를 보관하는 속성입니다.</p>
+<p><code>liff.init()</code>을 실행하기 전까지 <code>liff.id</code>의 값은 <code>null</code>입니다.</p>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-keyword">const</span> liffId = <span class="hljs-string">&quot;my-liff-id&quot;</span>;
+liff.<span class="hljs-title function_">init</span>({ liffId });
+
+<span class="hljs-comment">// liff.id equals to liffId</span>
+</code></pre>
+<!-- tab end -->
+<h3>liff.ready</h3>
+<p>LIFF 앱을 시작한 후 <a href="./#initialize-liff-app"><code>liff.init()</code></a>을 처음 실행하면 resolve되는 <code>Promise</code> 객체를 보관하는 속성입니다.</p>
+<p><code>liff.ready</code>를 사용하면 <code>liff.init()</code>이 완료된 후 원하는 처리를 실행할 수 있습니다.</p>
+<div class="tip">
+<p><strong>This property can be used before the LIFF app is initialized</strong></p>
+<p><code>liff.init()</code>에 의한 LIFF 앱 초기화가 끝나기 전에도 <code>liff.ready</code>를 사용할 수 있습니다.</p>
+</div>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff.<span class="hljs-property">ready</span>.<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-comment">// do something you want when liff.init finishes</span>
+});
+</code></pre>
+<!-- tab end -->
+<!-- note start -->
+<p><strong>Note</strong></p>
+<p><code>liff.init()</code>이 실패하더라도 <code>liff.ready</code>는 reject되지 않습니다. 또한 <code>LiffError</code> 객체를 반환하지 않습니다.</p>
+<!-- note end -->
+<h2>Initialization</h2>
+<h3>liff.init()</h3>
+<p>LIFF 앱을 초기화합니다.</p>
+<p><code>liff.init()</code> 메서드를 실행한 후에만 다른 LIFF SDK 메서드를 호출할 수 있습니다. LIFF 앱은 페이지를 열 때마다 초기화해야 합니다. 같은 LIFF 앱 내에서 전환하는 경우에도 새 페이지를 열 때는 <code>liff.init()</code> 메서드를 실행해야 합니다.</p>
+<p>LIFF 앱을 올바르게 초기화하지 않고 LIFF 기능을 사용하면 해당 기능이 작동하는 것을 보장하지 않습니다.</p>
+<p><code>liff.init()</code> 메서드를 실행하면 LIFF SDK는 LINE Platform에서 사용자의 access token과 ID token을 가져옵니다.</p>
+<ul>
+<li>LIFF SDK가 가져온 access token을 사용하려면 <a href="./#get-access-token">liff.getAccessToken()</a>을 호출하십시오.</li>
+<li>LIFF SDK가 가져온 ID token의 payload를 사용하려면 <a href="./#get-decoded-id-token">liff.getDecodedIDToken()</a>을 호출하십시오.</li>
+</ul>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-comment">// Using a Promise object</span>
+liff
+  .<span class="hljs-title function_">init</span>({
+    <span class="hljs-attr">liffId</span>: <span class="hljs-string">&quot;123456-abcedfg&quot;</span>, <span class="hljs-comment">// Use own liffId</span>
+  })
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-comment">// Start to use liff&#x27;s api</span>
+  })
+  .<span class="hljs-title function_">catch</span>(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-comment">// Error happens during initialization</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(err.<span class="hljs-property">code</span>, err.<span class="hljs-property">message</span>);
+  });
+
+<span class="hljs-comment">// Using a callback</span>
+liff.<span class="hljs-title function_">init</span>({ <span class="hljs-attr">liffId</span>: <span class="hljs-string">&quot;123456-abcedfg&quot;</span> }, successCallback, errorCallback);
+</code></pre>
+<!-- tab end -->
+<h4>Important points to consider when initializing the LIFF app</h4>
+<p>LIFF 앱을 초기화할 때 고려해야 할 중요한 사항은 다음과 같습니다. LIFF 앱 개발을 시작하기 전에 이 사항을 읽고 이해하십시오.</p>
+<ul>
+<li><a href="./#initializing-liff-app-notes-1">Execute <code>liff.init()</code> at the endpoint URL or at a lower level</a></li>
+<li><a href="./#initializing-liff-app-notes-2">Execute <code>liff.init()</code> once for the primary redirect URL and once for the secondary redirect URL</a></li>
+<li><a href="./#initializing-liff-app-notes-3">Process URL changes after <code>liff.init()</code> completes</a></li>
+<li><a href="./#initializing-liff-app-notes-4">Use caution when handling the primary redirect URL</a></li>
+</ul>
+<h5>Execute <code>liff.init()</code> at the endpoint URL or at a lower level</h5>
+<p><code>liff.init()</code> 메서드는 Endpoint URL과 정확히 같은 URL이거나 Endpoint URL보다 하위 레벨인 URL에서만 작동합니다. LIFF 앱이 이 외의 URL로 전환되면 <code>liff.init()</code> 메서드가 작동한다고 보장할 수 없습니다.</p>
+<p>다음 예시는 Endpoint URL이 <code>https://example.com/path1/</code>일 때 <code>liff.init()</code> 메서드를 실행하는 URL에서 동작이 보장되는지를 보여줍니다. <a href="../../docs/liff/overview/#multi-tab-view">multi-tab view</a> 같은 일부 LIFF 앱 기능은 동작이 보장되지 않는 URL에서 올바르게 작동하지 않을 수 있습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th><code>liff.init()</code>을 실행하는 URL</th>
+<th>작동 보장 여부</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>https://example.com/</code></td>
+<td>❌</td>
+</tr>
+<tr>
+<td><code>https://example.com/path1/</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>https://example.com/path1/language/</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>https://example.com/path2/</code></td>
+<td>❌</td>
+</tr>
+</tbody>
+</table></div>
+<!-- note start -->
+<p><strong>When executing the liff.init() method, the warning message &quot;liff.init() was called with a current URL that is not related to the endpoint URL.&quot; appears in a console</strong></p>
+<p>LIFF v2.27.2 이상에서는 동작이 보장되지 않는 URL에서 <code>liff.init()</code> 메서드를 실행하면 경고 메시지가 표시됩니다.</p>
+<p>예를 들어 LIFF 앱의 Endpoint URL이 <code>https://example.com/path1/path2/</code>이고 <code>liff.init()</code> 메서드를 실행하는 URL이 <code>https://example.com/path1/</code>이면 다음 경고 메시지가 표시됩니다.</p>
+<pre><code>liff.init() was called with a current URL that is not related to the endpoint URL.
+https://example.com/path1/ is not under https://example.com/path1/path2/
+</code></pre>
+<p>위 경고 메시지가 표시되면 Endpoint URL을 <code>https://example.com/</code> 또는 <code>https://example.com/path1/</code>로 변경하는 것을 고려하십시오. 이러한 URL로 변경하면 <code>liff.init()</code> 메서드가 올바르게 작동하도록 보장됩니다.</p>
+<!-- note end -->
+<h5>Execute <code>liff.init()</code> once for the primary redirect URL and once for the secondary redirect URL</h5>
+<p><code>liff.init()</code> 메서드는 primary redirect URL에 전달된 <code>liff.state</code> 및 <code>access_token=xxx</code>와 같은 정보를 바탕으로 초기화 처리를 수행합니다. Endpoint URL에 쿼리 파라미터나 경로가 포함되어 있다면 LIFF 앱을 올바르게 초기화하기 위해 primary redirect URL과 secondary redirect URL 각각에 대해 <code>liff.init()</code> 메서드를 한 번씩 실행하십시오. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/opening-liff-app/#redirect-flow">Behaviors from accessing the LIFF URL to opening the LIFF app</a>를 참조하십시오.</p>
+<h5>Process URL changes after <code>liff.init()</code> completes</h5>
+<p>URL을 변경하는 처리는 <code>liff.init()</code> 메서드가 반환한 <code>Promise</code> 객체가 resolve된 후에 실행하십시오.</p>
+<pre><code class="language-javascript"><span class="hljs-comment">// Example using window.location.replace()</span>
+liff
+  .<span class="hljs-title function_">init</span>({
+    <span class="hljs-attr">liffId</span>: <span class="hljs-string">&quot;1234567890-AbcdEfgh&quot;</span>, <span class="hljs-comment">// Use own liffId</span>
+  })
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-comment">// Redirect to another page after the returned Promise object has been resolved</span>
+    <span class="hljs-variable language_">window</span>.<span class="hljs-property">location</span>.<span class="hljs-title function_">replace</span>(location.<span class="hljs-property">href</span> + <span class="hljs-string">&quot;/entry/&quot;</span>);
+  });
+</code></pre>
+<p><code>Promise</code> 객체가 resolve되기 전에 다음과 같은 URL 조작을 실행하면 LIFF 앱이 올바르게 열리지 않을 수 있습니다.</p>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/location" target="_blank" rel="noopener noreferrer"><code>Document.location</code></a> 속성 또는 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/location" target="_blank" rel="noopener noreferrer"><code>Window.location</code></a> 속성을 사용하여 URL을 변경하는 경우</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API" target="_blank" rel="noopener noreferrer">History API</a>의 <a href="https://developer.mozilla.org/en-US/docs/Web/API/History/pushState" target="_blank" rel="noopener noreferrer"><code>history.pushState()</code></a> 메서드 또는 <a href="https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState" target="_blank" rel="noopener noreferrer"><code>history.replaceState()</code></a> 메서드를 사용하여 URL을 변경하는 경우</li>
+<li>서버 측에서 상태 코드 <code>301</code> 또는 <code>302</code>를 반환하여 다른 URL로 리디렉션하는 경우</li>
+</ul>
+<h5>Use caution when handling the primary redirect URL</h5>
+<p>Primary redirect URL에 자동으로 부여되는 <code>access_token=xxx</code>는 사용자의 access token(기밀 정보)입니다. Primary redirect URL을 Google Analytics와 같은 외부 로깅 도구로 전송하지 마십시오.</p>
+<p>LIFF v2.11.0 이상에서는 <code>liff.init()</code> 메서드가 resolve될 때 URL에서 인증 정보가 제외된다는 점에 유의하십시오. 따라서 아래와 같이 <code>then()</code> 메서드에서 페이지 뷰를 전송하면 인증 정보가 유출되는 것을 방지할 수 있습니다. 로깅 도구를 사용하려면 LIFF 앱을 v2.11.0 이상으로 업그레이드하는 것을 권장합니다. LIFF v2.11.0의 업데이트에 대한 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/release-notes/#liff-v2-11-0">Release Notes</a>를 참조하십시오.</p>
+<pre><code class="language-javascript">liff
+  .<span class="hljs-title function_">init</span>({
+    <span class="hljs-attr">liffId</span>: <span class="hljs-string">&quot;1234567890-AbcdEfgh&quot;</span>, <span class="hljs-comment">// Use own liffId</span>
+  })
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-title function_">ga</span>(<span class="hljs-string">&quot;send&quot;</span>, <span class="hljs-string">&quot;pageview&quot;</span>);
+  });
+</code></pre>
+<!-- note start -->
+<p><strong>LIFF app’s query parameters</strong></p>
+<p>LIFF URL에 접근하거나 LIFF 간 전환(LIFF-to-LIFF transition)을 수행하면 URL에 다음 쿼리 파라미터가 추가될 수 있습니다.</p>
+<ul>
+<li><code>liff.state</code>: LIFF URL에 지정된 추가 정보를 나타냅니다.</li>
+<li><code>liff.referrer</code>: LIFF 간 전환 전의 URL을 나타냅니다. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/opening-liff-app/#using-liff-referrer">Get URL from before LIFF-to-LIFF transition</a>을 참조하십시오.</li>
+<li><code>lineAppVersion</code>: LINE for Android에서 LIFF 앱을 열 때 포함될 수 있습니다.</li>
+</ul>
+<p>위의 쿼리 파라미터는 LIFF 앱이 올바르게 작동하도록 LIFF SDK가 추가하는 것입니다. LIFF 앱의 URL에 사용자 정의 처리를 할 때는, 열기나 LIFF 간 전환 등에서 LIFF 앱이 올바르게 작동하도록 <code>liff.init()</code> 메서드가 resolve될 때까지 LIFF SDK가 전달한 쿼리 파라미터를 수정하지 마십시오.</p>
+<p>그 밖의 <code>liff.*</code> 쿼리 파라미터도 추가될 수 있습니다. 따라서 LIFF URL에 접근하거나 LIFF 간 전환을 할 때 추가되는 <code>liff.*</code> 쿼리 파라미터를 수정하지 않도록 앱을 설계하십시오.</p>
+<!-- note end -->
+<div class="tip">
+<p><strong>Functions that can be executed even before the LIFF app is initialized</strong></p>
+<p>다음 속성 또는 메서드는 <code>liff.init()</code> 메서드를 실행하기 전에도 사용할 수 있습니다. LIFF 앱을 초기화하기 전에 LIFF 앱이 실행되는 환경을 확인하거나, LIFF 앱 초기화에 실패했을 때 LIFF 앱을 닫을 수 있습니다.</p>
+<ul>
+<li><a href="./#ready">liff.ready</a></li>
+<li><a href="./#get-os">liff.getOS()</a></li>
+<li><a href="./#get-app-language">liff.getAppLanguage()</a></li>
+<li><a href="./#get-language">liff.getLanguage()</a> (deprecated)</li>
+<li><a href="./#get-version">liff.getVersion()</a></li>
+<li><a href="./#get-line-version">liff.getLineVersion()</a></li>
+<li><a href="./#is-in-client">liff.isInClient()</a></li>
+<li><a href="./#close-window">liff.closeWindow()</a></li>
+<li><a href="./#use">liff.use()</a></li>
+<li><a href="./#i18n-set-lang">liff.i18n.setLang()</a></li>
+</ul>
+<p><code>liff.init()</code>에 의한 LIFF 앱 초기화가 끝나기 전에 <code>liff.closeWindow()</code> 메서드를 사용하려면 LIFF SDK 버전이 v2.4.0 이상이어야 합니다.</p>
+</div>
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">init</span>(config, successCallback, errorCallback);
+</code></pre>
+<h4>Arguments</h4>
+<!-- parameter start (props: required) -->
+<p>config</p>
+<p>Object</p>
+<p>LIFF 앱 설정</p>
+<!-- parameter end -->
+<!-- parameter start (props: required) -->
+<p>config.liffId</p>
+<p>String</p>
+<p>LIFF 앱 ID입니다. 채널에 LIFF 앱을 추가할 때 얻을 수 있습니다. 자세한 내용은 <a href="../../docs/liff/registering-liff-apps/">Adding a LIFF app to your channel</a>을 참조하십시오.<br>
+여기에 지정한 LIFF 앱 ID는 <a href="./#id"><code>liff.id</code></a>로 얻을 수 있습니다.</p>
+<!-- parameter end -->
+<!-- parameter start (props: optional) -->
+<p>config.withLoginOnExternalBrowser</p>
+<p>Boolean</p>
+<p>다음 값 중 하나를 사용하여 외부 브라우저에서 LIFF 앱을 초기화할 때 <code>liff.login()</code> 메서드를 자동으로 실행할지 여부를 지정하십시오. 기본값은 <code>false</code>입니다.</p>
+<ul>
+<li><code>true</code>: 외부 브라우저에서 <code>liff.login()</code> 메서드를 자동으로 실행합니다.</li>
+<li><code>false</code>: 외부 브라우저에서 <code>liff.login()</code> 메서드를 자동으로 실행하지 않습니다.</li>
+</ul>
+<!-- parameter end -->
+<!-- parameter start (props: optional) -->
+<p>successCallback</p>
+<p>Function</p>
+<p>LIFF 앱 초기화에 성공했을 때 데이터 객체를 반환하는 콜백입니다.</p>
+<!-- note start -->
+<p><strong>Note</strong></p>
+<p>successCallback은 반환 값인 <code>Promise</code> 객체가 resolve되는 시점과 동시에 처리됩니다. 다만 어느 쪽이 먼저 처리되는지는 정해져 있지 않습니다.</p>
+<!-- note end -->
+<!-- parameter end -->
+<!-- parameter start (props: optional) -->
+<p>errorCallback</p>
+<p>Function</p>
+<p>LIFF 앱 초기화에 실패했을 때 오류 객체를 반환하는 콜백입니다.</p>
+<!-- note start -->
+<p><strong>Note</strong></p>
+<p>errorCallback은 반환 값인 <code>Promise</code> 객체가 reject되는 시점과 동시에 처리됩니다. 다만 어느 쪽이 먼저 처리되는지는 정해져 있지 않습니다.</p>
+<!-- note end -->
+<!-- parameter end -->
+<h4>Return value</h4>
+<p><code>Promise</code> 객체를 반환합니다.</p>
+<h5>Error response</h5>
+<p><code>Promise</code>가 reject되면 <a href="./#liff-errors"><code>LiffError</code></a>가 전달됩니다.</p>
+<h2>Getting environment</h2>
+<h3>liff.getOS()</h3>
+<p>사용자가 LIFF 앱을 실행하고 있는 환경을 가져옵니다.</p>
+<div class="tip">
+<p><strong>This method can be used before the LIFF app is initialized</strong></p>
+<p><code>liff.init()</code>에 의한 LIFF 앱 초기화가 끝나기 전에도 이 메서드를 사용할 수 있습니다.</p>
+</div>
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">getOS</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p>사용자가 LIFF 앱을 실행하고 있는 환경이 문자열로 반환됩니다. 반환 값은 user agent 문자열의 OS 이름을 기준으로 하므로 브라우저 종류(<a href="https://developers.line.biz/en/glossary/#liff-browser" target="_blank" rel="noopener noreferrer">LIFF browser</a>, <a href="https://developers.line.biz/en/glossary/#line-iab" target="_blank" rel="noopener noreferrer">LINE’s in-app browser</a>, <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">external browser</a>)와 관계없이 동일합니다.</p>
+<p>예를 들어 사용자가 iOS를 사용하면 LIFF browser를 사용하는지 Safari를 사용하는지와 관계없이 <code>ios</code>가 반환됩니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>반환 값</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ios</td>
+<td>iOS 또는 iPadOS</td>
+</tr>
+<tr>
+<td>android</td>
+<td>Android</td>
+</tr>
+<tr>
+<td>web</td>
+<td>위에 해당하지 않는 경우</td>
+</tr>
+</tbody>
+</table></div>
+<p>LIFF 앱이 지원하는 운영체제와 브라우저에 대한 자세한 내용은 <a href="../../docs/liff/overview/#operating-environment">Operating environment</a>를 참조하십시오.</p>
+<h3>liff.getAppLanguage()</h3>
+<p>LIFF 앱을 실행하는 LINE 앱의 언어 설정을 가져옵니다.</p>
+<div class="tip">
+<p><strong>This method can be used before the LIFF app is initialized</strong></p>
+<p><code>liff.init()</code>에 의한 LIFF 앱 초기화가 끝나기 전에도 이 메서드를 사용할 수 있습니다.</p>
+</div>
+<h4>Conditions of use</h4>
+<p>LIFF SDK v2.24.0 이상</p>
+<h4>Operating conditions</h4>
+<p><code>liff.getAppLanguage()</code> 메서드가 올바르게 작동하려면 다음 조건을 모두 충족해야 합니다.</p>
+<ul>
+<li>LIFF 앱이 <a href="https://developers.line.biz/en/glossary/#liff-browser" target="_blank" rel="noopener noreferrer">LIFF browser</a>에서 실행되고 있어야 합니다.</li>
+<li>LINE 앱 버전이 14.11.0 이상이어야 합니다.</li>
+</ul>
+<p>위 조건을 충족하지 않으면 <code>liff.getAppLanguage()</code> 메서드는 <a href="./#get-language"><code>liff.getLanguage()</code></a> 메서드와 동일하게 작동합니다.</p>
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">getAppLanguage</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p>LIFF 앱을 실행하는 LINE 앱의 언어 설정이 <a href="https://datatracker.ietf.org/doc/html/rfc5646" target="_blank" rel="noopener noreferrer">RFC 5646</a>을 따르는 문자열로 반환됩니다.</p>
+<h3>liff.getLanguage()</h3>
+<!-- note start -->
+<p><strong>The liff.getLanguage() method is deprecated</strong></p>
+<p><code>liff.getLanguage()</code> 메서드는 deprecated되었습니다. LIFF 앱이 실행되는 환경의 언어 설정을 가져오려면 <a href="./#get-app-language"><code>liff.getAppLanguage()</code></a> 메서드를 사용하십시오. 자세한 내용은 <a href="https://developers.line.biz/en/news/2024/07/23/release-liff-2-24-0/" target="_blank" rel="noopener noreferrer">2024년 7월 23일</a> 소식을 참조하십시오.</p>
+<!-- note end -->
+<p>LIFF 앱이 실행되는 환경의 언어 설정을 가져옵니다.</p>
+<div class="tip">
+<p><strong>This method can be used before the LIFF app is initialized</strong></p>
+<p><code>liff.init()</code>에 의한 LIFF 앱 초기화가 끝나기 전에도 이 메서드를 사용할 수 있습니다.</p>
+</div>
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">getLanguage</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p>LIFF 앱의 실행 환경에 있는 <code>navigator.language</code>에 지정된 언어 설정을 담은 문자열입니다.</p>
+<h3>liff.getVersion()</h3>
+<p>LIFF SDK의 버전을 가져옵니다.</p>
+<div class="tip">
+<p><strong>This method can be used before the LIFF app is initialized</strong></p>
+<p><code>liff.init()</code>에 의한 LIFF 앱 초기화가 끝나기 전에도 이 메서드를 사용할 수 있습니다.</p>
+</div>
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">getVersion</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p>LIFF SDK의 버전이 문자열로 반환됩니다.</p>
+<h3>liff.getLineVersion()</h3>
+<p>사용자의 LINE 버전을 가져옵니다.</p>
+<div class="tip">
+<p><strong>This method can be used before the LIFF app is initialized</strong></p>
+<p><code>liff.init()</code>에 의한 LIFF 앱 초기화가 끝나기 전에도 이 메서드를 사용할 수 있습니다.</p>
+</div>
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">getLineVersion</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p>사용자가 LIFF browser를 사용하여 LIFF 앱을 열었다면 사용자의 LINE 버전이 문자열로 반환됩니다. 사용자가 외부 브라우저를 사용하여 LIFF 앱을 열었다면 <code>null</code>이 반환됩니다.</p>
+<h3>liff.getContext()</h3>
+<p>LIFF 앱이 실행된 화면 유형(1:1 채팅, 그룹 채팅, 다인 채팅 또는 외부 브라우저)을 가져옵니다.</p>
+<!-- warning start -->
+<p><strong>We’ve discontinued providing company internal identifiers of chat rooms to LIFF apps</strong></p>
+<p>채팅방의 사내 식별자(1:1 채팅 ID, 그룹 ID, 룸 ID)를 LIFF 앱에 제공하는 기능은 중단되었습니다. 자세한 내용은 2023년 2월 6일 소식인 <a href="https://developers.line.biz/en/news/2023/02/06/liff-spec-change/" target="_blank" rel="noopener noreferrer">We’ve discontinued providing company internal identifiers of chat rooms to LIFF apps as of February 6, 2023</a>을 참조하십시오.</p>
+<!-- warning end -->
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-keyword">const</span> context = liff.<span class="hljs-title function_">getContext</span>();
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(context);
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">getContext</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p>다양한 API 호출에 필요한 정보를 담은 데이터 객체입니다.</p>
+<!-- parameter start -->
+<p>type</p>
+<p>String</p>
+<p>LIFF 앱이 실행된 화면의 유형입니다. 다음 중 하나입니다.</p>
+<ul>
+<li><code>utou</code>: 1:1 채팅입니다.</li>
+<li><code>group</code>: 그룹 채팅입니다.</li>
+<li><code>room</code>: 다인 채팅입니다.</li>
+<li><code>external</code>: 외부 브라우저입니다.</li>
+<li><code>none</code>: 1:1 채팅, 그룹 채팅, 다인 채팅 또는 외부 브라우저 이외의 화면입니다. 예: 지갑 탭</li>
+</ul>
+<p>LIFF 앱 간 전환 후에도 이 속성이 반환됩니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>userId</p>
+<p>String</p>
+<p>사용자 ID입니다. <code>type</code> 속성이 <code>utou</code>, <code>room</code>, <code>group</code>, <code>none</code> 또는 <code>external</code>인 경우에 포함됩니다. 다만 <code>type</code>이 <code>external</code>인 경우 null이 반환될 수 있습니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>liffId</p>
+<p>String</p>
+<p>LIFF ID입니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>viewType</p>
+<p>String</p>
+<p>LIFF 앱 화면의 크기입니다. <code>type</code> 속성이 <code>external</code>이 아닌 경우에만 반환됩니다. 다음 중 하나입니다.</p>
+<ul>
+<li><code>compact</code></li>
+<li><code>tall</code></li>
+<li><code>full</code></li>
+</ul>
+<p>자세한 내용은 <a href="../../docs/liff/registering-liff-apps/">Adding a LIFF app to your channel</a>을 참조하십시오.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>endpointUrl</p>
+<p>String</p>
+<p>서비스 endpoint의 URL입니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>accessTokenHash</p>
+<p>String</p>
+<p>Access token을 SHA256으로 해시한 값의 앞부분입니다. Access token을 검증하는 데 사용됩니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>availability</p>
+<p>Object</p>
+<p>LIFF 앱이 실행된 환경에서 LIFF 기능을 사용할 수 있는지 여부를 나타내는 <a href="./#get-context-return-value-availability"><code>availability</code> 객체</a>를 반환합니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>scope</p>
+<p>Array of strings</p>
+<p>일부 LIFF SDK 메서드를 사용하는 데 필요한 scope 중 LIFF 앱이 가지고 있는 scope를 반환합니다.</p>
+<ul>
+<li><code>openid</code>: <a href="./#get-id-token"><code>liff.getIDToken()</code></a> 및 <a href="./#get-decoded-id-token"><code>liff.getDecodedIDToken()</code></a>을 사용하는 데 필요한 scope입니다.</li>
+<li><code>email</code>: <a href="./#get-id-token"><code>liff.getIDToken()</code></a> 또는 <a href="./#get-decoded-id-token"><code>liff.getDecodedIDToken()</code></a>을 사용하여 사용자의 이메일 주소를 가져오는 데 필요한 scope입니다.</li>
+<li><code>profile</code>: <a href="./#get-profile"><code>liff.getProfile()</code></a> 또는 <a href="./#get-friendship"><code>liff.getFriendship()</code></a>을 사용하는 데 필요한 scope입니다.</li>
+<li><code>chat_message.write</code>: <a href="./#send-messages"><code>liff.sendMessages()</code></a>를 사용하는 데 필요한 scope입니다.</li>
+</ul>
+<p>Scope에 대한 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/registering-liff-apps/#registering-liff-app">Adding the LIFF app to your channel</a>을 참조하십시오.</p>
+<div class="tip">
+<p><strong>Difference between liff.getContext() and liff.permission.getGrantedAll()</strong></p>
+<p><code>liff.getContext()</code> 메서드는 LIFF 앱의 scope 목록(*)을 가져옵니다.</p>
+<p>반면 <a href="./#permission-get-granted-all"><code>liff.permission.getGrantedAll()</code></a> 메서드는 LIFF 앱의 scope 중에서 사용자가 권한 부여에 동의한 scope 목록을 가져옵니다.</p>
+<p>* LINE Login 채널의 <strong>LIFF</strong> 탭에 있는 “Scope” 섹션에 지정된 scope입니다.</p>
+</div>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>menuColorSetting</p>
+<p>Object</p>
+<p>LIFF browser 헤더의 색상 설정을 <a href="./#get-context-return-value-menucolorsetting"><code>menuColorSetting</code> 객체</a>로 반환합니다.</p>
+<p>현재 헤더 색상 설정을 변경하는 기능은 제공하지 않습니다.</p>
+<!-- parameter end -->
+<!-- parameter start (props: annotation="Not always included") -->
+<p>miniAppId</p>
+<p>String</p>
+<p>LINE MINI App의 Custom Path 기능으로 설정한 문자열을 반환합니다. Custom Path 기능에 대한 자세한 내용은 LINE MINI App 문서의 <a href="../../docs/line-mini-app/develop/custom-path/">Configuring Custom Path</a>를 참조하십시오.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>miniDomainAllowed</p>
+<p>Boolean</p>
+<p>LINE MINI App을 <code>miniapp.line.me</code> 도메인에서 사용할 수 있는지 여부를 반환합니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>permanentLinkPattern</p>
+<p>String</p>
+<p>LIFF URL의 추가 정보를 처리하는 방식입니다. <code>concat</code>이 반환됩니다.</p>
+<p>자세한 내용은 LIFF 문서의 <a href="../../docs/liff/opening-liff-app/">Opening a LIFF app</a>을 참조하십시오.</p>
+<!-- parameter end -->
+<!-- parameter start (props: annotation="Discontinued") -->
+<p>utouId</p>
+<p>String</p>
+<p>이 속성은 중단되었습니다. 자세한 내용은 2023년 2월 6일 소식인 <a href="https://developers.line.biz/en/news/2023/02/06/liff-spec-change/" target="_blank" rel="noopener noreferrer">We’ve discontinued providing company internal identifiers of chat rooms to LIFF apps as of February 6, 2023</a>을 참조하십시오.</p>
+<!-- parameter end -->
+<!-- parameter start (props: annotation="Discontinued") -->
+<p>groupId</p>
+<p>String</p>
+<p>이 속성은 중단되었습니다. 자세한 내용은 2023년 2월 6일 소식인 <a href="https://developers.line.biz/en/news/2023/02/06/liff-spec-change/" target="_blank" rel="noopener noreferrer">We’ve discontinued providing company internal identifiers of chat rooms to LIFF apps as of February 6, 2023</a>을 참조하십시오.</p>
+<!-- parameter end -->
+<!-- parameter start (props: annotation="Discontinued") -->
+<p>roomId</p>
+<p>String</p>
+<p>이 속성은 중단되었습니다. 자세한 내용은 2023년 2월 6일 소식인 <a href="https://developers.line.biz/en/news/2023/02/06/liff-spec-change/" target="_blank" rel="noopener noreferrer">We’ve discontinued providing company internal identifiers of chat rooms to LIFF apps as of February 6, 2023</a>을 참조하십시오.</p>
+<!-- parameter end -->
+<p><em>Example (LIFF browser)</em></p>
+<!-- tab start `json` -->
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;utou&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;utouId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;e2bff570-...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;U850014438e...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;liffId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123456-abcedfg&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;viewType&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;full&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;endpointUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://example.com/&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;accessTokenHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;EVWYWo1yYA...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;availability&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;shareTargetPicker&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;10.3.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;multipleLiffTransition&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;10.18.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;subwindowOpen&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;11.7.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;scanCode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9.4.0&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;unsupportedFromVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9.19.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;scanCodeV2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;11.7.0&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minOsVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;14.3.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;getAdvertisingId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;7.14.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;addToHomeScreen&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9.16.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;bluetoothLeFunction&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9.14.0&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;unsupportedFromVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9.19.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;skipChannelVerificationScreen&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;11.14.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;addToHomeV2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;13.20.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;addToHomeHideDomain&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;13.20.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;addToHomeLineScheme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;13.20.0&quot;</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;scope&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-string">&quot;chat_message.write&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-string">&quot;openid&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-string">&quot;profile&quot;</span>
+  <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;menuColorSetting&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;adaptableColorSchemes&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+      <span class="hljs-string">&quot;light&quot;</span>
+    <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;lightModeColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;iconColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;statusBarColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;black&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleTextColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleSubtextColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#B7B7B7&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleButtonColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleBackgroundColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;progressBarColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#06C755&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;progressBackgroundColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;darkModeColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;iconColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;statusBarColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;white&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleTextColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleSubtextColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#949494&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleButtonColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleBackgroundColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;progressBarColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#06C755&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;progressBackgroundColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;miniDomainAllowed&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;permanentLinkPattern&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;concat&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<!-- tab end -->
+<p><em>Example (external browser)</em></p>
+<!-- tab start `json` -->
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;external&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;liffId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123456-abcedfg&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;endpointUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://example.com/&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;accessTokenHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;EVWYWo1yYA...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;availability&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;shareTargetPicker&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;10.3.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;multipleLiffTransition&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;10.18.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;subwindowOpen&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;11.7.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;scanCode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9.4.0&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;unsupportedFromVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9.19.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;scanCodeV2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;11.7.0&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minOsVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;14.3.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;getAdvertisingId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;7.14.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;addToHomeScreen&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9.16.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;bluetoothLeFunction&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9.14.0&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;unsupportedFromVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9.19.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;skipChannelVerificationScreen&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;11.14.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;addToHomeV2&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;13.20.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;addToHomeHideDomain&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;13.20.0&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;addToHomeLineScheme&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;13.20.0&quot;</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;scope&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-string">&quot;chat_message.write&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-string">&quot;openid&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-string">&quot;profile&quot;</span>
+  <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;menuColorSetting&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;adaptableColorSchemes&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+      <span class="hljs-string">&quot;light&quot;</span>
+    <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;lightModeColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;iconColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;statusBarColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;black&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleTextColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleSubtextColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#B7B7B7&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleButtonColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleBackgroundColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;progressBarColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#06C755&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;progressBackgroundColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;darkModeColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;iconColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;statusBarColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;white&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleTextColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleSubtextColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#949494&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleButtonColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;titleBackgroundColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;progressBarColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#06C755&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;progressBackgroundColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;miniDomainAllowed&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;permanentLinkPattern&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;concat&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<!-- tab end -->
+<h4><code>availability</code> object</h4>
+<p><code>availability</code> 객체는 다음 속성을 포함합니다.</p>
+<!-- parameter start -->
+<p>shareTargetPicker</p>
+<p>Object</p>
+<p>LIFF 앱이 실행된 환경에서 <a href="./#share-target-picker"><code>liff.shareTargetPicker()</code></a>를 사용할 수 있는지 여부를 나타내는 <a href="./#get-context-return-value-availability-common">객체</a>를 반환합니다.</p>
+<p>* <code>liff.shareTargetPicker()</code>의 사용 가능 여부 정보는 <a href="./#is-api-available">liff.isApiAvailable(‘shareTargetPicker’)</a>를 사용하는 것을 강력히 권장합니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>multipleLiffTransition</p>
+<p>Object</p>
+<p>LIFF 앱이 실행된 환경의 LIFF browser에서 LIFF 앱을 닫지 않고 <a href="./#open-window"><code>liff.openWindow()</code></a>를 사용하여 <a href="../../docs/liff/opening-liff-app/#move-liff-to-liff">다른 LIFF 앱으로 전환</a>할 수 있는지 여부를 나타내는 <a href="./#get-context-return-value-availability-common">객체</a>를 반환합니다.</p>
+<p>* 여러 LIFF 앱 간 전환의 사용 가능 여부 정보는 <a href="./#is-api-available">liff.isApiAvailable(‘multipleLiffTransition’)</a>를 사용하는 것을 강력히 권장합니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>subwindowOpen</p>
+<p>Object</p>
+<p>LIFF 앱이 실행된 환경에서 subwindow를 사용할 수 있는지 여부를 나타내는 <a href="./#get-context-return-value-availability-common">객체</a>를 반환합니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>scanCode</p>
+<p>Object</p>
+<p>LIFF 앱이 실행된 환경에서 <a href="./#scan-code"><code>liff.scanCode()</code></a>를 사용할 수 있는지 여부를 나타내는 <a href="./#get-context-return-value-availability-common">객체</a>를 반환합니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>scanCodeV2</p>
+<p>Object</p>
+<p>LIFF 앱이 실행된 환경에서 <a href="./#scan-code-v2"><code>liff.scanCodeV2()</code></a>를 사용할 수 있는지 여부를 나타내는 <a href="./#get-context-return-value-availability-common">객체</a>를 반환합니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>getAdvertisingId</p>
+<p>Object</p>
+<p>LIFF 앱이 실행된 환경에서 <code>liff.getAid()</code>를 사용할 수 있는지 여부를 나타내는 <a href="./#get-context-return-value-availability-common">객체</a>를 반환합니다.</p>
+<p>현재 <code>liff.getAid()</code>는 제공하지 않습니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>addToHomeScreen</p>
+<p>String</p>
+<p>LIFF 앱이 실행된 환경에서 <code>liff.addToHomeScreen()</code>을 사용할 수 있는지 여부를 나타내는 <a href="./#get-context-return-value-availability-common">객체</a>를 반환합니다.</p>
+<p>현재 <code>liff.addToHomeScreen()</code>은 제공하지 않습니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>bluetoothLeFunction</p>
+<p>Object</p>
+<p>LIFF 앱이 실행된 환경에서 LINE Things용 Bluetooth® Low Energy를 사용할 수 있는지 여부를 나타내는 <a href="./#get-context-return-value-availability-common">객체</a>를 반환합니다.</p>
+<p>현재 이 기능은 제공하지 않습니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>skipChannelVerificationScreen</p>
+<p>Object</p>
+<p>LIFF 앱이 실행된 환경에서 “Channel consent simplification” 기능을 사용할 수 있는지 여부를 나타내는 <a href="./#get-context-return-value-availability-common">객체</a>를 반환합니다. 자세한 내용은 LINE MINI App 문서의 <a href="../../docs/line-mini-app/develop/channel-consent-simplification/">Skipping the channel consent process</a>를 참조하십시오.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>addToHomeV2</p>
+<p>Object</p>
+<p>LIFF 앱이 실행된 환경에서 <a href="./#create-shortcut-on-home-screen"><code>liff.createShortcutOnHomeScreen()</code></a>을 사용할 수 있는지 여부를 나타내는 <a href="./#get-context-return-value-availability-common">객체</a>를 반환합니다.</p>
+<p>* <code>liff.createShortcutOnHomeScreen()</code>의 사용 가능 여부 정보는 <a href="./#is-api-available">liff.isApiAvailable(‘createShortcutOnHomeScreen’)</a>를 사용하는 것을 강력히 권장합니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>addToHomeHideDomain</p>
+<p>Object</p>
+<p>사용자 기기의 홈 화면에 바로가기를 추가하는 화면을 표시할 때 Endpoint URL을 숨길 수 있는지 여부를 나타내는 <a href="./#get-context-return-value-availability-common">객체</a>를 반환합니다.</p>
+<p>현재 이 기능은 제공하지 않습니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>addToHomeLineScheme</p>
+<p>Object</p>
+<p><a href="../../docs/line-login/using-line-url-scheme/">LINE URL scheme</a>을 지정하여 바로가기를 만들 수 있는지 여부를 나타내는 <a href="./#get-context-return-value-availability-common">객체</a>를 반환합니다.</p>
+<p>현재 이 기능은 제공하지 않습니다.</p>
+<!-- parameter end -->
+<p><em>Example</em></p>
+<!-- tab start `json` -->
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;shareTargetPicker&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;10.3.0&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<!-- tab end -->
+<h4>Common properties of the <code>availability</code> object</h4>
+<!-- parameter start -->
+<p>permission</p>
+<p>Boolean</p>
+<p><code>availability</code> 객체의 속성 이름으로 지정된 기능을 LIFF 앱이 실행된 환경에서 사용할 수 있는지 여부입니다.</p>
+<ul>
+<li><code>true</code>: 기능을 사용할 수 있습니다.</li>
+<li><code>false</code>: 기능을 사용할 수 없습니다.</li>
+</ul>
+<!-- parameter end -->
+<!-- parameter start (props: annotation="Not always included") -->
+<p>minVer</p>
+<p>String</p>
+<p>해당 기능을 지원하는 최소 LINE 버전입니다.</p>
+<!-- parameter end -->
+<!-- parameter start (props: annotation="Not always included") -->
+<p>maxVer</p>
+<p>String</p>
+<p>해당 기능을 지원하는 최대 LINE 버전입니다.</p>
+<!-- parameter end -->
+<!-- parameter start (props: annotation="Not always included") -->
+<p>unsupportedFromVer</p>
+<p>String</p>
+<p>해당 기능을 더 이상 지원하지 않는 LINE 버전입니다.</p>
+<!-- parameter end -->
+<!-- parameter start (props: annotation="Not always included") -->
+<p>minOsVer</p>
+<p>String</p>
+<p>해당 기능을 지원하는 최소 OS 버전입니다.</p>
+<!-- parameter end -->
+<!-- parameter start (props: annotation="Not always included") -->
+<p>maxOsVer</p>
+<p>String</p>
+<p>해당 기능을 지원하는 최대 OS 버전입니다.</p>
+<!-- parameter end -->
+<!-- parameter start (props: annotation="Not always included") -->
+<p>unsupportedFromOsVer</p>
+<p>String</p>
+<p>해당 기능을 더 이상 지원하지 않는 OS 버전입니다.</p>
+<!-- parameter end -->
+<h4><code>menuColorSetting</code> object</h4>
+<p><code>menuColorSetting</code> 객체는 다음 속성을 포함합니다.</p>
+<!-- parameter start -->
+<p>adaptableColorSchemes</p>
+<p>Array of strings</p>
+<p>항상 <code>light</code>를 반환합니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>lightModeColor</p>
+<p>Object</p>
+<p><code>adaptableColorSchemes</code>가 <code>light</code>인 경우 헤더 색상 설정을 <a href="./#get-context-return-value-menucolorsetting-common">객체</a>로 반환합니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>darkModeColor</p>
+<p>Object</p>
+<p><code>adaptableColorSchemes</code>가 <code>dark</code>인 경우 헤더 색상 설정을 <a href="./#get-context-return-value-menucolorsetting-common">객체</a>로 반환합니다.</p>
+<p>현재 헤더 색상 설정은 제공하지 않습니다.</p>
+<!-- parameter end -->
+<p><em>Example</em></p>
+<!-- tab start `json` -->
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;adaptableColorSchemes&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-string">&quot;light&quot;</span>
+  <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;lightModeColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;iconColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;statusBarColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;black&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;titleTextColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;titleSubtextColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#B7B7B7&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;titleButtonColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;titleBackgroundColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;progressBarColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#06C755&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;progressBackgroundColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;darkModeColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;iconColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;statusBarColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;white&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;titleTextColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;titleSubtextColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#949494&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;titleButtonColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#FFFFFF&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;titleBackgroundColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;progressBarColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#06C755&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;progressBackgroundColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#111111&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<!-- tab end -->
+<h4>Common properties of the <code>menuColorSetting</code> object</h4>
+<!-- parameter start -->
+<p>iconColor</p>
+<p>String</p>
+<p>헤더 아이콘의 색상입니다. <code>#RRGGBB</code> 형식의 16진수 색상 코드로 표시됩니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>statusBarColor</p>
+<p>String</p>
+<p>항상 <code>white</code>를 반환합니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>titleTextColor</p>
+<p>String</p>
+<p>헤더 제목 텍스트의 색상입니다. <code>#RRGGBB</code> 형식의 16진수 색상 코드로 표시됩니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>titleSubtextColor</p>
+<p>String</p>
+<p>헤더 부제목 텍스트의 색상입니다. <code>#RRGGBB</code> 형식의 16진수 색상 코드로 표시됩니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>titleButtonColor</p>
+<p>String</p>
+<p>헤더 버튼의 색상입니다. <code>#RRGGBB</code> 형식의 16진수 색상 코드로 표시됩니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>titleBackgroundColor</p>
+<p>String</p>
+<p>헤더의 배경 색상입니다. <code>#RRGGBB</code> 형식의 16진수 색상 코드로 표시됩니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>progressBarColor</p>
+<p>String</p>
+<p>헤더 진행 막대의 색상입니다. <code>#RRGGBB</code> 형식의 16진수 색상 코드로 표시됩니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>progressBackgroundColor</p>
+<p>String</p>
+<p>헤더 진행 막대의 배경 색상입니다. <code>#RRGGBB</code> 형식의 16진수 색상 코드로 표시됩니다.</p>
+<!-- parameter end -->
+<h3>liff.isInClient()</h3>
+<p>LIFF 앱이 LIFF browser에서 실행되고 있는지 확인합니다.</p>
+<div class="tip">
+<p><strong>This method can be used before the LIFF app is initialized</strong></p>
+<p><code>liff.init()</code>에 의한 LIFF 앱 초기화가 끝나기 전에도 이 메서드를 사용할 수 있습니다.</p>
+</div>
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">isInClient</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<ul>
+<li><code>true</code>: <a href="https://developers.line.biz/en/glossary/#liff-browser" target="_blank" rel="noopener noreferrer">LIFF browser</a>에서 실행 중입니다.</li>
+<li><code>false</code>: <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">외부 브라우저</a> 또는 <a href="https://developers.line.biz/en/glossary/#line-iab" target="_blank" rel="noopener noreferrer">LINE’s in-app browser</a>에서 실행 중입니다.</li>
+</ul>
+<h3>liff.isLoggedIn()</h3>
+<p>사용자가 로그인했는지 확인합니다.</p>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-keyword">if</span> (liff.<span class="hljs-title function_">isLoggedIn</span>()) {
+  <span class="hljs-comment">// The user can use an API that requires an access token, such as liff.getProfile().</span>
+}
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">isLoggedIn</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<ul>
+<li><code>true</code>: 사용자가 로그인되어 있습니다.</li>
+<li><code>false</code>: 사용자가 로그인되어 있지 않습니다.</li>
+</ul>
+<h3>liff.isApiAvailable()</h3>
+<p>지정한 API 또는 기능을 LIFF 앱을 시작한 환경에서 사용할 수 있는지 확인합니다. 구체적으로는 현재 LINE 버전이 해당 API를 지원하는지, 그리고 해당 API의 약관에 동의했는지를 확인합니다.</p>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-comment">// Check if shareTargetPicker is available</span>
+<span class="hljs-keyword">if</span> (liff.<span class="hljs-title function_">isApiAvailable</span>(<span class="hljs-string">&#x27;shareTargetPicker&#x27;</span>)) {
+  liff.<span class="hljs-title function_">shareTargetPicker</span>([
+    {
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;text&quot;</span>,
+      <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;Hello, World!&quot;</span>
+    }
+  ])
+    .<span class="hljs-title function_">then</span>(
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;ShareTargetPicker was launched&quot;</span>)
+    ).<span class="hljs-title function_">catch</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">res</span>) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Failed to launch ShareTargetPicker&quot;</span>)
+    })
+}
+
+<span class="hljs-comment">// Check if the LIFF-to-LIFF transition is available</span>
+<span class="hljs-keyword">if</span> (liff.<span class="hljs-title function_">isApiAvailable</span>(<span class="hljs-string">&#x27;multipleLiffTransition&#x27;</span>)) {
+  <span class="hljs-variable language_">window</span>.<span class="hljs-property">location</span>.<span class="hljs-property">href</span> = <span class="hljs-string">&quot;https://line.me/{liffId}&quot;</span>, <span class="hljs-comment">// URL for another LIFF app</span>
+}
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">isApiAvailable</span>(apiName);
+</code></pre>
+<h4>Arguments</h4>
+<!-- parameter start (props: required) -->
+<p>apiName</p>
+<p>String</p>
+<p>LIFF 클라이언트 API 또는 기능의 이름입니다. 다음 중 하나를 지정할 수 있습니다.</p>
+<ul>
+<li><code>createShortcutOnHomeScreen</code>: <a href="./#create-shortcut-on-home-screen"><code>liff.createShortcutOnHomeScreen()</code></a> 메서드를 사용할 수 있는지 여부</li>
+<li><code>scanCodeV2</code>: <a href="./#scan-code-v2"><code>liff.scanCodeV2()</code></a> 메서드를 사용할 수 있는지 여부</li>
+<li><code>scanCode</code>: <a href="./#scan-code"><code>liff.scanCode()</code></a> 메서드를 사용할 수 있는지 여부</li>
+<li><code>shareTargetPicker</code>: <a href="./#share-target-picker"><code>liff.shareTargetPicker()</code></a> 메서드를 사용할 수 있는지 여부</li>
+<li><code>iap</code>: LINE MINI App의 <a href="../../docs/line-mini-app/in-app-purchase/overview/">인앱 결제</a> 기능을 사용할 수 있는지 여부</li>
+<li><code>multipleLiffTransition</code>: <a href="../../docs/liff/opening-liff-app/#move-liff-to-liff">LIFF 간 전환</a>을 사용할 수 있는지 여부</li>
+<li><code>skipChannelVerificationScreen</code>: LINE MINI App의 <a href="../../docs/line-mini-app/develop/channel-consent-simplification/#what-is-channel-consent-simplification">채널 동의 간소화</a> 기능을 사용할 수 있는지 여부</li>
+</ul>
+<!-- parameter end -->
+<h4>Return value</h4>
+<p>지정한 API 또는 기능을 현재 환경에서 사용할 수 있는지 여부를 반환합니다. 사용할 수 있으면 <code>true</code>, 그렇지 않으면 <code>false</code>가 반환됩니다. <code>false</code>가 반환되는 경우의 예는 다음과 같습니다.</p>
+<ul>
+<li>LIFF 앱이 해당 API를 지원하지 않는 LINE 버전으로 실행된 경우</li>
+<li>외부 브라우저에서는 해당 API를 사용할 수 없는데 LIFF 앱이 외부 브라우저에서 실행된 경우</li>
+<li>API를 사용하려면 약관에 동의해야 하는데 동의하지 않은 경우</li>
+<li>API를 사용하려면 로그인해야 하는데 로그인하지 않은 경우</li>
+<li>API를 사용하려면 access token이 유효해야 하는데 access token이 만료된 경우</li>
+</ul>
+<h2>Authentication</h2>
+<h3>liff.login()</h3>
+<p><a href="https://developers.line.biz/en/glossary/#line-iab" target="_blank" rel="noopener noreferrer">LINE’s in-app browser</a> 또는 <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">외부 브라우저</a>에서 로그인 절차를 수행합니다.</p>
+<!-- note start -->
+<p><strong>Note</strong></p>
+<p><code>liff.init()</code>을 실행하면 자동으로 실행되므로 LIFF browser에서는 <code>liff.login()</code>을 사용할 수 없습니다.</p>
+<!-- note end -->
+<!-- note start -->
+<p><strong>Authorization requests within LIFF browser</strong></p>
+<p>LIFF browser 내에서 LINE Login 인증 요청의 동작은 보장되지 않습니다. 또한 외부 브라우저나 LINE’s in-app browser에서 LIFF 앱을 열 때는 로그인 절차에 <a href="../../docs/line-login/integrate-line-login/#making-an-authorization-request">LINE Login 인증 요청</a>이 아니라 이 메서드를 사용하십시오.</p>
+<!-- note end -->
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-keyword">if</span> (!liff.<span class="hljs-title function_">isLoggedIn</span>()) {
+  liff.<span class="hljs-title function_">login</span>({ <span class="hljs-attr">redirectUri</span>: <span class="hljs-string">&quot;https://example.com/path&quot;</span> });
+}
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">login</span>(loginConfig);
+</code></pre>
+<h4>Arguments</h4>
+<!-- parameter start (props: optional) -->
+<p>loginConfig</p>
+<p>Object</p>
+<p>로그인 설정</p>
+<!-- parameter end -->
+<!-- parameter start (props: optional) -->
+<p>loginConfig.redirectUri</p>
+<p>String</p>
+<p>로그인 후 LIFF 앱에서 열 URL입니다. 기본값은 <strong>Endpoint URL</strong>에 설정된 URL입니다. <strong>Endpoint URL</strong>을 설정하는 방법은 LIFF 문서의 <a href="../../docs/liff/registering-liff-apps/#registering-liff-app">Adding a LIFF app to your channel</a>을 참조하십시오.</p>
+<p><code>redirectUri</code>에 지정한 URL이 <strong>Endpoint URL</strong>에 지정한 URL로 시작하지 않으면 로그인 절차가 실패하고 오류 화면이 표시됩니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/liff/liff_login_error_screen.png" alt="" loading="lazy"><figcaption></figcaption></figure></p>
+<p>예를 들어 <strong>Endpoint URL</strong>이 <code>https://example.com/path1/path2?query1=value1</code>인 경우 로그인 절차의 성공 또는 실패는 다음과 같습니다. 쿼리 파라미터와 URL 프래그먼트는 로그인 절차의 성공 또는 실패에 영향을 주지 않습니다.</p>
+<div class="table-wrap"><table>
+  <thead>
+    <tr>
+      <th>redirectUri</th>
+      <th>Login process</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <ul>
+          <li>https://example.com/path1/path2?query1=value1</li>
+          <li>https://example.com/path1/path2?query2=value2</li>
+          <li>https://example.com/path1/path2#URL-fragment</li>
+          <li>https://example.com/path1/path2</li>
+          <li>https://example.com/path1/path2/</li>
+          <li>https://example.com/path1/path2/path3</li>
+        </ul>
+      </td>
+      <td>✅ 성공</td>
+    </tr>
+    <tr>
+      <td>
+        <ul>
+          <li>https://example.com/path1</li>
+          <li>https://example.com/</li>
+          <li>https://example.com/path2/path1</li>
+        </ul>
+      </td>
+      <td>❌ 실패</td>
+    </tr>
+  </tbody>
+</table></div>
+<!-- parameter end -->
+<h4>Return value</h4>
+<p>없음</p>
+<h3>liff.logout()</h3>
+<p>로그아웃합니다.</p>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-keyword">if</span> (liff.<span class="hljs-title function_">isLoggedIn</span>()) {
+  liff.<span class="hljs-title function_">logout</span>();
+}
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">logout</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p>없음</p>
+<h3>liff.getAccessToken()</h3>
+<p>현재 사용자의 access token을 가져옵니다.</p>
+<p>이 API로 얻은 access token을 사용하면 LIFF 앱에서 서버로 사용자 데이터를 전송할 수 있습니다. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/using-user-profile/">Using user data in LIFF apps and servers</a>를 참조하십시오.</p>
+<h4>Access token validity period</h4>
+<p>Access token은 발급 후 12시간 동안 유효합니다. 다만 이 유효 기간 안에서도 사용자의 동작에 따라 access token이 취소될 수 있습니다.</p>
+<ul>
+<li>사용자가 LIFF 앱을 닫으면 access token이 취소될 수 있습니다. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/developing-liff-apps/#behavior-when-closing-liff-app">Behavior when closing the LIFF app</a>을 참조하십시오.</li>
+<li>“<a href="../../docs/line-mini-app/develop/channel-consent-simplification/#what-is-channel-consent-simplification">Channel consent simplification</a>” 기능이 활성화된 LINE MINI App에서 검증 화면을 통해 추가 권한을 부여하면 access token이 갱신되고, 이전에 발급된 access token은 취소됩니다. 자세한 내용은 LINE MINI App 문서의 <a href="../../docs/line-mini-app/develop/channel-consent-simplification/#request-permissions-other-than-openid">Request permissions other than the <code>openid</code> scope on the verification screen</a>을 참조하십시오.</li>
+</ul>
+<div class="tip">
+<p><strong>Getting an access token</strong></p>
+<ul>
+<li>사용자가 LIFF browser에서 LIFF 앱을 시작하면, <a href="./#initialize-liff-app"><code>liff.init()</code></a>을 호출할 때 LIFF SDK가 access token을 가져옵니다.</li>
+<li>사용자가 외부 브라우저에서 LIFF 앱을 시작하면, 다음 단계를 모두 거쳤을 때 LIFF SDK가 access token을 가져옵니다.
+<ol>
+<li><a href="./#login"><code>liff.login()</code></a>을 호출합니다.</li>
+<li>사용자가 로그인합니다.</li>
+<li><a href="./#initialize-liff-app"><code>liff.init()</code></a>을 호출합니다.</li>
+</ol>
+</li>
+</ul>
+</div>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-keyword">const</span> accessToken = liff.<span class="hljs-title function_">getAccessToken</span>();
+<span class="hljs-keyword">if</span> (accessToken) {
+  <span class="hljs-title function_">fetch</span>(<span class="hljs-string">&quot;https://api...&quot;</span>, {
+    <span class="hljs-attr">headers</span>: {
+      <span class="hljs-string">&quot;Content-Type&quot;</span>: <span class="hljs-string">&quot;application/json&quot;</span>,
+      <span class="hljs-title class_">Authorization</span>: <span class="hljs-string">`Bearer <span class="hljs-subst">${accessToken}</span>`</span>,
+    },
+    <span class="hljs-comment">//...</span>
+  });
+}
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">getAccessToken</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p>현재 사용자의 access token을 문자열로 반환합니다.</p>
+<h3>liff.getIDToken()</h3>
+<p>LIFF SDK가 가져온 현재 사용자의 ID token을 가져옵니다. ID token은 사용자 데이터를 담은 JSON Web Token(JWT)입니다. ID token은 발급 후 1시간 동안 유효합니다.</p>
+<p>이 API로 얻은 ID token을 사용하면 LIFF 앱에서 서버로 사용자 데이터를 전송할 수 있습니다. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/using-user-profile/">Using user data in LIFF apps and servers</a>를 참조하십시오.</p>
+<!-- note start -->
+<p><strong>Select a scope</strong></p>
+<p><a href="../../docs/liff/registering-liff-apps/">LIFF 앱을 채널에 추가</a>할 때 <code>openid</code> scope를 선택하십시오. Scope를 선택하지 않았거나 사용자가 권한을 부여하지 않으면 ID token을 가져올 수 없습니다. LIFF 앱을 추가한 후에도 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>의 LIFF 탭에서 scope 선택을 변경할 수 있습니다.</p>
+<!-- note end -->
+<div class="tip">
+<p><strong>Getting an ID token</strong></p>
+<ul>
+<li>사용자가 LIFF browser에서 LIFF 앱을 시작하면, <a href="./#initialize-liff-app"><code>liff.init()</code></a>을 호출할 때 LIFF SDK가 ID token을 가져옵니다.</li>
+<li>사용자가 외부 브라우저에서 LIFF 앱을 시작하면, 다음 단계를 모두 거쳤을 때 LIFF SDK가 ID token을 가져옵니다.
+<ol>
+<li><a href="./#login"><code>liff.login()</code></a>을 호출합니다.</li>
+<li>사용자가 로그인합니다.</li>
+<li><a href="./#initialize-liff-app"><code>liff.init()</code></a>을 호출합니다.</li>
+</ol>
+</li>
+</ul>
+</div>
+<div class="tip">
+<p><strong>You can get the user’s email address</strong></p>
+<p>사용자의 이메일 주소를 가져오려면 <a href="../../docs/liff/registering-liff-apps/">LIFF 앱을 채널에 추가</a>할 때 <code>email</code> scope를 선택하십시오. 사용자가 권한을 부여하면 이메일 주소를 가져올 수 있습니다. LIFF 앱을 추가한 후에도 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>의 LIFF 탭에서 scope 선택을 변경할 수 있습니다.</p>
+</div>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff
+  .<span class="hljs-title function_">init</span>({
+    <span class="hljs-attr">liffId</span>: <span class="hljs-string">&quot;123456-abcedfg&quot;</span>, <span class="hljs-comment">// Use own liffId</span>
+  })
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">const</span> idToken = liff.<span class="hljs-title function_">getIDToken</span>();
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(idToken); <span class="hljs-comment">// print idToken object</span>
+  });
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">getIDToken</span>();
+</code></pre>
+<h4>Argument</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p>ID token을 반환합니다.</p>
+<h3>liff.getDecodedIDToken()</h3>
+<p>LIFF SDK가 가져온 ID token의 payload를 가져옵니다. Payload에는 사용자의 표시 이름, 프로필 이미지 URL, 이메일 주소 등의 정보가 포함됩니다.</p>
+<p>LIFF 앱에서 사용자의 표시 이름을 사용하고 싶을 때 이 메서드를 사용하십시오.</p>
+<p>기본 프로필 정보만 가져올 수 있습니다. 사용자의 <a href="https://developers.line.biz/en/glossary/#subprofile" target="_blank" rel="noopener noreferrer">subprofile</a>은 가져올 수 없습니다.</p>
+<!-- warning start -->
+<p><strong>Don’t send user info to server</strong></p>
+<p>이 메서드로 얻은 사용자 데이터를 서버로 전송하지 마십시오. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/using-user-profile/">Using user data in LIFF apps and servers</a>를 참조하십시오.</p>
+<!-- warning end -->
+<!-- note start -->
+<p><strong>Select a scope</strong></p>
+<p><a href="../../docs/liff/registering-liff-apps/">LIFF 앱을 채널에 추가</a>할 때 <code>openid</code> scope를 선택하십시오. Scope를 선택하지 않았거나 사용자가 권한을 부여하지 않으면 ID token을 가져올 수 없습니다. LIFF 앱을 추가한 후에도 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>의 LIFF 탭에서 scope 선택을 변경할 수 있습니다.</p>
+<!-- note end -->
+<div class="tip">
+<p><strong>Getting an ID token</strong></p>
+<ul>
+<li>
+<p>사용자가 LIFF browser에서 LIFF 앱을 시작하면, <a href="./#initialize-liff-app"><code>liff.init()</code></a>을 호출할 때 LIFF SDK가 ID token을 가져옵니다.</p>
+</li>
+<li>
+<p>사용자가 외부 브라우저에서 LIFF 앱을 시작하면, 다음 단계를 모두 거쳤을 때 LIFF SDK가 ID token을 가져옵니다.</p>
+<ol>
+<li><a href="./#login"><code>liff.login()</code></a>을 호출합니다.</li>
+<li>사용자가 로그인합니다.</li>
+<li><a href="./#initialize-liff-app"><code>liff.init()</code></a>을 호출합니다.</li>
+</ol>
+</li>
+</ul>
+</div>
+<div class="tip">
+<p><strong>You can get the user’s email address</strong></p>
+<p>사용자의 이메일 주소를 가져오려면 <a href="../../docs/liff/registering-liff-apps/">LIFF 앱을 채널에 추가</a>할 때 <code>email</code> scope를 선택하십시오. 사용자가 권한을 부여하면 이메일 주소를 가져올 수 있습니다. LIFF 앱을 추가한 후에도 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>의 LIFF 탭에서 scope 선택을 변경할 수 있습니다.</p>
+</div>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff
+  .<span class="hljs-title function_">init</span>({
+    <span class="hljs-attr">liffId</span>: <span class="hljs-string">&quot;123456-abcedfg&quot;</span>, <span class="hljs-comment">// Use own liffId</span>
+  })
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">const</span> idToken = liff.<span class="hljs-title function_">getDecodedIDToken</span>();
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(idToken); <span class="hljs-comment">// print decoded idToken object</span>
+  });
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">getDecodedIDToken</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p>ID token의 payload를 가져옵니다.</p>
+<p>ID token payload에 대한 자세한 내용은 LINE Login 통합 문서의 <a href="../../docs/line-login/verify-id-token/">Get profile information from ID tokens</a>에 있는 <strong>Payload</strong> 섹션을 참조하십시오.</p>
+<p><em>Example</em></p>
+<!-- tab start `json` -->
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;iss&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://access.line.me&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;sub&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;U1234567890abcdef1234567890abcdef &quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;aud&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1234567890&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;exp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1504169092</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;iat&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1504263657</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;amr&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;pwd&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Taro Line&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;picture&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://sample_line.me/aBcdefg123456&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<!-- tab end -->
+<h3>liff.permission.getGrantedAll()</h3>
+<p>사용자가 권한 부여에 동의한 scope의 목록을 가져옵니다.</p>
+<p>이 메서드로 가져올 수 있는 scope는 다음과 같습니다.</p>
+<ul>
+<li><a href="../../docs/liff/registering-liff-apps/#registering-liff-app"><code>profile</code></a></li>
+<li><a href="../../docs/liff/registering-liff-apps/#registering-liff-app"><code>chat_message.write</code></a></li>
+<li><a href="../../docs/liff/registering-liff-apps/#registering-liff-app"><code>openid</code></a></li>
+<li><a href="../../docs/liff/registering-liff-apps/#registering-liff-app"><code>email</code></a></li>
+</ul>
+<div class="tip">
+<p><strong>Difference between liff.getContext() and liff.permission.getGrantedAll()</strong></p>
+<p><a href="./#get-context"><code>liff.getContext()</code></a> 메서드는 LIFF 앱의 scope 목록(*)을 가져옵니다.</p>
+<p>반면 <code>liff.permission.getGrantedAll()</code> 메서드는 LIFF 앱의 scope 중에서 사용자가 권한 부여에 동의한 scope 목록을 가져옵니다.</p>
+<p>* LINE Login 채널의 <strong>LIFF</strong> 탭에 있는 “Scope” 섹션에 지정된 scope입니다.</p>
+</div>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff.<span class="hljs-property">permission</span>.<span class="hljs-title function_">getGrantedAll</span>().<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">scopes</span>) =&gt;</span> {
+  <span class="hljs-comment">// [&quot;profile&quot;, &quot;chat_message.write&quot;, &quot;openid&quot;, &quot;email&quot;]</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(scopes);
+});
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-property">permission</span>.<span class="hljs-title function_">getGrantedAll</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p><code>Promise</code>가 resolve되면 사용자가 권한 부여에 동의한 scope의 배열이 전달됩니다.</p>
+<h5>Error response</h5>
+<p><code>Promise</code>가 reject되면 <a href="./#liff-errors"><code>LiffError</code></a>가 전달됩니다.</p>
+<h3>liff.permission.query()</h3>
+<p>사용자가 지정한 권한을 부여하는 데 동의했는지 확인합니다.</p>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff.<span class="hljs-property">permission</span>.<span class="hljs-title function_">query</span>(<span class="hljs-string">&quot;profile&quot;</span>).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">permissionStatus</span>) =&gt;</span> {
+  <span class="hljs-comment">// permissionStatus = { state: &#x27;granted&#x27; }</span>
+});
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-property">permission</span>.<span class="hljs-title function_">query</span>(permission);
+</code></pre>
+<h4>Arguments</h4>
+<!-- parameter start (props: required) -->
+<p>permission</p>
+<p>String</p>
+<p>확인할 권한입니다. 다음 scope 중 하나를 지정하십시오.</p>
+<ul>
+<li><a href="../../docs/liff/registering-liff-apps/#registering-liff-app"><code>profile</code></a></li>
+<li><a href="../../docs/liff/registering-liff-apps/#registering-liff-app"><code>chat_message.write</code></a></li>
+<li><a href="../../docs/liff/registering-liff-apps/#registering-liff-app"><code>openid</code></a></li>
+<li><a href="../../docs/liff/registering-liff-apps/#registering-liff-app"><code>email</code></a></li>
+</ul>
+<!-- parameter end -->
+<h4>Return value</h4>
+<p><code>Promise</code> 객체를 반환합니다.</p>
+<p><code>Promise</code>가 resolve되면 다음 속성을 포함하는 객체가 반환됩니다.</p>
+<!-- parameter start -->
+<p>state</p>
+<p>String</p>
+<p>다음 값 중 하나를 포함합니다.</p>
+<ul>
+<li><code>granted</code>: 사용자가 권한 부여에 동의했습니다.</li>
+<li><code>prompt</code>: 사용자가 권한 부여에 동의하지 않았습니다.</li>
+<li><code>unavailable</code>: 채널에 지정한 scope가 없어 사용할 수 없습니다.</li>
+</ul>
+<!-- parameter end -->
+<h3>liff.permission.requestAll()</h3>
+<p>LINE MINI App이 요청한 권한에 대한 &quot;검증 화면&quot;을 표시합니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/line-mini-app/verification-screen-en.webp" alt="verification screen" loading="lazy"><figcaption>verification screen</figcaption></figure></p>
+<!-- note start -->
+<p><strong>Operating environment of liff.permission.requestAll()</strong></p>
+<p><code>liff.permission.requestAll()</code>은 <a href="https://developers.line.biz/en/docs/line-mini-app/" target="_blank" rel="noopener noreferrer">LINE MINI App</a>에서만 작동합니다.</p>
+<p>이 메서드를 실행하려면 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에서 미리 <strong>Channel consent simplification</strong>을 켜야 합니다. 채널 동의 간소화 기능의 설정 방법은 LINE MINI App 문서의 <a href="../../docs/line-mini-app/develop/channel-consent-simplification/#simplification-feature-setup">The “Channel consent simplification” feature setup</a>을 참조하십시오.</p>
+<!-- note end -->
+<!-- note start -->
+<p><strong>Make sure that the user has consented to all the permissions before executing this method</strong></p>
+<p>사용자가 이미 모든 권한에 동의한 상태에서 <code>liff.permission.requestAll()</code>을 실행하면 <code>Promise</code>가 reject되고 <a href="./#liff-errors"><code>LiffError</code></a>가 반환됩니다. 따라서 <a href="./#permission-query"><code>liff.permission.query()</code></a>를 사용하여 사용자가 모든 권한에 동의했는지 확인하고, 동의하지 않은 권한이 있는 경우에만 <code>liff.permission.requestAll()</code>을 실행하십시오.</p>
+<!-- note end -->
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff.<span class="hljs-property">permission</span>.<span class="hljs-title function_">query</span>(<span class="hljs-string">&quot;profile&quot;</span>).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">permissionStatus</span>) =&gt;</span> {
+  <span class="hljs-keyword">if</span> (permissionStatus.<span class="hljs-property">state</span> === <span class="hljs-string">&quot;prompt&quot;</span>) {
+    liff.<span class="hljs-property">permission</span>.<span class="hljs-title function_">requestAll</span>();
+  }
+});
+
+<span class="hljs-comment">// When Use multiple accounts is enabled for the LINE MINI App channel</span>
+liff.<span class="hljs-property">permission</span>.<span class="hljs-title function_">query</span>(<span class="hljs-string">&quot;profile&quot;</span>).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">permissionStatus</span>) =&gt;</span> {
+  <span class="hljs-keyword">if</span> (permissionStatus.<span class="hljs-property">state</span> === <span class="hljs-string">&quot;prompt&quot;</span>) {
+    liff.<span class="hljs-property">permission</span>.<span class="hljs-title function_">requestAll</span>({
+      <span class="hljs-attr">officialAccount</span>: {
+        <span class="hljs-attr">id</span>: <span class="hljs-string">&quot;@819...&quot;</span>,
+        <span class="hljs-attr">fallback</span>: <span class="hljs-literal">true</span>,
+      },
+    });
+  }
+});
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-property">permission</span>.<span class="hljs-title function_">requestAll</span>(params);
+</code></pre>
+<h4>Arguments</h4>
+<p>인자는 LINE MINI App에서만 사용할 수 있습니다. LIFF SDK v2.30.0 이상이 필요하며, LINE MINI App 채널에서 <strong>Use multiple accounts</strong>가 활성화되어 있어야 합니다. 자세한 내용은 LINE MINI App 문서의 <a href="../../docs/line-mini-app/service/add-friend-option/">Add a LINE Official Account as a friend in a LINE MINI App (add friend option)</a>을 참조하십시오.</p>
+<!-- parameter start (props: optional) -->
+<p>params</p>
+<p>Object</p>
+<p>파라미터 객체</p>
+<!-- parameter end -->
+<!-- parameter start (props: optional) -->
+<p>params.officialAccount</p>
+<p>Object</p>
+<p>Add friend option을 통해 사용자에게 친구 추가 또는 차단 해제를 요청할 LINE Official Account를 지정하는 객체입니다. 생략하면 기본 LINE Official Account가 표시됩니다.</p>
+<!-- parameter end -->
+<!-- parameter start (props: required) -->
+<p><a href="http://officialAccount.id" target="_blank" rel="noopener noreferrer">officialAccount.id</a></p>
+<p>String</p>
+<p>Add friend option을 통해 사용자에게 친구 추가 또는 차단 해제를 요청할 LINE Official Account의 ID입니다. Basic ID 또는 <a href="https://developers.line.biz/en/glossary/#premium-id" target="_blank" rel="noopener noreferrer">premium ID</a>를 지정하십시오.</p>
+<!-- parameter end -->
+<!-- parameter start (props: optional) -->
+<p>officialAccount.fallback</p>
+<p>Boolean</p>
+<p><code>officialAccount.id</code> 속성에 지정한 LINE Official Account가 존재하지 않거나, 허용 목록에 등록되어 있지 않거나, 그 밖의 이유로 사용할 수 없는 경우 기본 LINE Official Account를 표시할지 여부입니다. 기본값은 <code>true</code>입니다.</p>
+<ul>
+<li><code>true</code>: 기본 LINE Official Account를 표시합니다.</li>
+<li><code>false</code>: LINE Official Account를 표시하지 않습니다.</li>
+</ul>
+<!-- parameter end -->
+<h4>Return value</h4>
+<p><code>Promise</code> 객체를 반환합니다.</p>
+<h4>Error response</h4>
+<p><code>Promise</code>가 reject되면 <a href="./#liff-errors"><code>LiffError</code></a>가 전달됩니다. 다음 오류는 <code>liff.permission.requestAll()</code> 메서드에 특정된 오류입니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Error code</th>
+<th>Error message</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FORBIDDEN</code></td>
+<td><code>All permissions have already been approved.</code></td>
+<td>사용자가 이미 모든 권한에 동의했습니다.</td>
+</tr>
+<tr>
+<td><code>FORBIDDEN</code></td>
+<td><code>SkipChannelVerificationScreen is unavailable.</code></td>
+<td><strong>Channel consent simplification</strong>이 비활성화되어 있습니다.</td>
+</tr>
+<tr>
+<td><code>INVALID_ARGUMENT</code></td>
+<td><code>officialAccount.id must start with &quot;@&quot;.</code></td>
+<td><code>officialAccount.id</code> 속성의 값이 <code>@</code>로 시작하지 않습니다.</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Profile</h2>
+<h3>liff.getProfile()</h3>
+<p>현재 사용자의 <a href="https://developers.line.biz/en/glossary/#profile-information" target="_blank" rel="noopener noreferrer">프로필 정보</a>를 가져옵니다.</p>
+<p>기본 프로필 정보만 가져올 수 있습니다. 사용자의 <a href="https://developers.line.biz/en/glossary/#subprofile" target="_blank" rel="noopener noreferrer">subprofile</a>은 가져올 수 없습니다.</p>
+<!-- warning start -->
+<p><strong>Don’t send user info to server</strong></p>
+<p>이 메서드로 얻은 사용자 데이터를 서버로 전송하지 마십시오. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/using-user-profile/">Using user data in LIFF apps and servers</a>를 참조하십시오.</p>
+<!-- warning end -->
+<!-- note start -->
+<p><strong>Select a scope</strong></p>
+<p><a href="../../docs/liff/registering-liff-apps/">LIFF 앱을 채널에 추가</a>할 때 <code>profile</code> scope를 선택하십시오. Scope를 선택하지 않았거나 사용자가 권한을 부여하지 않으면 사용자 프로필을 가져올 수 없습니다. LIFF 앱을 추가한 후에도 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>의 LIFF 탭에서 scope 선택을 변경할 수 있습니다.</p>
+<!-- note end -->
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff
+  .<span class="hljs-title function_">getProfile</span>()
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">profile</span>) =&gt;</span> {
+    <span class="hljs-keyword">const</span> name = profile.<span class="hljs-property">displayName</span>;
+  })
+  .<span class="hljs-title function_">catch</span>(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;error&quot;</span>, err);
+  });
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">getProfile</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p><code>Promise</code> 객체를 반환합니다.</p>
+<p><code>Promise</code>가 resolve되면 사용자의 프로필 정보를 담은 객체가 전달됩니다.</p>
+<!-- parameter start -->
+<p>userId</p>
+<p>String</p>
+<p>사용자 ID</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>displayName</p>
+<p>String</p>
+<p>표시 이름</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>pictureUrl</p>
+<p>String</p>
+<p>이미지 URL입니다. 사용자가 설정하지 않은 경우 이 속성은 반환되지 않습니다.</p>
+<!-- parameter end -->
+<!-- parameter start -->
+<p>statusMessage</p>
+<p>String</p>
+<p>상태 메시지입니다. 사용자가 설정하지 않은 경우 이 속성은 반환되지 않습니다.</p>
+<!-- parameter end -->
+<h5>Error response</h5>
+<p><code>Promise</code>가 reject되면 <a href="./#liff-errors"><code>LiffError</code></a>가 전달됩니다.</p>
+<p><em>Example</em></p>
+<!-- tab start `json` -->
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;U4af4980629...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;displayName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Brown&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;pictureUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://profile.line-scdn.net/abcdefghijklmn&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;statusMessage&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Hello, LINE!&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<!-- tab end -->
+<h3>liff.getFriendship()</h3>
+<p>사용자와 LINE Official Account 간의 친구 상태를 가져옵니다.</p>
+<p>다만 LIFF 앱을 추가한 LINE Login 채널에 연결된 LINE Official Account와 사용자 사이의 친구 상태만 가져올 수 있습니다. LINE Official Account를 LINE Login 채널에 연결하는 방법은 LINE Login 문서의 <a href="../../docs/line-login/link-a-bot/">Add a LINE Official Account as a friend when logged in (add friend option)</a>을 참조하십시오.</p>
+<!-- note start -->
+<p><strong>Select a scope</strong></p>
+<p><a href="../../docs/liff/registering-liff-apps/">LIFF 앱을 채널에 추가</a>할 때 <code>profile</code> scope를 선택하십시오. Scope를 선택하지 않았거나 사용자가 권한을 부여하지 않으면 친구 상태를 가져올 수 없습니다. LIFF 앱을 추가한 후에도 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>의 LIFF 탭에서 scope 선택을 변경할 수 있습니다.</p>
+<!-- note end -->
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">getFriendship</span>().<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+  <span class="hljs-keyword">if</span> (data.<span class="hljs-property">friendFlag</span>) {
+    <span class="hljs-comment">// something you want to do</span>
+  }
+});
+
+<span class="hljs-comment">// When Use multiple accounts is enabled for the LINE MINI App channel</span>
+liff
+  .<span class="hljs-title function_">getFriendship</span>({
+    <span class="hljs-attr">officialAccountId</span>: <span class="hljs-string">&quot;@819...&quot;</span>,
+  })
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+    <span class="hljs-keyword">if</span> (data.<span class="hljs-property">friendFlag</span>) {
+      <span class="hljs-comment">// something you want to do</span>
+    }
+  });
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">getFriendship</span>(params);
+</code></pre>
+<h4>Arguments</h4>
+<p>인자는 LINE MINI App에서만 사용할 수 있습니다. LIFF SDK v2.30.0 이상이 필요하며, LINE MINI App 채널에서 <strong>Use multiple accounts</strong>가 활성화되어 있어야 합니다. 자세한 내용은 LINE MINI App 문서의 <a href="../../docs/line-mini-app/service/add-friend-option/">Add a LINE Official Account as a friend in a LINE MINI App (add friend option)</a>을 참조하십시오.</p>
+<!-- parameter start (props: optional) -->
+<p>params</p>
+<p>Object</p>
+<p>파라미터 객체입니다. 생략하면 기본 LINE Official Account와의 친구 상태를 가져옵니다.</p>
+<!-- parameter end -->
+<!-- parameter start (props: required) -->
+<p>params.officialAccountId</p>
+<p>String</p>
+<p>친구 상태를 가져올 LINE Official Account의 ID입니다. Basic ID 또는 <a href="https://developers.line.biz/en/glossary/#premium-id" target="_blank" rel="noopener noreferrer">premium ID</a>를 지정하십시오.</p>
+<!-- parameter end -->
+<h4>Return value</h4>
+<p><code>Promise</code> 객체를 반환합니다.</p>
+<p>친구 상태를 가져오면 <code>Promise</code>가 resolve되고 친구 관계에 대한 정보가 전달됩니다.</p>
+<!-- parameter start -->
+<p>friendFlag</p>
+<p>Boolean</p>
+<ul>
+<li><code>true</code>: 사용자가 LINE Official Account를 친구로 추가했고 차단하지 않았습니다.</li>
+<li>그 외의 경우 <code>false</code>입니다.</li>
+</ul>
+<!-- parameter end -->
+<p><em>Example</em></p>
+<!-- tab start `json` -->
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;friendFlag&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<!-- tab end -->
+<h4>Error response</h4>
+<p><code>Promise</code>가 reject되면 <a href="./#liff-errors"><code>LiffError</code></a>가 전달됩니다. 다음 오류는 <code>liff.getFriendship()</code> 메서드에 특정된 오류입니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Error code</th>
+<th>Error message</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>400</code></td>
+<td><code>Bot not found</code></td>
+<td><p>친구 상태를 가져오려는 LINE Official Account를 찾을 수 없습니다. 가능한 원인은 다음과 같습니다.</p><ul><li><code>officialAccountId</code> 속성에 지정한 LINE Official Account가 존재하지 않습니다.</li><li><code>officialAccountId</code> 속성에 지정한 LINE Official Account가 허용 목록에 등록되어 있지 않습니다.</li><li><code>officialAccountId</code> 속성에 지정한 LINE Official Account가 정지되었거나 삭제되었습니다.</li></ul></td>
+</tr>
+<tr>
+<td><code>400</code></td>
+<td><code>There is no login bot linked to this channel.</code></td>
+<td><p>친구 상태를 가져오려는 LINE Official Account가 존재하지 않습니다. 가능한 원인은 다음과 같습니다.</p><ul><li>LINE Login 채널에 <strong>Linked LINE Official Account</strong>가 설정되어 있지 않습니다.</li><li>LINE MINI App 채널에 <strong>Default LINE Official Account</strong>가 설정되어 있지 않고 <code>officialAccountId</code> 속성도 지정하지 않았습니다.</li></ul></td>
+</tr>
+<tr>
+<td><code>403</code></td>
+<td><code>LOGIN_MULTI_LINKED_BOT_PROMPT feature license is required.</code></td>
+<td><code>officialAccountId</code> 속성을 지정했지만 LINE MINI App 채널에서 <strong>Use multiple accounts</strong>가 비활성화되어 있습니다.</td>
+</tr>
+<tr>
+<td><code>INVALID_ARGUMENT</code></td>
+<td><code>officialAccountId must start with &quot;@&quot;.</code></td>
+<td><code>officialAccountId</code> 속성의 값이 <code>@</code>로 시작하지 않습니다.</td>
+</tr>
+</tbody>
+</table></div>
+<h3>liff.requestFriendship()</h3>
+<p>사용자에게 LINE Official Account를 친구로 추가하거나 차단을 해제하도록 요청하는 subwindow를 표시합니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/liff/request-friendship/request-friendship-add-friend-en.webp" alt="" loading="lazy"><figcaption></figcaption></figure></p>
+<ul>
+<li>사용자가 LINE Official Account를 친구로 추가하지 않았다면 친구 추가를 요청하는 subwindow가 표시됩니다.</li>
+<li>사용자가 LINE Official Account를 차단했다면 차단 해제를 요청하는 subwindow가 표시됩니다.</li>
+<li>사용자가 이미 LINE Official Account와 친구라면 subwindow가 표시된 후 자동으로 닫힙니다.</li>
+</ul>
+<p>친구 추가 또는 차단 해제를 요청할 LINE Official Account는 <a href="../../docs/line-login/link-a-bot/#link-a-line-official-account">채널에 LINE Official Account 연결</a>을 통해 지정할 수 있습니다. 자세한 내용은 LINE Login 문서의 <a href="../../docs/line-login/link-a-bot/">Add a LINE Official Account as a friend when logged in (add friend option)</a>을 참조하십시오.</p>
+<p>LIFF browser의 화면 크기가 <code>Full</code>인 경우에만 사용할 수 있습니다. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/overview/#screen-size">Size of the LIFF browser</a>를 참조하십시오.</p>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-keyword">try</span> {
+  <span class="hljs-keyword">await</span> liff.<span class="hljs-title function_">requestFriendship</span>({
+    <span class="hljs-attr">template</span>: { <span class="hljs-attr">id</span>: <span class="hljs-string">&quot;coupon&quot;</span> },
+  });
+} <span class="hljs-keyword">catch</span> (error) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(error);
+}
+
+<span class="hljs-comment">// When Use multiple accounts is enabled for the LINE MINI App channel</span>
+<span class="hljs-keyword">try</span> {
+  <span class="hljs-keyword">await</span> liff.<span class="hljs-title function_">requestFriendship</span>({
+    <span class="hljs-attr">officialAccount</span>: {
+      <span class="hljs-attr">id</span>: <span class="hljs-string">&quot;@819...&quot;</span>,
+      <span class="hljs-attr">fallback</span>: <span class="hljs-literal">true</span>,
+    },
+    <span class="hljs-attr">template</span>: { <span class="hljs-attr">id</span>: <span class="hljs-string">&quot;coupon&quot;</span> },
+  });
+} <span class="hljs-keyword">catch</span> (error) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(error);
+}
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">requestFriendship</span>(params);
+</code></pre>
+<h4>Arguments</h4>
+<!-- parameter start (props: optional) -->
+<p>params</p>
+<p>Object</p>
+<p>파라미터 객체</p>
+<!-- parameter end -->
+<!-- parameter start (props: optional) -->
+<p>params.officialAccount</p>
+<p>Object</p>
+<p>사용자에게 친구 추가 또는 차단 해제를 요청할 LINE Official Account를 지정하는 객체입니다. 생략하면 기본 LINE Official Account가 표시됩니다.</p>
+<p><code>officialAccount</code> 속성은 LINE MINI App에서만 사용할 수 있습니다. LIFF SDK v2.30.0 이상이 필요하며, LINE MINI App 채널에서 <strong>Use multiple accounts</strong>가 활성화되어 있어야 합니다. 자세한 내용은 LINE MINI App 문서의 <a href="../../docs/line-mini-app/service/add-friend-option/">Add a LINE Official Account as a friend in a LINE MINI App (add friend option)</a>을 참조하십시오.</p>
+<!-- parameter end -->
+<!-- parameter start (props: required) -->
+<p><a href="http://officialAccount.id" target="_blank" rel="noopener noreferrer">officialAccount.id</a></p>
+<p>String</p>
+<p>사용자에게 친구 추가 또는 차단 해제를 요청할 LINE Official Account의 ID입니다. Basic ID 또는 <a href="https://developers.line.biz/en/glossary/#premium-id" target="_blank" rel="noopener noreferrer">premium ID</a>를 지정하십시오.</p>
+<!-- parameter end -->
+<!-- parameter start (props: optional) -->
+<p>officialAccount.fallback</p>
+<p>Boolean</p>
+<p><code>officialAccount.id</code> 속성에 지정한 LINE Official Account가 존재하지 않거나, 허용 목록에 등록되어 있지 않거나, 그 밖의 이유로 사용할 수 없는 경우 기본 LINE Official Account를 표시할지 여부입니다. 기본값은 <code>true</code>입니다.</p>
+<ul>
+<li><code>true</code>: 기본 LINE Official Account를 표시합니다.</li>
+<li><code>false</code>: LINE Official Account를 표시하지 않습니다.</li>
+</ul>
+<!-- parameter end -->
+<!-- parameter start (props: optional) -->
+<p>params.template</p>
+<p>Object</p>
+<p>친구 추가 또는 차단 해제를 요청하는 subwindow에 표시되는 메시지의 <a href="./#request-friendship-template">template</a>을 지정하는 객체입니다.</p>
+<!-- parameter end -->
+<!-- parameter start (props: required) -->
+<p><a href="http://template.id" target="_blank" rel="noopener noreferrer">template.id</a></p>
+<p>String</p>
+<p>친구 추가 또는 차단 해제를 요청하는 subwindow에 표시되는 메시지의 <a href="./#request-friendship-template">template</a> ID입니다.</p>
+<!-- parameter end -->
+<h5>Template</h5>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Category</th>
+<th>Japanese</th>
+<th>English</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>Default</td>
+<td>この公式アカウントを友だち追加しますか？</td>
+<td>Add this official account as a friend?</td>
+</tr>
+<tr>
+<td><code>bonusContent</code></td>
+<td>Bonus content</td>
+<td>公式アカウントから特典コンテンツやお得な情報をお届けします。</td>
+<td>Get bonus content and special offers from this official account.</td>
+</tr>
+<tr>
+<td><code>bonusItem</code></td>
+<td>Bonuses</td>
+<td>公式アカウントからボーナスやアイテムをお届けします。</td>
+<td>Get bonuses and items from this official account.</td>
+</tr>
+<tr>
+<td><code>campaign</code></td>
+<td>Campaigns</td>
+<td>公式アカウントからキャンペーンなどのお得な情報をお届けします。</td>
+<td>Get campaign news and special offers from this official account.</td>
+</tr>
+<tr>
+<td><code>coupon</code></td>
+<td>Coupons</td>
+<td>公式アカウントからクーポンや特典情報をお届けします。</td>
+<td>Get coupons and special offers from this official account.</td>
+</tr>
+<tr>
+<td><code>couponUsefulInfo</code></td>
+<td>Coupons and useful information</td>
+<td>公式アカウントから定期的にクーポンや有益な情報をお届けします。</td>
+<td>Get regular coupons and useful information from this official account.</td>
+</tr>
+<tr>
+<td><code>eventReward</code></td>
+<td>Events and rewards</td>
+<td>公式アカウントからイベント情報や限定特典をお届けします。</td>
+<td>Get event info and exclusive rewards from this official account.</td>
+</tr>
+<tr>
+<td><code>exclusiveContent</code></td>
+<td>Exclusive content</td>
+<td>公式アカウントからここでしか見られない限定コンテンツをお届けします。</td>
+<td>Get exclusive content you won’t find anywhere else from this official account.</td>
+</tr>
+<tr>
+<td><code>exclusiveUpdate</code></td>
+<td>Exclusive updates</td>
+<td>公式アカウントから特別なお知らせをお届けします。</td>
+<td>Get special updates from this official account.</td>
+</tr>
+<tr>
+<td><code>featureAccess</code></td>
+<td>Feature access</td>
+<td>公式アカウントの便利な機能をご利用いただけます。</td>
+<td>Get access to useful features from this official account.</td>
+</tr>
+<tr>
+<td><code>gameInfoTips</code></td>
+<td>Game information</td>
+<td>公式アカウントからゲーム情報やプレイに役立つヒントをお届けします。</td>
+<td>Get game news and helpful gameplay tips from this official account.</td>
+</tr>
+<tr>
+<td><code>gameNotification</code></td>
+<td>Game information</td>
+<td>公式アカウントでこのゲームからの通知を受け取れます。</td>
+<td>Get notifications from this game through its official account.</td>
+</tr>
+<tr>
+<td><code>importantAnnouncement</code></td>
+<td>Important announcements</td>
+<td>公式アカウントから重要なお知らせをお届けします。</td>
+<td>Get important updates from this official account.</td>
+</tr>
+<tr>
+<td><code>newReleaseUpdate</code></td>
+<td>New releases and updates</td>
+<td>公式アカウントから新着・更新情報をお届けします。</td>
+<td>Get the latest news and updates from this official account.</td>
+</tr>
+<tr>
+<td><code>promotionalFlyer</code></td>
+<td>Flyers</td>
+<td>公式アカウントからお得なチラシ情報をお届けします。</td>
+<td>Get flyers with the latest deals from this official account.</td>
+</tr>
+<tr>
+<td><code>usefulInfo</code></td>
+<td>Useful information</td>
+<td>公式アカウントから有益な情報をお届けします。</td>
+<td>Get useful information from this official account.</td>
+</tr>
+</tbody>
+</table></div>
+<h4>Return value</h4>
+<p><code>Promise</code> 객체를 반환합니다.</p>
+<!-- note start -->
+<p><strong>The result of the user’s action cannot be confirmed from the return value</strong></p>
+<p>반환 값으로는 사용자가 LINE Official Account를 친구로 추가했는지 또는 차단을 해제했는지 확인할 수 없습니다. <code>liff.requestFriendship()</code> 메서드를 호출한 후 친구 상태를 확인하려면 <a href="./#get-friendship"><code>liff.getFriendship()</code></a> 메서드를 사용하십시오.</p>
+<!-- note end -->
+<h4>Error response</h4>
+<p><code>Promise</code>가 reject되면 <a href="./#liff-errors"><code>LiffError</code></a>가 전달됩니다. 다음 오류는 <code>liff.requestFriendship()</code> 메서드에 특정된 오류입니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Error code</th>
+<th>Error message</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FORBIDDEN</code></td>
+<td><code>No bot could be resolved for the request.</code></td>
+<td><p>표시할 LINE Official Account가 존재하지 않습니다. 가능한 원인은 다음과 같습니다.</p><ul><li>LINE Login 채널에 <strong>Linked LINE Official Account</strong>가 설정되어 있지 않습니다.</li><li>LINE MINI App 채널에 <strong>Default LINE Official Account</strong>가 설정되어 있지 않고 <strong>Use multiple accounts</strong>가 비활성화되어 있습니다.</li><li>LINE MINI App 채널에 <strong>Default LINE Official Account</strong>가 설정되어 있지 않고 <code>officialAccount.id</code> 속성도 지정하지 않았습니다.</li><li><code>officialAccount.id</code> 속성에 지정한 LINE Official Account가 존재하지 않고, <code>officialAccount.fallback</code> 속성 값이 <code>false</code>입니다.</li><li><code>officialAccount.id</code> 속성에 지정한 LINE Official Account가 허용 목록에 등록되어 있지 않고, <code>officialAccount.fallback</code> 속성 값이 <code>false</code>입니다.</li><li><code>officialAccount.id</code> 속성에 지정한 LINE Official Account가 정지되었거나 삭제되었고, <code>officialAccount.fallback</code> 속성 값이 <code>false</code>입니다.</li></ul></td>
+</tr>
+<tr>
+<td><code>FORBIDDEN</code></td>
+<td><code>subwindowOpen is not allowed in this LIFF app</code></td>
+<td>LIFF 앱의 화면 크기가 <code>Full</code>로 설정되어 있지 않습니다.</td>
+</tr>
+<tr>
+<td><code>INVALID_ARGUMENT</code></td>
+<td><code>officialAccount.id must start with &quot;@&quot;.</code></td>
+<td><code>officialAccount.id</code> 속성의 값이 <code>@</code>로 시작하지 않습니다.</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Window</h2>
+<h3>liff.openWindow()</h3>
+<p>지정한 URL을 LINE’s in-app browser 또는 외부 브라우저에서 엽니다.</p>
+<!-- note start -->
+<p><strong>Operating environment of liff.openWindow()</strong></p>
+<p>외부 브라우저에서 <code>liff.openWindow()</code>를 사용하는 경우 동작이 보장되지 않습니다.</p>
+<!-- note end -->
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">openWindow</span>({
+  <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;https://line.me&quot;</span>,
+  <span class="hljs-attr">external</span>: <span class="hljs-literal">true</span>,
+});
+</code></pre>
+<!-- tab end -->
+<h4>Behavioral differences by LINE version</h4>
+<p><a href="https://developer.apple.com/documentation/xcode/allowing-apps-and-websites-to-link-to-your-content/" target="_blank" rel="noopener noreferrer">Universal Links</a> 또는 <a href="https://developer.android.com/training/app-links" target="_blank" rel="noopener noreferrer">App Links</a>를 지원하는 URL을 열 때 <code>liff.openWindow()</code> 메서드의 동작은 LINE 버전과 <a href="./#open-window-arguments"><code>params.external</code></a> 파라미터 설정에 따라 달라집니다. 동작의 차이는 다음과 같습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th><code>params.external = false</code><br>(기본값)</th>
+<th><code>params.external = true</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LINE 14.20.0 미만 (*)</td>
+<td><ul><li>iOS: LINE’s in-app browser에서 URL을 엽니다.</li><li>Android: 해당 앱으로 전환합니다.</li></ul></td>
+<td><ul><li>iOS: 해당 앱으로 전환합니다.</li><li>Android: 기본 브라우저에서 URL을 엽니다.</li></ul></td>
+</tr>
+<tr>
+<td>LINE 14.20.0 이상,<br>또는 15.20.0 미만</td>
+<td>해당 앱으로 전환합니다.</td>
+<td>해당 앱으로 전환합니다.</td>
+</tr>
+<tr>
+<td>LINE 15.20.0 이상</td>
+<td>LINE’s in-app browser에서 URL을 엽니다.</td>
+<td>해당 앱으로 전환합니다.</td>
+</tr>
+</tbody>
+</table></div>
+<p>* LINE 14.20.0 이상에서는 동작이 OS별로 달라지지 않습니다.</p>
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">openWindow</span>(params);
+</code></pre>
+<h4>Arguments</h4>
+<!-- parameter start (props: required) -->
+<p>params</p>
+<p>Object</p>
+<p>파라미터 객체</p>
+<!-- parameter end -->
+<!-- parameter start (props: required) -->
+<p>params.url</p>
+<p>String</p>
+<p>URL입니다. 전체 URL을 지정하십시오.</p>
+<!-- parameter end -->
+<!-- parameter start (props: optional) -->
+<p>params.external</p>
+<p>Boolean</p>
+<p>URL을 외부 브라우저에서 열지 여부입니다. 다음 값 중 하나를 지정하십시오. 기본값은 <code>false</code>입니다.</p>
+<ul>
+<li><code>true</code>: 외부 브라우저에서 URL을 엽니다.</li>
+<li><code>false</code>: LINE’s in-app browser에서 URL을 엽니다.</li>
+</ul>
+<!-- parameter end -->
+<h4>Return value</h4>
+<p>없음</p>
+<h3>liff.closeWindow()</h3>
+<p>LIFF 앱을 닫습니다.</p>
+<p>LIFF 앱을 닫을 때의 동작은 LINE 앱 버전과 LIFF 앱의 설정에 따라 달라집니다. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/developing-liff-apps/#behavior-when-closing-liff-app">Behavior when closing the LIFF app</a>을 참조하십시오.</p>
+<div class="tip">
+<p><strong>This method can be used before the LIFF app is initialized</strong></p>
+<p><code>liff.init()</code>에 의한 LIFF 앱 초기화가 끝나기 전에 <code>liff.closeWindow()</code> 메서드를 사용하려면 LIFF SDK 버전이 v2.4.0 이상이어야 합니다.</p>
+</div>
+<!-- note start -->
+<p><strong>Note</strong></p>
+<p>외부 브라우저에서 <code>liff.closeWindow()</code>가 작동한다고 보장할 수 없습니다.</p>
+<!-- note end -->
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">closeWindow</span>();
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">closeWindow</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p>없음</p>
+<h2>Message</h2>
+<h3>liff.sendMessages()</h3>
+<p>사용자를 대신하여 LIFF 앱이 열린 채팅방에 메시지를 보냅니다.</p>
+<p>이 기능을 사용하려면 다음 조건을 모두 충족해야 합니다.</p>
+<ul>
+<li>1:1 채팅, <a href="https://developers.line.biz/en/glossary/#group" target="_blank" rel="noopener noreferrer">그룹 채팅</a> 또는 <a href="https://developers.line.biz/en/glossary/#room" target="_blank" rel="noopener noreferrer">다인 채팅</a>에서 실행된 LIFF 앱의 LIFF browser 내부여야 합니다.</li>
+<li><a href="../../docs/liff/registering-liff-apps/#registering-liff-app"><code>chat_message.write</code> scope</a>가 활성화되어 있어야 합니다.</li>
+<li>LIFF 앱이 <a href="../../docs/liff/overview/#multi-tab-view-recent-service">최근 사용한 서비스</a> 섹션에서 다시 로드되지 않았어야 합니다.</li>
+</ul>
+<p>조건을 충족하지 않으면 <code>liff.sendMessages()</code> 메서드를 사용할 수 없으며, 오류 코드 <code>403</code>과 함께 <code>user doesn't grant required permissions yet</code> 오류가 발생합니다. 다음은 이 오류가 발생하는 경우의 예입니다.</p>
+<ul>
+<li><a href="https://help.line.me/line/smartphone/pc?lang=en&amp;contentId=20017696" target="_blank" rel="noopener noreferrer">Keep Memo</a> 기능을 사용하여 LIFF 앱에 접근한 경우</li>
+<li>웹사이트 리디렉션 과정 등을 통해 <a href="../../docs/line-login/using-line-url-scheme/#opening-a-liff-app">LIFF 앱을 여는</a> URL 스킴에 접근한 경우</li>
+<li>LIFF 간 전환 후 <code>chat_message.write</code> scope가 비활성화된 경우. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/opening-liff-app/#about-chat-message-write-scope">About the “chat_message.write” scope after transitioning between LIFF apps</a>를 참조하십시오.</li>
+<li>사용자가 <code>chat_message.write</code> scope에 대한 권한을 부여하지 않은 경우</li>
+</ul>
+<p><a href="./#get-context"><code>liff.getContext()</code></a> 메서드를 사용하면 LIFF 앱이 실행된 화면의 유형을 가져올 수 있습니다.</p>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff
+  .<span class="hljs-title function_">sendMessages</span>([
+    {
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;text&quot;</span>,
+      <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;Hello, World!&quot;</span>,
+    },
+  ])
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;message sent&quot;</span>);
+  })
+  .<span class="hljs-title function_">catch</span>(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;error&quot;</span>, err);
+  });
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">sendMessages</span>(messages);
+</code></pre>
+<h4>Arguments</h4>
+<!-- parameter start (props: required) -->
+<p>messages</p>
+<p>Array of objects</p>
+<p><a href="../messaging-api/#message-objects">Message objects</a><br>
+최대: 5<br>
+다음 유형의 Messaging API 메시지를 보낼 수 있습니다.</p>
+<ul>
+<li><a href="../../docs/messaging-api/message-types/#text-messages">Text message</a>. 다만 <code>emojis</code> 속성과 <code>quoteToken</code> 속성은 사용할 수 없습니다.</li>
+<li><a href="../../docs/messaging-api/message-types/#sticker-messages">Sticker message</a>. 다만 <code>quoteToken</code> 속성은 사용할 수 없습니다.</li>
+<li><a href="../../docs/messaging-api/message-types/#image-messages">Image message</a>.</li>
+<li><a href="../../docs/messaging-api/message-types/#video-messages">Video message</a>. 다만 <code>trackingId</code> 속성은 사용할 수 없습니다.</li>
+<li><a href="../../docs/messaging-api/message-types/#audio-messages">Audio message</a>.</li>
+<li><a href="../../docs/messaging-api/message-types/#location-messages">Location message</a>.</li>
+<li><a href="../../docs/messaging-api/message-types/#template-messages">Template message</a>. 다만 action으로는 <a href="../../docs/messaging-api/actions/#uri-action">URI action</a>만 설정할 수 있습니다.</li>
+<li><a href="../../docs/messaging-api/message-types/#flex-messages">Flex Message</a>. 다만 action으로는 <a href="../../docs/messaging-api/actions/#uri-action">URI action</a>만 설정할 수 있습니다.</li>
+</ul>
+<!-- parameter end -->
+<p><code>liff.sendMessages()</code> 메서드를 사용하여 사용자가 template message 또는 Flex Message를 보내는 경우 LINE Platform에서 webhook이 전송되지 않습니다. 그 밖의 모든 <a href="../../docs/messaging-api/message-types/">메시지 유형</a>에 대해서는 webhook이 전송됩니다. <code>liff.sendMessages()</code> 메서드로 이미지, 동영상, 오디오 메시지를 보내면 생성되는 webhook 이벤트에는 값이 <code>external</code>인 <code>contentProvider.type</code> 속성이 포함됩니다. 자세한 내용은 Messaging API reference의 <a href="../messaging-api/#message-event">Message event</a>를 참조하십시오.</p>
+<h4>Return value</h4>
+<p><code>Promise</code> 객체를 반환합니다.</p>
+<ul>
+<li>메시지를 성공적으로 보내면 <code>Promise</code>가 resolve됩니다. 값은 전달되지 않습니다.</li>
+<li>메시지 전송에 실패하면 <code>Promise</code>가 reject되고 <a href="./#liff-errors"><code>LiffError</code></a>가 전달됩니다.</li>
+</ul>
+<h3>liff.shareTargetPicker()</h3>
+<p>Target picker(수신자를 선택하는 화면)를 표시하고, 개발자가 만든 메시지를 선택한 대상에게 보냅니다. 메시지는 사용자가 직접 보낸 것처럼 선택된 각 수신자에게 표시됩니다.</p>
+<p>Target picker에서 사용자는 그룹, 친구, 채팅에서 수신자를 선택할 수 있습니다. OpenChat은 포함되지 않습니다.</p>
+<p>선택할 수 있는 수신자에 대한 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/developing-liff-apps/#share-target-picker-displayed-targets">Recipients that can be selected in the share target picker</a>를 참조하십시오.</p>
+<h4>Conditions for using the liff.shareTargetPicker() method</h4>
+<p><code>liff.shareTargetPicker()</code> 메서드를 사용하려면 다음 조건을 모두 충족해야 합니다.</p>
+<ul>
+<li>사용자가 로그인되어 있어야 합니다.</li>
+<li><a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에서 share target picker가 활성화되어 있어야 합니다. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/developing-liff-apps/#using-share-target-picker">Using the share target picker</a>를 참조하십시오.</li>
+</ul>
+<!-- note start -->
+<p><strong>The email address login screen may be displayed when executing the liff.shareTargetPicker() method in a smartphone’s external browser</strong></p>
+<p>스마트폰의 <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">외부 브라우저</a>에서 target picker를 표시하려면 <a href="../../docs/line-login/integrate-line-login/#line-sso-login">Single Sign On (SSO) 로그인</a> 세션이 필요합니다.</p>
+<p><a href="../../docs/line-login/integrate-line-login/#line-auto-login">자동 로그인</a>을 사용하는 로그인 과정에서는 SSO 로그인 세션이 발급되지 않습니다. 따라서 <code>liff.shareTargetPicker()</code> 메서드를 실행하면 target picker가 표시되지 않고 대신 <a href="../../docs/line-login/integrate-line-login/#mail-or-qrcode-login">이메일 주소 로그인</a> 화면이 표시될 수 있습니다.</p>
+<p>사용자가 이메일 주소와 비밀번호를 입력하여 로그인하면 SSO 로그인 세션이 발급되고 target picker가 올바르게 표시됩니다.</p>
+<!-- note end -->
+<!-- note start -->
+<p><strong>We don’t retrieve the number of people to whom a user has sent a message using the share target picker</strong></p>
+<p>사용자 개인정보를 보호하기 위해 share target picker를 통해 사용자의 메시지를 몇 명이 받았는지에 대한 정보는 수집하거나 제공하지 않습니다.</p>
+<!-- note end -->
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff
+  .<span class="hljs-title function_">shareTargetPicker</span>(
+    [
+      {
+        <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;text&quot;</span>,
+        <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;Hello, World!&quot;</span>,
+      },
+    ],
+    {
+      <span class="hljs-attr">isMultiple</span>: <span class="hljs-literal">true</span>,
+    },
+  )
+  .<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">res</span>) {
+    <span class="hljs-keyword">if</span> (res) {
+      <span class="hljs-comment">// succeeded in sending a message through TargetPicker</span>
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`[<span class="hljs-subst">${res.status}</span>] Message sent!`</span>);
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-comment">// sending message canceled</span>
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;TargetPicker was closed!&quot;</span>);
+    }
+  })
+  .<span class="hljs-title function_">catch</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">error</span>) {
+    <span class="hljs-comment">// something went wrong before sending a message</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;something wrong happen&quot;</span>);
+  });
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">shareTargetPicker</span>(messages, options);
+</code></pre>
+<h4>Arguments</h4>
+<!-- parameter start (props: required) -->
+<p>messages</p>
+<p>Array of objects</p>
+<p><a href="../messaging-api/#message-objects">Message objects</a><br>
+최대: 5<br>
+다음 유형의 Messaging API 메시지를 보낼 수 있습니다.</p>
+<ul>
+<li><a href="../../docs/messaging-api/message-types/#text-messages">Text message</a>. 다만 <code>emojis</code> 속성과 <code>quoteToken</code> 속성은 사용할 수 없습니다.</li>
+<li><a href="../../docs/messaging-api/message-types/#image-messages">Image message</a>.</li>
+<li><a href="../../docs/messaging-api/message-types/#video-messages">Video message</a>. 다만 <code>trackingId</code> 속성은 사용할 수 없습니다.</li>
+<li><a href="../../docs/messaging-api/message-types/#audio-messages">Audio message</a>.</li>
+<li><a href="../../docs/messaging-api/message-types/#location-messages">Location message</a>.</li>
+<li><a href="../../docs/messaging-api/message-types/#template-messages">Template message</a>. 다만 action으로는 <a href="../../docs/messaging-api/actions/#uri-action">URI action</a>만 설정할 수 있습니다.</li>
+<li><a href="../../docs/messaging-api/message-types/#flex-messages">Flex Message</a>. 다만 action으로는 <a href="../../docs/messaging-api/actions/#uri-action">URI action</a>만 설정할 수 있습니다.</li>
+</ul>
+<!-- parameter end -->
+<!-- parameter start (props: optional) -->
+<p>options</p>
+<p>Object</p>
+<p>Share target picker 옵션</p>
+<!-- parameter end -->
+<!-- parameter start (props: optional) -->
+<p>options.isMultiple</p>
+<p>Boolean</p>
+<p>다음 값 중 하나를 사용하여 사용자가 target picker에서 여러 메시지 수신자를 선택할 수 있도록 할지 여부를 지정합니다. 기본값은 <code>true</code>입니다.</p>
+<ul>
+<li><code>true</code>: 사용자는 그룹, 친구, 채팅에서 여러 수신자를 선택할 수 있습니다.</li>
+<li><code>false</code>: 사용자는 친구 중 한 명만 수신자로 선택할 수 있습니다.</li>
+</ul>
+<!-- parameter end -->
+<!-- note start -->
+<p><strong>Setting isMultiple to false doesn’t guarantee that the message will be sent to only one friend</strong></p>
+<p><code>isMultiple</code> 속성을 <code>false</code>로 설정하더라도 share target picker를 여러 번 호출하거나 같은 메시지를 다른 수신자에게 다시 공유하면 여러 사용자에게 메시지를 보낼 수 있습니다. 사용자가 한 명의 친구에게 메시지를 한 번만 보낼 수 있도록 엄격하게 제한하려면 LIFF 앱을 구현할 때 제한을 추가하십시오.</p>
+<p>다음은 URL이 포함된 메시지를 보내고 해당 URL의 접근을 제한하는 예입니다.</p>
+<ol>
+<li>URL에 고유한 토큰을 부여하고 메시지를 보냅니다.</li>
+<li>메시지의 URL에 접근하면 서버에서 토큰을 검증하고 여러 사용자가 접근하는 것을 제한합니다.</li>
+</ol>
+<!-- note end -->
+<h4>Return value</h4>
+<p><code>Promise</code> 객체를 반환합니다.</p>
+<ul>
+<li>
+<p>메시지를 올바르게 보내면 <code>Promise</code>가 resolve되고 다음 속성을 가진 객체가 전달됩니다.</p>
+  <!-- parameter start -->
+<p>status</p>
+<p>String</p>
+<p><code>success</code></p>
+  <!-- parameter end -->
+</li>
+<li>
+<p>사용자가 메시지를 보내기 전에 target picker를 취소하고 닫으면 <code>Promise</code>는 resolve되지만 객체는 전달되지 않습니다.</p>
+</li>
+<li>
+<p>Target picker가 표시되기 전에 문제가 발생하면 <code>Promise</code>가 reject되고 <code>LiffError</code>가 전달됩니다. LiffError 객체에 대한 자세한 내용은 <a href="./#liff-errors">LIFF SDK errors</a>를 참조하십시오.</p>
+</li>
+</ul>
+<!-- note start -->
+<p><strong>Note</strong></p>
+<p><code>Promise</code>가 resolve되거나 reject되는 콜백 함수에서 <code>alert()</code>를 사용하면 일부 기기에서 LIFF 앱이 작동하지 않을 수 있습니다.</p>
+<!-- note end -->
+<h2>Camera</h2>
+<h3>liff.scanCodeV2()</h3>
+<p>2D 코드 리더를 실행하여 문자열을 얻습니다. 2D 코드 리더를 활성화하려면 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에서 <strong>Scan QR</strong>을 켜십시오.</p>
+<!-- note start -->
+<p><strong>Operating environments of liff.scanCodeV2()</strong></p>
+<p><code>liff.scanCodeV2()</code>는 다음 환경에서 작동합니다.</p>
+<ul>
+<li>iOS: iOS 14.3 이상</li>
+<li>Android: 모든 버전</li>
+<li>외부 브라우저: <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API" target="_blank" rel="noopener noreferrer">WebRTC API</a>를 지원하는 웹 브라우저</li>
+</ul>
+<div class="table-wrap"><table>
+  <thead>
+    <tr>
+      <th>OS</th>
+      <th>Version</th>
+      <th>LIFF browser</th>
+      <th>External browser</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">iOS</td>
+      <td>11-14.2</td>
+      <td>❌</td>
+      <td>✅ *1</td>
+    </tr>
+    <tr>
+      <td>14.3 or later</td>
+      <td>✅ *2</td>
+      <td>✅ *1</td>
+    </tr>
+    <tr>
+      <td>Android</td>
+      <td>All versions</td>
+      <td>✅ *2</td>
+      <td>✅ *1</td>
+    </tr>
+    <tr>
+      <td>PC</td>
+      <td>All versions</td>
+      <td>❌</td>
+      <td>✅ *1</td>
+    </tr>
+  </tbody>
+</table></div>
+<p>*1 <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API" target="_blank" rel="noopener noreferrer">WebRTC API</a>를 지원하는 웹 브라우저만 사용할 수 있습니다.</p>
+<p>*2 LIFF browser의 화면 크기가 <code>Full</code>인 경우에만 사용할 수 있습니다. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/overview/#screen-size">Size of the LIFF browser</a>를 참조하십시오.</p>
+<!-- note end -->
+<!-- note start -->
+<p><strong>Turn [Scan QR] on to launch the 2D code reader</strong></p>
+<p><a href="../../docs/liff/registering-liff-apps/">LIFF 앱을 채널에 추가</a>할 때 <strong>Scan QR</strong>을 켜십시오. LIFF 앱을 채널에 추가한 후에도 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>의 LIFF 탭에서 <strong>Scan QR</strong> 설정을 변경할 수 있습니다.</p>
+<!-- note end -->
+<!-- note start -->
+<p><strong>The operation specification of liff.scanCodeV2()</strong></p>
+<p><code>liff.scanCodeV2()</code>는 내부적으로 <a href="https://github.com/cozmo/jsQR" target="_blank" rel="noopener noreferrer">jsQR</a>이라는 외부 라이브러리를 사용합니다. 따라서 <code>liff.scanCodeV2()</code> 메서드를 실행할 때 실행되는 2D 코드 리더는 <a href="https://github.com/cozmo/jsQR" target="_blank" rel="noopener noreferrer">jsQR</a>의 동작 사양에 따릅니다. 사용하는 라이브러리는 예고 없이 업데이트되거나 변경될 수 있습니다.</p>
+<!-- note end -->
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff
+  .<span class="hljs-title function_">scanCodeV2</span>()
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">result</span>) =&gt;</span> {
+    <span class="hljs-comment">// result = { value: &quot;&quot; }</span>
+  })
+  .<span class="hljs-title function_">catch</span>(<span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;error&quot;</span>, error);
+  });
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">scanCodeV2</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p><code>Promise</code> 객체를 반환합니다.</p>
+<p>2D 코드 리더가 문자열을 읽으면 <code>Promise</code>가 resolve되고 문자열을 담은 객체가 전달됩니다.</p>
+<!-- parameter start -->
+<p>value</p>
+<p>String</p>
+<p>2D 코드 리더로 스캔한 문자열</p>
+<!-- parameter end -->
+<h5>Error response</h5>
+<p><code>Promise</code>가 reject되면 <a href="./#liff-errors"><code>LiffError</code></a>가 전달됩니다.</p>
+<h3>liff.scanCode()</h3>
+<!-- note start -->
+<p><strong>liff.scanCode() method deprecated</strong></p>
+<p>기존 <code>liff.scanCode()</code> 메서드는 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">deprecated</a>되었습니다. 2D 코드 리더를 구현할 때는 <a href="./#scan-code-v2"><code>liff.scanCodeV2()</code></a> 메서드를 사용하는 것을 권장합니다.</p>
+<!-- note end -->
+<br>
+<p>2D 코드 리더를 시작하고 사용자가 읽은 문자열을 가져옵니다. 2D 코드 리더를 시작하려면 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에서 <code>ScanQR</code>을 켜십시오.</p>
+<!-- note start -->
+<p><strong>Not available on LINE for iOS</strong></p>
+<p><code>liff.scanCode()</code>는 다음 환경에서 작동합니다.</p>
+<div class="table-wrap"><table>
+  <thead>
+    <tr>
+      <th>OS</th>
+      <th>Version</th>
+      <th>LIFF browser</th>
+      <th>External browser</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>iOS</td>
+      <td>All versions</td>
+      <td>❌</td>
+      <td>❌</td>
+    </tr>
+    <tr>
+      <td>Android</td>
+      <td>All versions</td>
+      <td>✅</td>
+      <td>❌</td>
+    </tr>
+    <tr>
+      <td>PC</td>
+      <td>All versions</td>
+      <td>❌</td>
+      <td>❌</td>
+    </tr>
+  </tbody>
+</table></div>
+<p>기술적인 문제로 인해 LINE for iOS에서는 <code>liff.scanCode</code>가 <code>undefined</code>입니다. 샘플 코드와 같이 함수가 존재하는지 확인한 후 사용하십시오. LINE for iOS 또는 외부 브라우저에서 2D 코드 리더를 사용하려면 <a href="./#scan-code-v2"><code>liff.scanCodeV2()</code></a>를 참조하십시오.</p>
+<!-- note end -->
+<!-- note start -->
+<p><strong>Turn [Scan QR] on to launch the 2D code reader</strong></p>
+<ul>
+<li><a href="../../docs/liff/registering-liff-apps/">LIFF 앱을 채널에 추가</a>할 때 <strong>Scan QR</strong>을 켜십시오. LIFF 앱을 채널에 추가한 후에도 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>의 LIFF 탭에서 <strong>Scan QR</strong> 설정을 변경할 수 있습니다.</li>
+<li>외부 브라우저에서는 <code>liff.scanCode()</code>를 사용할 수 없습니다.</li>
+</ul>
+<!-- note end -->
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-keyword">if</span> (liff.<span class="hljs-property">scanCode</span>) {
+  liff.<span class="hljs-title function_">scanCode</span>().<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">result</span>) =&gt;</span> {
+    <span class="hljs-comment">// result = { value: &quot;&quot; }</span>
+  });
+}
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">scanCode</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p><code>Promise</code> 객체를 반환합니다.</p>
+<p>2D 코드 리더가 문자열을 읽으면 <code>Promise</code>가 resolve되고 읽은 문자열을 담은 객체가 전달됩니다.</p>
+<!-- parameter start -->
+<p>value</p>
+<p>String</p>
+<p>2D 코드 리더로 읽은 문자열</p>
+<!-- parameter end -->
+<h2>Permanent link</h2>
+<h3>liff.permanentLink.createUrlBy()</h3>
+<p>LIFF 앱의 임의의 페이지에 대한 permanent link를 가져옵니다.</p>
+<p>Permanent link 형식:</p>
+<pre><code>https://liff.line.me/{liffId}/{path}?{query}#{URL fragment}
+</code></pre>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-comment">// For example, if the endpoint URL of the LIFF app</span>
+<span class="hljs-comment">// is https://example.com/path1?q1=v1</span>
+<span class="hljs-comment">// and its LIFF ID is 1234567890-AbcdEfgh</span>
+liff.<span class="hljs-property">permanentLink</span>
+  .<span class="hljs-title function_">createUrlBy</span>(<span class="hljs-string">&quot;https://example.com/path1?q1=v1&quot;</span>)
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">permanentLink</span>) =&gt;</span> {
+    <span class="hljs-comment">// https://liff.line.me/1234567890-AbcdEfgh</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(permanentLink);
+  });
+
+liff.<span class="hljs-property">permanentLink</span>
+  .<span class="hljs-title function_">createUrlBy</span>(<span class="hljs-string">&quot;https://example.com/path1/path2?q1=v1&amp;q2=v2&quot;</span>)
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">permanentLink</span>) =&gt;</span> {
+    <span class="hljs-comment">// https://liff.line.me/1234567890-AbcdEfgh/path2?q=2=v2</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(permanentLink);
+  });
+
+liff.<span class="hljs-property">permanentLink</span>
+  .<span class="hljs-title function_">createUrlBy</span>(<span class="hljs-string">&quot;https://example.com/&quot;</span>)
+  .<span class="hljs-title function_">catch</span>(<span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+  <span class="hljs-comment">// Error: currentPageUrl must start with endpoint URL of LIFF App.</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(error);
+});
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-property">permanentLink</span>.<span class="hljs-title function_">createUrlBy</span>(url);
+</code></pre>
+<h4>Arguments</h4>
+<!-- parameter start (props: required) -->
+<p>url</p>
+<p>String</p>
+<p>Permanent link를 가져올 URL입니다. 임의의 쿼리 파라미터나 URL 프래그먼트를 추가할 수 있습니다.</p>
+<!-- parameter end -->
+<h4>Return value</h4>
+<p><code>Promise</code> 객체를 반환합니다.</p>
+<p><code>Promise</code>가 resolve되면 permanent link 문자열을 반환합니다.</p>
+<h5>Error responsee</h5>
+<p>Permanent link를 가져올 URL이 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에서 <strong>Endpoint URL</strong>에 지정한 URL로 시작하지 않으면 <code>Promise</code>가 reject되고 <a href="./#liff-errors"><code>LiffError</code></a>가 반환됩니다.</p>
+<p>예를 들어 permanent link를 가져올 URL(예: <code>https://example.com/</code>)이 <strong>Endpoint URL</strong>(예: <code>https://example.com/path1?q1=v1</code>)보다 상위 경로이면 <code>Promise</code>가 reject됩니다.</p>
+<h3>liff.permanentLink.createUrl()</h3>
+<!-- note start -->
+<p><strong>liff.permanentLink.createUrl() may be deprecated in the next major version update</strong></p>
+<p>기술적인 문제로 인해 <code>liff.permanentLink.createUrl()</code>은 다음 메이저 버전 업데이트에서 deprecated될 수 있습니다. 현재 페이지의 permanent link를 가져오려면 <a href="./#permanent-link-create-url-by"><code>liff.permanentLink.createUrlBy()</code></a>를 사용하는 것을 권장합니다.</p>
+<!-- note end -->
+<p>현재 페이지의 permanent link를 가져옵니다.</p>
+<p>Permanent link 형식:</p>
+<pre><code>https://liff.line.me/{liffId}/{path}?{query}#{URL fragment}
+</code></pre>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-comment">// For example, if current location is</span>
+<span class="hljs-comment">// /shopping?item_id=99#details</span>
+<span class="hljs-comment">// (LIFF ID = 1234567890-AbcdEfgh)</span>
+<span class="hljs-keyword">const</span> myLink = liff.<span class="hljs-property">permanentLink</span>.<span class="hljs-title function_">createUrl</span>();
+
+<span class="hljs-comment">// myLink equals &quot;https://liff.line.me/1234567890-AbcdEfgh/shopping?item_id=99#details&quot;</span>
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-property">permanentLink</span>.<span class="hljs-title function_">createUrl</span>();
+</code></pre>
+<h4>Arguments</h4>
+<p>없음</p>
+<h4>Return value</h4>
+<p>현재 페이지의 permanent link를 문자열로 반환합니다.</p>
+<p>현재 페이지 URL이 LINE Developers console의 <strong>Endpoint URL</strong>에 지정한 URL로 시작하지 않으면 <code>LiffError</code> 예외가 발생합니다.</p>
+<h3>liff.permanentLink.setExtraQueryParam()</h3>
+<!-- note start -->
+<p><strong>liff.permanentLink.setExtraQueryParam() may be deprecated in the next major version update</strong></p>
+<p>기술적인 문제로 인해 <code>liff.permanentLink.setExtraQueryParam()</code>은 다음 메이저 버전 업데이트에서 deprecated될 수 있습니다. 현재 페이지의 permanent link에 임의의 쿼리 파라미터를 추가하려면 <a href="./#permanent-link-create-url-by"><code>liff.permanentLink.createUrlBy()</code></a>를 사용하는 것을 권장합니다.</p>
+<!-- note end -->
+<p>현재 페이지의 permanent link에 임의의 쿼리 파라미터를 추가할 수 있습니다.</p>
+<p><code>liff.permanentLink.setExtraQueryParam()</code>을 실행할 때마다 이전에 추가한 쿼리 파라미터는 덮어쓰기됩니다.</p>
+<div class="tip">
+<p><strong>Delete added query parameters</strong></p>
+<ul>
+<li>추가한 쿼리 파라미터를 삭제하려면 <code>liff.permanentLink.setExtraQueryParam(&quot;&quot;)</code>을 실행하십시오.</li>
+<li>사용자가 다른 페이지로 이동하면 추가한 쿼리 파라미터는 삭제됩니다.</li>
+</ul>
+</div>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-comment">// For example, if current location is</span>
+<span class="hljs-comment">// /food?menu=pizza</span>
+<span class="hljs-comment">// (LIFF ID = 1234567890-AbcdEfgh)</span>
+liff.<span class="hljs-property">permanentLink</span>.<span class="hljs-title function_">setExtraQueryParam</span>(<span class="hljs-string">&quot;user_tracking_id=8888&quot;</span>);
+<span class="hljs-keyword">const</span> myLink = liff.<span class="hljs-property">permanentLink</span>.<span class="hljs-title function_">createUrl</span>();
+
+<span class="hljs-comment">// myLink equals &quot;https://liff.line.me/1234567890-AbcdEfgh/food?menu=pizza&amp;user_tracking_id=8888&quot;</span>
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-property">permanentLink</span>.<span class="hljs-title function_">setExtraQueryParam</span>(extraString);
+</code></pre>
+<h4>Arguments</h4>
+<!-- parameter start (props: required) -->
+<p>extraString</p>
+<p>String</p>
+<p>추가할 쿼리 파라미터</p>
+<!-- parameter end -->
+<h4>Return value</h4>
+<p>없음</p>
+<h2>LIFF plugin</h2>
+<h3>liff.use()</h3>
+<p><a href="../../docs/liff/pluggable-sdk/">Pluggable SDK</a> 또는 <a href="../../docs/liff/liff-plugin/">LIFF plugin</a>에서 LIFF API를 활성화하고 초기화합니다.</p>
+<p><em>Example of LIFF API in the pluggable SDK</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-keyword">import</span> liff <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@line/liff/core&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">GetOS</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@line/liff/get-os&quot;</span>;
+
+liff.<span class="hljs-title function_">use</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">GetOS</span>());
+
+liff.<span class="hljs-title function_">init</span>({
+  <span class="hljs-attr">liffId</span>: <span class="hljs-string">&quot;123456-abcedfg&quot;</span>, <span class="hljs-comment">// Use own liffId</span>
+});
+</code></pre>
+<!-- tab end -->
+<p><em>Example of LIFF plugin</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">greetPlugin</span> {
+  <span class="hljs-title function_">constructor</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span> = <span class="hljs-string">&quot;greet&quot;</span>;
+  }
+
+  <span class="hljs-title function_">install</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">return</span> {
+      <span class="hljs-attr">hello</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">hello</span>,
+    };
+  }
+
+  <span class="hljs-title function_">hello</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Hello, World!&quot;</span>);
+  }
+}
+
+liff.<span class="hljs-title function_">use</span>(<span class="hljs-keyword">new</span> <span class="hljs-title function_">greetPlugin</span>());
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">use</span>(<span class="hljs-variable language_">module</span>, option);
+</code></pre>
+<h4>Arguments</h4>
+<!-- parameter start (props: required) -->
+<p>module</p>
+<p>Object</p>
+<p>Pluggable SDK의 LIFF API 모듈 또는 LIFF plugin입니다.</p>
+<p>LIFF API 모듈을 전달하는 경우 LIFF API 모듈을 인스턴스화해야 합니다. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/pluggable-sdk/#how-to-use">How to use the pluggable SDK</a>를 참조하십시오.</p>
+<p>LIFF plugin을 전달하고 해당 LIFF plugin이 클래스인 경우 LIFF plugin을 인스턴스화해야 합니다. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/liff-plugin/#use-liff-plugin">Using a LIFF plugin</a>을 참조하십시오.</p>
+<!-- parameter end -->
+<!-- parameter start (props: optional) -->
+<p>option</p>
+<p>Any value</p>
+<p><code>module</code> 속성으로 지정한 LIFF plugin에 전달할 값입니다. 이 값은 LIFF plugin의 <a href="../../docs/liff/liff-plugin/#install"><code>install()</code></a> 메서드의 두 번째 인자로 전달됩니다. 자세한 내용은 LIFF 문서의 <a href="../../docs/liff/liff-plugin/#option">option</a>을 참조하십시오.</p>
+<!-- parameter end -->
+<h4>Return value</h4>
+<p><code>liff</code> 객체를 반환합니다.</p>
+<h2>Internationalization</h2>
+<h3>liff.i18n.setLang()</h3>
+<p>LIFF SDK가 표시하는 텍스트의 언어를 지정합니다.</p>
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript">liff.<span class="hljs-property">i18n</span>.<span class="hljs-title function_">setLang</span>(<span class="hljs-string">&quot;en&quot;</span>);
+</code></pre>
+<!-- tab end -->
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-property">i18n</span>.<span class="hljs-title function_">setLang</span>(language);
+</code></pre>
+<h4>Arguments</h4>
+<!-- parameter start (props: required) -->
+<p>language</p>
+<p>String</p>
+<p><a href="https://datatracker.ietf.org/doc/html/rfc5646" target="_blank" rel="noopener noreferrer">RFC 5646 (BCP 47)</a>에 정의된 언어 태그입니다. 지정한 언어 태그에 대한 번역이 없으면 <code>en</code>이 대체로 사용됩니다.</p>
+<!-- parameter end -->
+<h4>Return value</h4>
+<p><code>Promise</code> 객체를 반환합니다.</p>
+<h5>Error response</h5>
+<p><code>Promise</code>가 reject되면 <a href="./#liff-errors"><code>LiffError</code></a>가 전달됩니다.</p>
+<h2>Others</h2>
+<h3>liff.createShortcutOnHomeScreen()</h3>
+<div class="tip">
+<p><strong>This feature can only be used for verified MINI Apps</strong></p>
+<p>이 기능은 검증된 MINI App에서만 사용할 수 있습니다. 검증되지 않은 MINI App은 Developing 내부 채널에서 기능을 테스트할 수 있지만, Published 내부 채널에서는 사용할 수 없습니다.</p>
+</div>
+<p>사용자 기기의 홈 화면에 <a href="https://developers.line.biz/en/docs/line-mini-app/" target="_blank" rel="noopener noreferrer">LINE MINI App</a>의 바로가기를 추가하는 화면을 표시합니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/line-mini-app/develop/add-to-home-screen/add-shortcut-screen-ios-en.webp" alt="" loading="lazy"><figcaption></figcaption></figure></p>
+<p>자세한 내용은 LINE MINI App 문서의 <a href="../../docs/line-mini-app/develop/add-to-home-screen/">Add a shortcut to your LINE MINI App to the home screen of the user’s device</a>를 참조하십시오.</p>
+<!-- note start -->
+<p><strong>When to execute the liff.createShortcutOnHomeScreen() method</strong></p>
+<p>사용자 경험을 해치지 않도록 <code>liff.createShortcutOnHomeScreen()</code> 메서드는 LINE MINI App에서 사용자의 동작(예: 탭)에 응답하여 실행하십시오.</p>
+<!-- note end -->
+<p><em>Example</em></p>
+<!-- tab start `javascript` -->
+<pre><code class="language-javascript"><span class="hljs-comment">// If the endpoint URL of the LINE MINI App</span>
+<span class="hljs-comment">// is https://example.com/path1/path2</span>
+<span class="hljs-comment">// and its LIFF ID is 1234567890-AbcdEfgh</span>
+
+<span class="hljs-comment">// Example of specifying the LIFF URL</span>
+liff
+  .<span class="hljs-title function_">createShortcutOnHomeScreen</span>({
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;https://miniapp.line.me/1234567890-AbcdEfgh&quot;</span>,
+  })
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> { <span class="hljs-comment">/* ... */</span> });
+
+liff
+  .<span class="hljs-title function_">createShortcutOnHomeScreen</span>({
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;https://liff.line.me/1234567890-AbcdEfgh&quot;</span>,
+  })
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> { <span class="hljs-comment">/* ... */</span> });
+
+<span class="hljs-comment">// Example of specifying a permanent link</span>
+liff
+  .<span class="hljs-title function_">createShortcutOnHomeScreen</span>({
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;https://liff.line.me/1234567890-AbcdEfgh/path3&quot;</span>,
+  })
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> { <span class="hljs-comment">/* ... */</span> });
+
+<span class="hljs-comment">// Example of specifying the endpoint URL of the LINE MINI App</span>
+liff
+  .<span class="hljs-title function_">createShortcutOnHomeScreen</span>({
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;https://example.com/path1/path2&quot;</span>,
+  })
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> { <span class="hljs-comment">/* ... */</span> });
+
+<span class="hljs-comment">// Example of specifying a URL that begins with the endpoint URL of the LINE MINI App</span>
+liff
+  .<span class="hljs-title function_">createShortcutOnHomeScreen</span>({
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;https://example.com/path1/path2/path3&quot;</span>,
+  })
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> { <span class="hljs-comment">/* ... */</span> });
+
+<span class="hljs-comment">// Example of specifying a URL that results in an error</span>
+liff
+  .<span class="hljs-title function_">createShortcutOnHomeScreen</span>({
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;https://example.com/invalid-path&quot;</span>,
+  })
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> { <span class="hljs-comment">/* ... */</span> })
+  .<span class="hljs-title function_">catch</span>(<span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+    <span class="hljs-comment">// invalid URL.</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(error.<span class="hljs-property">message</span>);
+  });
+</code></pre>
+<!-- tab end -->
+<h4>Conditions of use</h4>
+<p><code>liff.createShortcutOnHomeScreen()</code> 메서드를 사용하려면 다음 조건을 모두 충족해야 합니다.</p>
+<ul>
+<li>LINE MINI App이어야 합니다.</li>
+<li>LINE MINI App의 LIFF SDK 버전이 v2.23.0 이상이어야 합니다.</li>
+<li>사용자 기기의 LINE 앱 버전이 13.20.0 이상이어야 합니다.</li>
+</ul>
+<h4>Operating conditions</h4>
+<p>사용자 기기의 OS가 iOS인 경우 <code>liff.createShortcutOnHomeScreen()</code> 메서드가 작동하는 조건은 다음과 같습니다. 작동하지 않는 환경에서 이 메서드를 실행하면 오류 페이지가 표시됩니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>기본 브라우저</th>
+<th>iOS 버전</th>
+<th>작동 여부</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Safari</td>
+<td>All versions</td>
+<td>작동함</td>
+</tr>
+<tr>
+<td>Chrome</td>
+<td>16.4 이상</td>
+<td>작동함</td>
+</tr>
+<tr>
+<td>Safari와 Chrome 이외의 브라우저</td>
+<td>16.4 이상</td>
+<td>작동을 보장할 수 없음</td>
+</tr>
+<tr>
+<td>Safari 이외의 브라우저</td>
+<td>16.4 미만</td>
+<td>작동하지 않음</td>
+</tr>
+</tbody>
+</table></div>
+<p>예를 들어 iOS 16.4 미만에서 Chrome으로 <code>liff.createShortcutOnHomeScreen()</code> 메서드를 실행하면 다음 오류 페이지가 표시됩니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/line-mini-app/develop/add-to-home-screen/add-shortcut-screen-ios-error-en.png" alt="" loading="lazy"><figcaption></figcaption></figure></p>
+<h4>Syntax</h4>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">createShortcutOnHomeScreen</span>(params);
+</code></pre>
+<h4>Arguments</h4>
+<!-- parameter start (props: required) -->
+<p>params</p>
+<p>Object</p>
+<p>파라미터 객체</p>
+<!-- parameter end -->
+<!-- parameter start (props: required) -->
+<p>params.url</p>
+<p>String</p>
+<p>URL입니다. 다음 URL을 지정할 수 있습니다.</p>
+<ul>
+<li><a href="https://developers.line.biz/en/glossary/#liff-url" target="_blank" rel="noopener noreferrer">LIFF URL</a></li>
+<li><a href="https://developers.line.biz/en/glossary/#permanent-link-liff" target="_blank" rel="noopener noreferrer">Permanent link</a></li>
+<li>LINE MINI App의 Endpoint URL</li>
+<li>LINE MINI App의 Endpoint URL로 시작하는 URL</li>
+</ul>
+<!-- parameter end -->
+<h4>Return value</h4>
+<p><code>Promise</code> 객체를 반환합니다.</p>
+<p>바로가기 추가 화면이 표시되면 <code>Promise</code>가 resolve됩니다. 값은 전달되지 않습니다.</p>
+<p>사용자가 실제로 LINE MINI App의 바로가기를 기기의 홈 화면에 추가했는지는 확인할 수 없습니다.</p>
+<h5>Error response</h5>
+<p><code>Promise</code>가 reject되면 <a href="./#liff-errors"><code>LiffError</code></a>가 전달됩니다.</p>
+</article></main>
+</div>
+<script>
+(function(){
+  var a=document.querySelector('.sidebar a.active');
+  if(a)a.scrollIntoView({block:'center'});
+  var input=document.getElementById('nav-search');
+  if(!input)return;
+  var items=[].slice.call(document.querySelectorAll('.sidebar li'));
+  input.addEventListener('input',function(){
+    var q=input.value.trim().toLowerCase();
+    items.forEach(function(li){
+      if(!q){li.classList.remove('hidden');return;}
+      var own=(li.querySelector(':scope > a, :scope > details > summary')||li).textContent.toLowerCase();
+      var hit=own.indexOf(q)!==-1||li.textContent.toLowerCase().indexOf(q)!==-1;
+      li.classList.toggle('hidden',!hit);
+      if(hit){var d=li.querySelector(':scope > details');if(d)d.open=true;}
+    });
+  });
+})();
+</script>
+</body>
+</html>

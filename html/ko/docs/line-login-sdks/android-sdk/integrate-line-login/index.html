@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Android 앱에 LINE Login 통합하기 | LINE Developers</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#fff;--fg:#1a1a1a;--fg2:#595959;--border:#e5e5e5;--bg2:#f5f5f7;--accent:#0066ff;--code-bg:#f3f4f6;--hover:rgba(0,102,255,.07);--header-h:57px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Neo','Noto Sans KR',Roboto,sans-serif;line-height:1.6;margin:0}
+header{position:sticky;top:0;z-index:20;height:var(--header-h);background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;padding:0 1.25rem}
+.logo{font-weight:700;font-size:1.2rem;color:var(--fg);text-decoration:none;white-space:nowrap}
+.search{flex:1;max-width:320px;margin-left:auto}
+.search input{width:100%;padding:.45rem .75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--fg);font-size:.875rem}
+.search input:focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--bg)}
+.nav-btn{display:none;cursor:pointer;font-size:1.3rem;line-height:1;padding:.25rem .4rem;border:1px solid var(--border);border-radius:6px}
+#nav-toggle{position:absolute;opacity:0;pointer-events:none}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr)}
+.sidebar{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto;border-right:1px solid var(--border);background:var(--bg2);padding:.75rem 0 2rem;font-size:.875rem}
+.sidebar ul{list-style:none;margin:0;padding:0}
+.sidebar ul ul{padding-left:.9rem;border-left:1px solid var(--border);margin-left:1.1rem}
+.nav-title{padding:.9rem 1.25rem .35rem;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg2)}
+.sidebar a,.sidebar summary>span{display:inline-block;padding:.28rem .5rem;color:var(--fg2);text-decoration:none;border-radius:4px}
+.sidebar li>a{display:block;margin:0 .5rem 0 1rem}
+.sidebar a:hover{color:var(--accent);background:var(--hover)}
+.sidebar a.active{color:var(--accent);background:var(--hover);font-weight:600}
+.sidebar summary{cursor:pointer;padding:.1rem .75rem .1rem 1rem;list-style-position:inside}
+.sidebar summary>span{font-weight:600;color:var(--fg)}
+.sidebar summary a{padding-left:.2rem}
+.sidebar li.hidden{display:none}
+.content{min-width:0;padding:2rem 2.5rem 4rem}
+article{max-width:880px;margin:0 auto}
+h1,h2,h3,h4{line-height:1.3;color:var(--fg);text-wrap:balance}
+h1{font-size:2.1rem;margin:0 0 1rem}
+h2{font-size:1.5rem;margin:2.2rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.2rem;margin:1.6rem 0 .6rem}
+p,li{color:var(--fg2);line-height:1.75}
+a{color:var(--accent)}
+code{background:var(--code-bg);padding:.15em .4em;border-radius:3px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;line-height:1.5}
+pre code{background:none;padding:0;color:var(--fg)}
+blockquote{border-left:4px solid var(--accent);padding:.6rem 1.2rem;margin:1.2rem 0;background:var(--bg2);border-radius:4px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:1.2rem 0}
+th,td{padding:.6rem .8rem;border:1px solid var(--border);text-align:left;vertical-align:top}
+th{background:var(--bg2);color:var(--fg)}
+.doc-figure{margin:1.5rem 0;text-align:center}
+.doc-figure img{max-width:100%;height:auto;border:1px solid var(--border);border-radius:8px}
+.doc-figure figcaption{margin-top:.4rem;font-size:.85rem;color:var(--fg2)}
+.tip{background:var(--bg2);border-left:4px solid var(--accent);padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:4px}
+.feature-box{background:var(--bg2);border-left:4px solid var(--accent);border-radius:6px;padding:1rem 1.4rem;margin:1.2rem 0}
+.feature-box h4{margin:0 0 .4rem;color:var(--accent)}
+.feature-box p{margin:0}
+@media (max-width:860px){
+  .nav-btn{display:block}
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .sidebar{display:none;position:fixed;inset:var(--header-h) 0 0 0;height:auto;z-index:15;width:100%}
+  #nav-toggle:checked~.layout .sidebar{display:block}
+  .content{padding:1.25rem 1rem 3rem}
+  h1{font-size:1.6rem}
+  .search{max-width:none}
+}
+</style>
+</head>
+<body>
+<input type="checkbox" id="nav-toggle">
+<header>
+  <label for="nav-toggle" class="nav-btn" aria-label="메뉴">☰</label>
+  <a href="../../../../" class="logo">LINE Developers</a>
+  <div class="search"><input id="nav-search" type="search" placeholder="문서 검색..." aria-label="문서 검색"></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" aria-label="문서 목차"><div class="nav-section"><div class="nav-title">문서</div><ul><li><details><summary><span>기본</span></summary><ul><li><a href="../../../basics/channel-access-token/">채널 액세스 토큰</a></li><li><a href="../../../basics/line-api-status/">LINE Platform 가용성 확인 (LINE API Status)</a></li><li><a href="../../../basics/user-profile/">사용자 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LIFF</span></summary><ul><li><a href="../../../liff/overview/">LIFF 개요</a></li><li><a href="../../../liff/getting-started/">채널 생성하기</a></li><li><a href="../../../liff/cli-tool-create-liff-app/">Create LIFF App로 LIFF 앱 개발 환경 구축하기</a></li><li><a href="../../../liff/developing-liff-apps/">LIFF 앱 개발하기</a></li><li><a href="../../../liff/development-guidelines/">LIFF 앱 개발 가이드라인</a></li><li><a href="../../../liff/differences-between-liff-browser-and-external-browser/">LIFF 브라우저와 외부 브라우저의 차이</a></li><li><a href="../../../liff/differences-between-liff-browser-and-line-in-app-browser/">LIFF 브라우저와 LINE 인앱 브라우저의 차이</a></li><li><a href="../../../liff/liff-cli/">LIFF CLI</a></li><li><a href="../../../liff/liff-plugin/">LIFF 플러그인</a></li><li><a href="../../../liff/minimizing-liff-browser/">LIFF 브라우저 최소화</a></li><li><a href="../../../liff/opening-liff-app/">LIFF 앱 열기</a></li><li><a href="../../../liff/pluggable-sdk/">플러거블 SDK</a></li><li><a href="../../../liff/registering-liff-apps/">채널에 LIFF 앱 추가하기</a></li><li><a href="../../../liff/release-notes/">릴리스 노트</a></li><li><a href="../../../liff/trying-liff-app/">LIFF 스타터 앱 체험하기</a></li><li><a href="../../../liff/using-user-profile/">LIFF 앱 및 서버에서 사용자 데이터 사용하기</a></li><li><a href="../../../liff/versioning-policy/">버전 정책</a></li></ul></details></li><li><details><summary><span>LINE Ads API</span></summary><ul><li><a href="../../../line-ads-api/about/">LINE Ads API 소개</a></li><li><a href="../../../line-ads-api/development-guidelines/">LINE Ads API 개발 가이드라인</a></li></ul></details></li><li><a href="../../../line-conversion-api/">LINE Conversion API</a></li><li><details><summary><span>LINE Developers 콘솔</span></summary><ul><li><a href="../../../line-developers-console/overview/">LINE Developers Console 개요</a></li><li><a href="../../../line-developers-console/best-practices-for-provider-and-channel-management/">프로바이더 및 채널 관리 모범 사례</a></li><li><a href="../../../line-developers-console/delete-developer-account/">개발자 계정 삭제하기</a></li><li><a href="../../../line-developers-console/login-account/">LINE Developers Console에 로그인하기</a></li><li><a href="../../../line-developers-console/managing-roles/">역할 관리하기</a></li><li><a href="../../../line-developers-console/notification/">이메일 또는 알림 센터로 알림 받기</a></li></ul></details></li><li><details><summary><span>LINE 로그인</span></summary><ul><li><a href="../../../line-login/overview/">LINE Login 개요</a></li><li><a href="../../../line-login/getting-started/">LINE Login 시작하기</a></li><li><a href="../../../line-login/development-guidelines/">LINE Login 개발 가이드라인</a></li><li><a href="../../../line-login/how-to-handle-auto-login-failure/">자동 로그인 실패 처리 방법</a></li><li><a href="../../../line-login/integrate-line-login/">웹 앱에 LINE Login 연동하기</a></li><li><a href="../../../line-login/integrate-line-login-v2/">웹 앱에 LINE Login(v2.0) 연동하기</a></li><li><a href="../../../line-login/integrate-pkce/">LINE Login의 PKCE 지원</a></li><li><a href="../../../line-login/link-a-bot/">로그인 시 LINE 공식 계정을 친구로 추가하기(친구 추가 옵션)</a></li><li><a href="../../../line-login/login-button/">LINE Login 버튼 디자인 가이드라인</a></li><li><a href="../../../line-login/managing-access-tokens/">액세스 토큰 관리</a></li><li><a href="../../../line-login/managing-access-tokens-v2/">액세스 토큰 관리(LINE Login v2.0)</a></li><li><a href="../../../line-login/managing-authorized-apps/">승인된 앱 관리하기</a></li><li><a href="../../../line-login/managing-users/">사용자 관리</a></li><li><a href="../../../line-login/managing-users-v2/">사용자 관리(LINE Login v2.0)</a></li><li><a href="../../../line-login/secure-login-process/">앱과 서버 간의 안전한 로그인 프로세스 만들기</a></li><li><a href="../../../line-login/security-checklist/">LINE Login 보안 체크리스트</a></li><li><a href="../../../line-login/using-line-url-scheme/">LINE URL scheme을 사용하여 LINE 기능 이용하기</a></li><li><a href="../../../line-login/verify-id-token/">ID 토큰에서 프로필 정보 가져오기</a></li></ul></details></li><li><details open><summary><span>LINE 로그인 SDK</span></summary><ul><li><details open><summary><span>Android SDK</span></summary><ul><li><a href="../overview/">LINE SDK for Android 개요</a></li><li><a href="../handling-errors/">오류 처리</a></li><li><a href="./" class="active" aria-current="page">Android 앱에 LINE Login 통합하기</a></li><li><a href="../link-a-bot/">SDK로 친구 추가 옵션 활성화하기</a></li><li><a href="../managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../managing-users/">사용자 관리하기</a></li><li><a href="../release-notes/">LINE SDK for Android 릴리스 노트</a></li><li><a href="../try-line-login/">샘플 앱 체험하기</a></li></ul></details></li><li><a href="../../flutter-sdk/">Flutter SDK</a></li><li><details><summary><span>iOS SDK</span></summary><ul><li><a href="../../ios-sdk/release-notes/">LINE SDK for iOS 릴리스 노트</a></li><li><details><summary><span>Swift</span></summary><ul><li><a href="../../ios-sdk/swift/overview/">LINE SDK for iOS Swift 개요</a></li><li><a href="../../ios-sdk/swift/error-handling/">오류 처리하기</a></li><li><a href="../../ios-sdk/swift/integrate-line-login/">iOS 앱에 LINE Login 통합하기</a></li><li><a href="../../ios-sdk/swift/link-a-bot/">SDK로 추가 친구 옵션 활성화하기</a></li><li><a href="../../ios-sdk/swift/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../ios-sdk/swift/managing-users/">사용자 관리하기</a></li><li><a href="../../ios-sdk/swift/migration-guide/">SDK 업그레이드하기</a></li><li><a href="../../ios-sdk/swift/setting-up-project/">프로젝트 설정하기</a></li><li><a href="../../ios-sdk/swift/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../ios-sdk/swift/universal-links-support/">유니버설 링크 사용하기</a></li><li><a href="../../ios-sdk/swift/using-objc/">Objective-C 코드에서 SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>Unity SDK</span></summary><ul><li><a href="../../unity-sdk/overview/">LINE SDK for Unity 개요</a></li><li><a href="../../unity-sdk/integrate-line-login/">Unity 게임에 LINE Login 통합하기</a></li><li><a href="../../unity-sdk/project-setup/">프로젝트 설정하기</a></li><li><a href="../../unity-sdk/release-notes/">LINE SDK for Unity 릴리스 노트</a></li><li><a href="../../unity-sdk/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../unity-sdk/using-sdk/">결과 처리와 기타 API에 LINE SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>LINE 미니앱</span></summary><ul><li><a href="../../../line-mini-app/quickstart/">LINE MINI App 시작하기</a></li><li><details><summary><span>Design</span></summary><ul><li><a href="../../../line-mini-app/design/landscape/">LINE MINI App의 안전 영역</a></li><li><a href="../../../line-mini-app/design/line-mini-app-icon/">LINE MINI App 아이콘 사양 및 가이드라인</a></li><li><a href="../../../line-mini-app/design/loading-icon/">로딩 아이콘</a></li></ul></details></li><li><details><summary><span>Develop</span></summary><ul><li><a href="../../../line-mini-app/develop/add-to-home-screen/">LINE MINI App의 바로가기를 사용자 기기의 홈 화면에 추가하기</a></li><li><a href="../../../line-mini-app/develop/channel-consent-simplification/">LINE MINI App 인증 흐름</a></li><li><a href="../../../line-mini-app/develop/configure-console/">LINE MINI App 사용자에게 표시되는 설정</a></li><li><a href="../../../line-mini-app/develop/custom-path/">커스텀 경로 설정하기</a></li><li><a href="../../../line-mini-app/develop/develop-overview/">시작하기</a></li><li><a href="../../../line-mini-app/develop/external-browser/">외부 브라우저에서 LINE MINI App 열기</a></li><li><a href="../../../line-mini-app/develop/payment/">결제 처리하기</a></li><li><a href="../../../line-mini-app/develop/performance-guidelines/">성능 가이드라인</a></li><li><a href="../../../line-mini-app/develop/permanent-links/">영구 링크 만들기</a></li><li><a href="../../../line-mini-app/develop/service-messages/">서비스 메시지 보내기</a></li><li><a href="../../../line-mini-app/develop/share-messages/">커스텀 액션 버튼 구현하기</a></li><li><a href="../../../line-mini-app/develop/share-messages-standard/">가이드라인을 따르는 JSON 파일 예시</a></li><li><a href="../../../line-mini-app/develop/web-to-mini-app/">운영 중인 웹 앱을 LINE MINI App으로 구현하기</a></li></ul></details></li><li><a href="../../../line-mini-app/development-guidelines/">LINE MINI App 개발 가이드라인</a></li><li><details><summary><span>Discover</span></summary><ul><li><a href="../../../line-mini-app/discover/introduction/">LINE MINI App 소개</a></li><li><a href="../../../line-mini-app/discover/builtin-features/">기본 제공 기능</a></li><li><a href="../../../line-mini-app/discover/console-guide/">LINE MINI App용 LINE Developers Console 가이드</a></li><li><a href="../../../line-mini-app/discover/custom-features/">커스텀 기능</a></li><li><a href="../../../line-mini-app/discover/native-mini/">네이티브 앱과 LINE MINI App의 차이</a></li><li><a href="../../../line-mini-app/discover/specifications/">LINE MINI App 사양</a></li><li><a href="../../../line-mini-app/discover/ui-components/">LINE MINI App UI 컴포넌트</a></li></ul></details></li><li><details><summary><span>In App Purchase</span></summary><ul><li><a href="../../../line-mini-app/in-app-purchase/overview/">인앱 결제 개요</a></li><li><a href="../../../line-mini-app/in-app-purchase/apple-mini-apps-partner-program/">Mini Apps Partner Program을 통한 App Store 수수료 인하</a></li><li><a href="../../../line-mini-app/in-app-purchase/iap-guidelines/">인앱 결제 개발 가이드라인</a></li><li><a href="../../../line-mini-app/in-app-purchase/iap-product-id/">인앱 결제로 구매 가능한 아이템의 상품 ID 목록</a></li><li><a href="../../../line-mini-app/in-app-purchase/iap-settings/">인앱 결제 설정</a></li><li><a href="../../../line-mini-app/in-app-purchase/implement-in-app-purchase/">인앱 결제 기능 연동</a></li><li><a href="../../../line-mini-app/in-app-purchase/request-iap-review/">인앱 결제 사용 신청</a></li></ul></details></li><li><details><summary><span>Quick Fill</span></summary><ul><li><a href="../../../line-mini-app/quick-fill/overview/">공통 프로필 Quick-fill 개요</a></li><li><a href="../../../line-mini-app/quick-fill/design-regulations/">공통 프로필 Quick-fill 디자인 규정</a></li></ul></details></li><li><details><summary><span>Service</span></summary><ul><li><a href="../../../line-mini-app/service/add-friend-option/">LINE MINI App에서 LINE 공식 계정을 친구로 추가하기 (친구 추가 옵션)</a></li><li><a href="../../../line-mini-app/service/business-manager-link/">LINE MINI App 채널을 Business Manager 조직에 연결하기</a></li><li><a href="../../../line-mini-app/service/line-mini-app-ads/">LINE MINI App에 광고 게재하기</a></li><li><a href="../../../line-mini-app/service/line-mini-app-oa/">LINE 공식 계정 활용하기</a></li><li><a href="../../../line-mini-app/service/service-operation/">서비스 운영하기</a></li><li><a href="../../../line-mini-app/service/update-service/">인증된 MINI App 업데이트 후 재심사</a></li></ul></details></li><li><details><summary><span>Submit</span></summary><ul><li><a href="../../../line-mini-app/submit/submission-guide/">LINE MINI App 제출하기</a></li></ul></details></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../../../line-mini-app/technicalcase/bravetechnology/">&#039;대기 줄 관리 솔루션이 LINE MINI App으로 확장되는 방식: &quot;matoca&quot;와 &quot;yoboca&quot;의 개발 사례&#039;</a></li><li><a href="../../../line-mini-app/technicalcase/classmethod/">모바일 주문 시스템 CX ORDER 사례 연구</a></li><li><a href="../../../line-mini-app/technicalcase/grandream/">GDL 플랫폼의 기술 사례 연구: 비용 효율성과 유연성을 함께 실현</a></li><li><a href="../../../line-mini-app/technicalcase/hakuhodo/">도야마현 아사히마치의 모빌리티 및 건강 증진을 위한 디지털 활성화 프로젝트 &quot;PoHUNT&quot; 개발 사례</a></li><li><a href="../../../line-mini-app/technicalcase/kirifuda-morikaranotegami/">놀이를 통한 자연 보호: LINE MINI App으로 출시한 &quot;Letters from the Forest&quot;의 기술 사례 연구</a></li></ul></details></li></ul></details></li><li><details><summary><span>Messaging API</span></summary><ul><li><a href="../../../messaging-api/overview/">Messaging API 개요</a></li><li><a href="../../../messaging-api/getting-started/">Messaging API 시작하기</a></li><li><a href="../../../messaging-api/actions/">액션</a></li><li><a href="../../../messaging-api/beacon-device-spec/">LINE Beacon 디바이스 사양</a></li><li><a href="../../../messaging-api/building-bot/">봇 만들기</a></li><li><a href="../../../messaging-api/check-webhook-error-statistics/">웹훅 오류 원인 및 통계 확인하기</a></li><li><a href="../../../messaging-api/create-flex-message-including-video/">동영상이 포함된 Flex Message 만들기</a></li><li><a href="../../../messaging-api/development-guidelines/">Messaging API 개발 가이드라인</a></li><li><a href="../../../messaging-api/download-bot-designer/">LINE Bot Designer 다운로드</a></li><li><a href="../../../messaging-api/flex-message-elements/">Flex Message 요소</a></li><li><a href="../../../messaging-api/flex-message-layout/">Flex Message 레이아웃</a></li><li><a href="../../../messaging-api/generate-json-web-token/">채널 액세스 토큰 v2.1 발급</a></li><li><a href="../../../messaging-api/get-quote-tokens/">인용 토큰 가져오기</a></li><li><a href="../../../messaging-api/getting-user-ids/">사용자 ID 가져오기</a></li><li><a href="../../../messaging-api/group-chats/">그룹 채팅 및 다인 채팅</a></li><li><a href="../../../messaging-api/icon-nickname-switch/">아이콘 및 표시 이름 설정하기</a></li><li><a href="../../../messaging-api/line-bot-sdk/">LINE Messaging API SDK</a></li><li><a href="../../../messaging-api/linking-accounts/">사용자 계정 연동</a></li><li><a href="../../../messaging-api/mark-as-read/">메시지를 읽음으로 표시하기</a></li><li><a href="../../../messaging-api/measure-impressions/">노출 수 측정하기</a></li><li><a href="../../../messaging-api/message-types/">메시지 타입</a></li><li><a href="../../../messaging-api/nodejs-sample/">튜토리얼 - 응답 봇 만들기</a></li><li><a href="../../../messaging-api/pricing/">Messaging API 요금</a></li><li><a href="../../../messaging-api/receiving-messages/">메시지 수신하기(웹훅)</a></li><li><a href="../../../messaging-api/retrying-api-request/">API 요청 재시도</a></li><li><a href="../../../messaging-api/rich-menus-overview/">리치 메뉴 개요</a></li><li><a href="../../../messaging-api/secure-message-sample/">보안 메시지 생성을 위한 샘플 코드와 데이터</a></li><li><a href="../../../messaging-api/send-coupons-to-users/">쿠폰을 만들어 사용자에게 보내기</a></li><li><a href="../../../messaging-api/sending-messages/">메시지 보내기</a></li><li><a href="../../../messaging-api/sharing-bot/">LINE 공식 계정 친구 늘리기</a></li><li><a href="../../../messaging-api/ssl-tls-spec-of-the-webhook-source/">웹훅 소스의 SSL/TLS 사양</a></li><li><a href="../../../messaging-api/stop-using-line-official-account/">LINE 공식 계정 사용 중단하기</a></li><li><a href="../../../messaging-api/stop-using-messaging-api/">Messaging API 사용 중단하기</a></li><li><a href="../../../messaging-api/switch-rich-menus/">리치 메뉴에서 탭 전환하기</a></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../../../messaging-api/technicalcase/boldly/">온디맨드 자율주행 버스 예약 시스템의 LINE MINI App 사례</a></li><li><a href="../../../messaging-api/technicalcase/evolany-ai/">anybot for ChatGPT 기술 사례 연구: ChatGPT를 적극 활용하여 더 원활한 커뮤니케이션 구현하기</a></li><li><a href="../../../messaging-api/technicalcase/heptagon/">이주 및 정착 관련 문의를 처리하는 LINE 봇 개발 사례 연구</a></li><li><a href="../../../messaging-api/technicalcase/playnext-lab/">Smart Public Lab 기술 사례 연구: 행정 디지털 전환을 지원하는 LINE 활용 전략</a></li><li><a href="../../../messaging-api/technicalcase/resortbaito-dive/">임시직 직원의 만족도를 높이기 위한 &quot;Resort Baito Dive&quot; 개발 사례</a></li><li><a href="../../../messaging-api/technicalcase/skillbox/">SkillBox 기술 사례 연구: 이메일 주소가 없는 직원까지 LINE 알림으로 참여도 설문 응답률을 크게 높이다</a></li><li><a href="../../../messaging-api/technicalcase/softbank/">인프라를 로우 코드로 도입하기: CNAP으로 개발 효율을 높인 LINE 기반 서비스 개발 사례</a></li></ul></details></li><li><a href="../../../messaging-api/text-character-count/">텍스트의 글자 수 세기</a></li><li><a href="../../../messaging-api/try-rich-menu/">리치 메뉴 체험하기</a></li><li><a href="../../../messaging-api/unit-based-statistics-aggregation/">발송한 메시지의 통계 조회하기</a></li><li><a href="../../../messaging-api/use-loading-indicator/">로딩 애니메이션 표시하기</a></li><li><a href="../../../messaging-api/use-membership-features/">멤버십 기능 사용하기</a></li><li><a href="../../../messaging-api/use-per-user-rich-menus/">사용자별 리치 메뉴 사용하기</a></li><li><a href="../../../messaging-api/user-consent/">사용자 프로필 정보 제공 동의</a></li><li><a href="../../../messaging-api/using-audience/">오디언스 사용하기</a></li><li><a href="../../../messaging-api/using-beacons/">LINE 비콘 사용하기</a></li><li><a href="../../../messaging-api/using-bot-designer/">LINE Bot Designer</a></li><li><a href="../../../messaging-api/using-flex-message-simulator/">튜토리얼 - Flex Message Simulator로 디지털 명함 만들기</a></li><li><a href="../../../messaging-api/using-flex-messages/">Flex Message 보내기</a></li><li><a href="../../../messaging-api/using-line-url-scheme/">LINE URL 스킴으로 LINE 기능 사용하기</a></li><li><a href="../../../messaging-api/using-quick-reply/">퀵 리플라이 사용하기</a></li><li><a href="../../../messaging-api/using-rich-menus/">리치 메뉴 사용하기</a></li><li><a href="../../../messaging-api/verify-webhook-signature/">웹훅 서명 검증하기</a></li><li><a href="../../../messaging-api/verify-webhook-url/">웹훅 URL 확인하기</a></li></ul></details></li><li><details><summary><span>파트너 문서</span></summary><ul><li><a href="../../../partner-docs/overview/">개요</a></li><li><a href="../../../partner-docs/api-policy-handbook/">LINE API 정책 핸드북</a></li><li><a href="../../../partner-docs/development-guidelines/">법인 고객을 위한 개발 가이드라인</a></li><li><a href="../../../partner-docs/error-notification/">오류 알림</a></li><li><a href="../../../partner-docs/line-beacon/">LINE Beacon</a></li><li><details><summary><span>Line Notification Messages</span></summary><ul><li><a href="../../../partner-docs/line-notification-messages/overview/">LINE 알림 메시지 개요</a></li><li><a href="../../../partner-docs/line-notification-messages/flow-when-receiving-message/">LINE 알림 메시지를 수신할 때의 흐름</a></li><li><a href="../../../partner-docs/line-notification-messages/message-sending-complete-webhook-event/">웹훅 발송 완료 이벤트</a></li><li><a href="../../../partner-docs/line-notification-messages/statistics/">LINE 알림 메시지 통계 가져오기</a></li><li><a href="../../../partner-docs/line-notification-messages/technical-specs/">LINE 알림 메시지 API 기술 사양</a></li><li><a href="../../../partner-docs/line-notification-messages/template/">LINE 알림 메시지(템플릿)</a></li></ul></details></li><li><a href="../../../partner-docs/line-profile-plus/">LINE Profile+</a></li><li><a href="../../../partner-docs/mark-as-read/">Mark as read API(이전 버전)</a></li><li><a href="../../../partner-docs/mission-stickers/">Mission Sticker API</a></li><li><a href="../../../partner-docs/module/">모듈</a></li><li><a href="../../../partner-docs/module-technical-attach-channel/">모듈 채널 연결</a></li><li><a href="../../../partner-docs/module-technical-chat-control/">채팅 주도권 제어(Chat Control)</a></li><li><a href="../../../partner-docs/module-technical-console/">모듈 채널 설정 구성</a></li><li><a href="../../../partner-docs/module-technical-using-messaging-api/">모듈 채널에서 Messaging API 사용하기</a></li><li><a href="../../../partner-docs/notice/">법인 고객 공지</a></li><li><a href="../../../partner-docs/provider-page/">Provider page</a></li></ul></details></li></ul></div><div class="nav-section"><div class="nav-title">레퍼런스</div><ul><li><a href="../../../../reference/liff/">LIFF API reference</a></li><li><a href="../../../../reference/liff-server/">Server API</a></li><li><a href="../../../../reference/line-login/">LINE Login v2.1 API reference</a></li><li><a href="../../../../reference/line-login-v2/">LINE Login API v2.0 reference</a></li><li><a href="../../../../reference/line-mini-app/">LINE MINI App API reference</a></li><li><a href="../../../../reference/line-notification-messages/">LINE notification messages API reference</a></li><li><a href="../../../../reference/messaging-api/">Messaging API reference</a></li><li><a href="../../../../reference/partner-docs/">Options for corporate customers API reference</a></li></ul></div></nav>
+  <main class="content"><article><h1>Android 앱에 LINE Login 통합하기</h1><p>이 문서에서는 기존 Android 앱에 LINE SDK for Android를 통합하여 <a href="../../../line-login/overview/">LINE Login</a>을 구현하는 방법을 설명합니다. LINE Login으로 할 수 있는 기능을 확인하려면 <a href="../try-line-login/">샘플 앱 체험하기</a>를 읽고 Android용 LINE Login 샘플 앱을 사용해 보십시오.</p>
+<h2>사전 요구 사항</h2>
+<p>LINE SDK for Android를 빌드하고 사용하려면 다음이 필요합니다.</p>
+<ul>
+<li><a href="https://developers.line.biz/en/glossary/#provider" target="_blank" rel="noopener noreferrer">프로바이더</a>와 LINE Login 채널. LINE Developers Console에서 <a href="https://developers.line.biz/console/register/line-login/channel/" target="_blank" rel="noopener noreferrer">둘 다 만들 수 있습니다</a>.</li>
+<li><code>minSdkVersion</code>을 24 이상(Android 7.0 이상)으로 설정합니다.</li>
+</ul>
+<div class="tip">
+<p><strong>minSdkVersion을 24 미만(Android 7.0 미만)으로 설정하기</strong></p>
+<p><code>minSdkVersion</code>을 24 미만(Android 7.0 미만)으로 설정하려면 이전 버전의 LINE SDK for Android를 사용하십시오. 자세한 내용은 <a href="https://github.com/line/line-sdk-android/releases" target="_blank" rel="noopener noreferrer">Releases</a>를 참조하십시오.</p>
+</div>
+<!-- note start -->
+<p><strong>리소스 이름 충돌</strong></p>
+<p>SDK의 리소스와 충돌할 수 있으므로 <code>linesdk_</code>로 시작하는 리소스 ID를 사용하지 마십시오.</p>
+<!-- note end -->
+<h2>이전 SDK 버전에서 업그레이드하기</h2>
+<p>LINE SDK v4.x 이하에서 업그레이드하는 경우, 현재 버전에는 다음과 같은 주요 차이점이 있다는 점을 알아 두면 도움이 됩니다.</p>
+<ul>
+<li>로그인을 시작할 때 앱이 접근할 수 있는 사용자 데이터를 결정하기 위해 <a href="../../../line-login/integrate-line-login/#scopes">스코프(Scope)</a>를 지정해야 합니다.</li>
+<li>로그인 시 <code>OPENID_CONNECT</code> 스코프를 지정하면 사용자의 신원을 안전하게 검증할 수 있는 <a href="../managing-users/#get-id-token">ID 토큰</a>을 받을 수 있습니다.</li>
+</ul>
+<h2>LINE SDK 종속성 추가하기</h2>
+<p>LINE SDK for Android를 통합하려면 프로젝트에 필요한 라이브러리를 가져오고 아래 단계에 따라 프로젝트의 Android 매니페스트 파일을 구성하십시오.</p>
+<h3>프로젝트에 라이브러리 가져오기</h3>
+<p>모듈 수준의 <code>build.gradle</code> 파일에 LINE SDK 종속성을 추가하십시오.</p>
+<p><a href="https://central.sonatype.com/artifact/com.linecorp.linesdk/linesdk" target="_blank" rel="noopener noreferrer"><figure class="doc-figure"><img src="https://img.shields.io/maven-central/v/com.linecorp.linesdk/linesdk.svg?label=Maven%20Central" alt="Maven Central" loading="lazy"><figcaption>Maven Central</figcaption></figure>{:zoom=“false”}</a></p>
+<pre><code class="language-groovy">repositories {
+   ...
+   mavenCentral()
+}
+
+dependencies {
+    ...
+    implementation <span class="hljs-string">&#x27;com.linecorp.linesdk:linesdk:latest.release&#x27;</span>
+    ...
+}
+</code></pre>
+<h3>Android 컴파일 옵션 추가하기</h3>
+<p>Java 1.8 지원을 활성화하십시오. 위와 같은 <code>build.gradle</code> 파일에 다음을 추가하십시오.</p>
+<pre><code>android {
+...
+  compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+...
+}
+</code></pre>
+<h2>Android 매니페스트 파일 설정하기</h2>
+<p>앱이 인터넷 접근을 필요로 함을 지정하려면 <code>AndroidManifest.xml</code> 파일에 <code>INTERNET</code> 권한을 추가하십시오.</p>
+<pre><code class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.INTERNET&quot;</span>/&gt;</span>
+</code></pre>
+<!-- note start -->
+<p><strong>참고</strong></p>
+<p>로그인을 호출하는 액티비티의 실행 모드가 <code>singleInstance</code>로 설정되어 있지 않은지 확인하십시오. 그렇지 않으면 액티비티가 <code>onActivityResult</code> 콜백을 받지 못할 수 있습니다.</p>
+<!-- note end -->
+<h2>앱과 채널 연결하기</h2>
+<p>앱을 LINE Login 채널에 연결하려면 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에서 채널 설정의 <strong>LINE Login</strong> 탭에 있는 <strong>Mobile app</strong>을 활성화하고 다음 항목을 입력하십시오.</p>
+<ul>
+<li><strong>Package names:</strong> 필수. Google Play 스토어를 실행하는 데 사용되는 애플리케이션의 패키지 이름입니다.</li>
+<li><strong>Package signatures:</strong> 선택. 각 서명을 새 줄에 입력하여 여러 서명을 설정할 수 있습니다.</li>
+<li><strong>Android URL scheme:</strong> 선택. 앱을 실행하는 데 사용되는 사용자 정의 URL 스킴입니다.</li>
+</ul>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/line-login/integrate-login-android/android-app-settings.png" alt="Android Package names, Package signatures, and URL scheme settings." loading="lazy"><figcaption>Android Package names, Package signatures, and URL scheme settings.</figcaption></figure></p>
+<h3>패키지 서명 설정하기</h3>
+<p>패키지 서명은 앱과 LINE 앱 간의 인증 상호 작용을 강화하는 데 매우 중요합니다. 패키지 서명에는 디버그 패키지 서명과 릴리스 패키지 서명, 두 가지 유형이 있습니다. 두 서명 모두 SHA-1 형식의 키 해시와 관련됩니다.</p>
+<h4>디버그 패키지 서명</h4>
+<p>디버그 패키지 서명은 앱을 실행하거나 디버깅할 때 Android Studio가 자동으로 생성하는 디버그 인증서로부터 만들어집니다.</p>
+<pre><code class="language-bash"><span class="hljs-comment"># For macOS</span>
+keytool -exportcert -<span class="hljs-built_in">alias</span> androiddebugkey -keystore ~/.android/debug.keystore -storepass android -keypass android | openssl sha1
+
+<span class="hljs-comment"># For Windows</span>
+keytool -exportcert -<span class="hljs-built_in">alias</span> androiddebugkey -keystore %USERPROFILE%\.android\debug.keystore -storepass android -keypass android | openssl sha1
+</code></pre>
+<h4>릴리스 패키지 서명</h4>
+<p>릴리스 패키지 서명은 앱을 스토어에 배포할 때 사용하는 릴리스 인증서로부터 만들어집니다. <code>&lt;RELEASE_KEY_ALIAS&gt;</code>와 <code>&lt;RELEASE_KEY_PATH&gt;</code>를 실제 릴리스 키 별칭과 경로로 바꾸십시오.</p>
+<pre><code class="language-bash">keytool -exportcert -<span class="hljs-built_in">alias</span> &lt;RELEASE_KEY_ALIAS&gt; -keystore &lt;RELEASE_KEY_PATH&gt; | openssl sha1
+</code></pre>
+<h4>Google Play Console을 사용하여 릴리스 키 해시 가져오기</h4>
+<p><a href="https://developer.android.com/studio/publish/app-signing?hl=en#app-signing-google-play" target="_blank" rel="noopener noreferrer">Play 앱 서명</a>을 사용하는 경우, 터미널에서 릴리스 키 해시를 생성하는 대신 Google Play Console에서 얻은 SHA-1 인증서 지문을 사용하십시오. 자세한 내용은 Play Console 도움말의 <a href="https://support.google.com/googleplay/android-developer/answer/9842756?hl=en" target="_blank" rel="noopener noreferrer">Play 앱 서명 사용하기</a>를 참조하십시오.</p>
+<p>Google Play Console에서 <strong>Setup</strong> &gt; <strong>App signing</strong>으로 이동한 다음 SHA-1 인증서 지문 값을 복사하십시오.</p>
+<h2>LINE Login 버튼 추가하기</h2>
+<p>사용자가 Android 앱에 로그인할 수 있도록, LINE 브랜드 로그인 버튼을 만들어 사용자가 인증 및 권한 부여 과정을 거치도록 할 수 있습니다.</p>
+<p>로그인 버튼을 추가하는 방법은 두 가지입니다.</p>
+<ul>
+<li><a href="./#use-button">LINE SDK의 기본 제공 로그인 버튼 사용하기</a></li>
+<li><a href="./#use-code">사용자 정의 로그인 버튼 사용하기</a></li>
+</ul>
+<h3>LINE SDK의 기본 제공 로그인 버튼 사용하기</h3>
+<p>LINE SDK는 미리 정의된 로그인 버튼을 제공합니다. 다음과 같이 앱의 사용자 인터페이스에 로그인 버튼을 추가하여 사용자에게 빠른 로그인 방법을 제공할 수 있습니다.</p>
+<ol>
+<li>
+<p>레이아웃 XML 파일에 로그인 버튼을 추가합니다.</p>
+<pre><code class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">com.linecorp.linesdk.widget.LoginButton</span>
+    <span class="hljs-attr">android:id</span>=<span class="hljs-string">&quot;@+id/line_login_btn&quot;</span>
+    <span class="hljs-attr">android:layout_width</span>=<span class="hljs-string">&quot;match_parent&quot;</span>
+    <span class="hljs-attr">android:layout_height</span>=<span class="hljs-string">&quot;wrap_content&quot;</span> /&gt;</span>
+</code></pre>
+</li>
+<li>
+<p>액티비티 또는 프래그먼트에서 뷰를 찾고, 필요한 매개변수를 설정한 다음 리스너를 할당합니다.</p>
+<pre><code class="language-java"><span class="hljs-keyword">import</span> java.util.Arrays;
+
+<span class="hljs-comment">// A delegate for delegating the login result to the internal login handler.</span>
+<span class="hljs-keyword">private</span> <span class="hljs-type">LoginDelegate</span> <span class="hljs-variable">loginDelegate</span> <span class="hljs-operator">=</span> LoginDelegate.Factory.create();
+
+<span class="hljs-type">LoginButton</span> <span class="hljs-variable">loginButton</span> <span class="hljs-operator">=</span> rootView.findViewById(R.id.line_login_btn);
+
+<span class="hljs-comment">// if the button is inside a Fragment, this function should be called.</span>
+loginButton.setFragment(<span class="hljs-built_in">this</span>);
+
+loginButton.setChannelId(channelIdEditText.getText().toString());
+
+<span class="hljs-comment">// configure whether login process should be done by Line App, or inside WebView.</span>
+loginButton.enableLineAppAuthentication(<span class="hljs-literal">true</span>);
+
+<span class="hljs-comment">// set up required scopes and nonce.</span>
+loginButton.setAuthenticationParams(<span class="hljs-keyword">new</span> <span class="hljs-title class_">LineAuthenticationParams</span>.Builder()
+        .scopes(Arrays.asList(Scope.PROFILE))
+        <span class="hljs-comment">// .nonce(&quot;&lt;a randomly-generated string&gt;&quot;) // nonce can be used to improve security</span>
+        .build()
+);
+loginButton.setLoginDelegate(loginDelegate);
+loginButton.addLoginListener(<span class="hljs-keyword">new</span> <span class="hljs-title class_">LoginListener</span>() {
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-type">void</span> <span class="hljs-title function_">onLoginSuccess</span><span class="hljs-params">(<span class="hljs-meta">@NonNull</span> LineLoginResult result)</span> {
+        Toast.makeText(getContext(), <span class="hljs-string">&quot;Login success&quot;</span>, Toast.LENGTH_SHORT).show();
+    }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-type">void</span> <span class="hljs-title function_">onLoginFailure</span><span class="hljs-params">(<span class="hljs-meta">@Nullable</span> LineLoginResult result)</span> {
+        Toast.makeText(getContext(), <span class="hljs-string">&quot;Login failure&quot;</span>, Toast.LENGTH_SHORT).show();
+    }
+});
+</code></pre>
+</li>
+</ol>
+<h3>사용자 정의 로그인 버튼 사용하기</h3>
+<p>기본 로그인 버튼 대신 자체 코드로 사용자 인터페이스와 로그인 과정을 직접 사용자 정의할 수도 있습니다.</p>
+<h4>이미지 다운로드 및 프로젝트에 추가하기</h4>
+<p>LINE Login 버튼 이미지 세트에는 iOS, Android, 데스크톱 애플리케이션용 이미지가 포함되어 있습니다. Android용 이미지 세트에는 여러 화면 밀도와 버튼 상태에 대한 이미지가 포함되어 있습니다. 이 가이드에서는 Android 폴더의 “base” 및 “pressed” 로그인 버튼 이미지를 사용합니다.</p>
+<ol>
+<li><a href="https://vos.line-scdn.net/line-developers/docs/media/line-login/login-button/LINE_Login_Button_Image.zip" target="_blank" rel="noopener noreferrer">LINE Login 버튼 이미지</a>를 다운로드하여 압축을 풉니다.</li>
+<li>화면 밀도별로 “base” 및 “pressed” 로그인 버튼 이미지를 <code>drawable</code> 폴더에 추가합니다.</li>
+</ol>
+<h4>이미지 구성하기</h4>
+<p>이미지를 사용하기 전에 사용할 로그인 버튼 텍스트를 추가해야 합니다. 언어별로 권장하는 로그인 버튼 텍스트는 <a href="../../../line-login/login-button/">LINE Login 버튼 디자인 가이드라인</a>을 참조하십시오. 또한 LINE 아이콘이 왜곡되지 않도록 버튼 텍스트를 추가할 신축 가능한 영역을 정의해야 합니다.</p>
+<ol>
+<li>각 이미지에 대해 <a href="https://developer.android.com/guide/topics/resources/drawable-resource#NinePatch#NinePatch" target="_blank" rel="noopener noreferrer">9-patch 파일</a>을 만들고 로그인 버튼 텍스트를 위한 신축 영역을 정의합니다.</li>
+<li>원하는 로그인 버튼 텍스트를 가진 클릭 가능한 텍스트 뷰로 앱의 로그인 화면에 버튼을 추가합니다.</li>
+<li>drawable 폴더에 선택기(selector) XML 파일을 추가하여 텍스트 뷰의 상태에 대응하는 이미지를 정의합니다.</li>
+</ol>
+<h2>로그인 액티비티 시작하기</h2>
+<p>사용자가 로그인 버튼을 누르면 앱은 <code>getLoginIntent()</code>를 호출하여 로그인 인텐트를 가져오고 로그인 액티비티를 시작합니다. 이 메서드에는 컨텍스트와 채널 ID를 전달해야 합니다. 기기에 LINE이 설치되어 있으면 사용자의 LINE 자격 증명을 묻지 않고 LINE이 열려 로그인을 수행합니다. LINE이 설치되어 있지 않으면 사용자는 브라우저의 LINE Login 화면으로 이동하여 LINE 자격 증명(이메일 주소와 비밀번호)을 입력합니다.</p>
+<ol>
+<li>버튼이 눌리는 것을 감지하기 위해 클릭 리스너를 설정합니다.</li>
+<li><code>onClick</code> 콜백에서 <code>LineLoginApi</code>의 <code>getLoginIntent()</code> 메서드를 호출하여 로그인 액티비티를 시작할 로그인 인텐트를 가져옵니다.</li>
+<li>로그인 인텐트와 요청 코드를 매개변수로 전달하여 <code>startActivityForResult()</code>를 호출함으로써 인증 과정을 시작합니다. 요청 코드는 요청을 식별하는 데 사용되는 정수입니다.</li>
+</ol>
+<p>다음은 사용자가 로그인 버튼을 눌렀을 때 사용자를 로그인시키는 액티비티를 시작하는 예시입니다.</p>
+<pre><code class="language-java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">REQUEST_CODE</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;
+...
+
+<span class="hljs-keyword">final</span> <span class="hljs-type">TextView</span> <span class="hljs-variable">loginButton</span> <span class="hljs-operator">=</span> (TextView) findViewById(R.id.login_button);
+loginButton.setOnClickListener(<span class="hljs-keyword">new</span> <span class="hljs-title class_">View</span>.OnClickListener() {
+
+    <span class="hljs-keyword">public</span> <span class="hljs-type">void</span> <span class="hljs-title function_">onClick</span><span class="hljs-params">(View view)</span> {
+        <span class="hljs-keyword">try</span> {
+            <span class="hljs-comment">// App-to-app login</span>
+            <span class="hljs-type">Intent</span> <span class="hljs-variable">loginIntent</span> <span class="hljs-operator">=</span> LineLoginApi.getLoginIntent(
+              view.getContext(),
+              Constants.CHANNEL_ID,
+              <span class="hljs-keyword">new</span> <span class="hljs-title class_">LineAuthenticationParams</span>.Builder()
+                .scopes(Arrays.asList(Scope.PROFILE))
+                        <span class="hljs-comment">// .nonce(&quot;&lt;a randomly-generated string&gt;&quot;) // nonce can be used to improve security</span>
+                .build());
+            startActivityForResult(loginIntent, REQUEST_CODE);
+        }
+        <span class="hljs-keyword">catch</span>(Exception e) {
+            Log.e(<span class="hljs-string">&quot;ERROR&quot;</span>, e.toString());
+        }
+    }
+});
+</code></pre>
+<!-- note start -->
+<p><strong>참고</strong></p>
+<p>앱 간 로그인을 사용하지 않고 사용자가 브라우저의 LINE Login 화면을 통해 로그인하도록 하려면 <code>getLoginIntentWithoutLineAppAuth()</code> 메서드를 사용하십시오.</p>
+<!-- note end -->
+<h2>로그인 결과 처리하기</h2>
+<p>사용자가 로그인하면 로그인 결과가 액티비티의 <code>onActivityResult()</code> 메서드로 반환됩니다. 앱은 로그인 결과를 처리하기 위해 이 메서드를 재정의해야 합니다.</p>
+<p><code>LineLoginResult</code> 객체의 <code>getResponseCode()</code> 메서드를 사용하여 로그인 성공 여부를 확인하십시오. <code>getResponseCode()</code>가 <code>SUCCESS</code>를 반환하면 로그인에 성공한 것입니다. 그 밖의 값은 실패를 나타냅니다. 발생한 오류 유형을 확인하려면 <a href="../handling-errors/">오류 처리</a>를 참조하십시오.</p>
+<p>앱에서 로그인 결과를 처리하는 예시는 다음과 같습니다.</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> <span class="hljs-type">void</span> <span class="hljs-title function_">onActivityResult</span><span class="hljs-params">(<span class="hljs-type">int</span> requestCode, <span class="hljs-type">int</span> resultCode, Intent data)</span> {
+    <span class="hljs-built_in">super</span>.onActivityResult(requestCode, resultCode, data);
+    <span class="hljs-keyword">if</span> (requestCode != REQUEST_CODE) {
+        Log.e(<span class="hljs-string">&quot;ERROR&quot;</span>, <span class="hljs-string">&quot;Unsupported Request&quot;</span>);
+        <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-type">LineLoginResult</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> LineLoginApi.getLoginResultFromIntent(data);
+
+    <span class="hljs-keyword">switch</span> (result.getResponseCode()) {
+
+        <span class="hljs-keyword">case</span> SUCCESS:
+            <span class="hljs-comment">// Login successful</span>
+            <span class="hljs-type">String</span> <span class="hljs-variable">accessToken</span> <span class="hljs-operator">=</span> result.getLineCredential().getAccessToken().getTokenString();
+
+            <span class="hljs-type">Intent</span> <span class="hljs-variable">transitionIntent</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Intent</span>(<span class="hljs-built_in">this</span>, PostLoginActivity.class);
+            transitionIntent.putExtra(<span class="hljs-string">&quot;line_profile&quot;</span>, result.getLineProfile());
+            transitionIntent.putExtra(<span class="hljs-string">&quot;line_credential&quot;</span>, result.getLineCredential());
+            startActivity(transitionIntent);
+            <span class="hljs-keyword">break</span>;
+
+        <span class="hljs-keyword">case</span> CANCEL:
+            <span class="hljs-comment">// Login canceled by user</span>
+            Log.e(<span class="hljs-string">&quot;ERROR&quot;</span>, <span class="hljs-string">&quot;LINE Login Canceled by user.&quot;</span>);
+            <span class="hljs-keyword">break</span>;
+
+        <span class="hljs-keyword">default</span>:
+            <span class="hljs-comment">// Login canceled due to other error</span>
+            Log.e(<span class="hljs-string">&quot;ERROR&quot;</span>, <span class="hljs-string">&quot;Login FAILED!&quot;</span>);
+            Log.e(<span class="hljs-string">&quot;ERROR&quot;</span>, result.getErrorData().toString());
+    }
+}
+</code></pre>
+<h3>액세스 토큰 가져오기</h3>
+<p>로그인 결과에는 사용자의 액세스 토큰을 담고 있는 <code>LineCredential()</code> 객체가 포함되어 있습니다. 위 예시와 같이 다음 코드로 액세스 토큰을 가져올 수 있습니다.</p>
+<pre><code class="language-java"><span class="hljs-type">String</span> <span class="hljs-variable">accessToken</span> <span class="hljs-operator">=</span> result.getLineCredential().getAccessToken().getTokenString();
+</code></pre>
+<h3>로그인 직후 사용자 프로필 가져오기</h3>
+<p>LINE SDK는 로그인 시 사용자의 프로필 정보를 자동으로 가져옵니다. 사용자의 프로필 정보에는 표시 이름, 사용자 ID, 상태 메시지, 프로필 미디어 URL이 포함됩니다. 이 정보는 <code>LineLoginResult</code> 객체의 <code>getLineProfile()</code> 메서드를 호출하여 가져올 수 있습니다. 위 예시에서 다음 코드 조각은 로그인 결과에서 사용자 프로필 정보를 가져와 인텐트에 전달하는 방법을 보여줍니다.</p>
+<pre><code class="language-java">transitionIntent.putExtra(<span class="hljs-string">&quot;display_name&quot;</span>, result.getLineProfile().getDisplayName());
+transitionIntent.putExtra(<span class="hljs-string">&quot;status_message&quot;</span>, result.getLineProfile().getStatusMessage());
+transitionIntent.putExtra(<span class="hljs-string">&quot;user_id&quot;</span>, result.getLineProfile().getUserId());
+transitionIntent.putExtra(<span class="hljs-string">&quot;picture_url&quot;</span>, result.getLineProfile().getPictureUrl().toString());
+</code></pre>
+<p>사용자 ID는 개별 프로바이더 안에서만 고유합니다. 같은 LINE 사용자라도 프로바이더가 다르면 사용자 ID가 다릅니다. 서로 다른 프로바이더에 걸쳐 사용자를 식별하는 데 사용자 ID를 사용하지 마십시오.</p>
+<h3>서버에서 사용자 데이터 사용하기</h3>
+<!-- warning start -->
+<p><strong>사용자 사칭</strong></p>
+<p>클라이언트가 백엔드 서버로 보낸 사용자 ID나 <code>LineProfile</code> 객체의 다른 정보를 신뢰하지 마십시오. 악의적인 클라이언트는 임의의 사용자 ID나 잘못된 형식의 정보를 서버로 보내 사용자를 사칭할 수 있습니다.</p>
+<p>대신 클라이언트는 액세스 토큰을 서버로 보내고, 서버는 이 토큰을 사용하여 사용자 데이터를 가져와야 합니다.</p>
+<!-- warning end -->
+<p>일반적으로 백엔드 서버는 사용자 ID, 표시 이름 또는 기타 LINE 계정 속성을 기반으로 사용자의 신원을 확인합니다. 그러나 이러한 정보를 클라이언트에서 서버로 직접 보내는 대신, 클라이언트는 액세스 토큰을 보내야 합니다. 그런 다음 서버는 이를 사용하여 LINE 플랫폼 서버에 대해 사용자의 신원을 안전하게 검증해야 합니다.</p>
+<p>액세스 토큰에 대한 자세한 내용은 <a href="./#get-access-token">액세스 토큰 가져오기</a>를 참조하십시오.</p>
+<p>백엔드에서 호출할 API에 대한 자세한 내용은 다음 페이지를 참조하십시오.</p>
+<ul>
+<li><a href="../../../../reference/line-login/#verify-access-token">액세스 토큰 유효성 검증</a></li>
+<li><a href="../../../../reference/line-login/#get-user-profile">사용자 프로필 가져오기</a></li>
+</ul>
+<h2><code>LineApiClient</code> 인터페이스 사용하기</h2>
+<p><code>LineApiClient</code> 인터페이스의 메서드를 호출하여 SDK를 사용합니다. 이를 위해 <code>lineApiClient</code> 객체의 정적 변수를 만들고 초기화하십시오.</p>
+<ol>
+<li>
+<p>다양한 메서드를 호출하기 위해 객체의 정적 변수를 만듭니다.</p>
+<pre><code class="language-java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> LineApiClient lineApiClient;
+</code></pre>
+</li>
+<li>
+<p>아래와 같이 액티비티의 <code>onCreate()</code> 메서드에서 <code>lineApiClient</code> 변수를 초기화합니다. 초기화에는 채널 ID와 컨텍스트가 필요합니다.</p>
+<pre><code class="language-java"><span class="hljs-type">LineApiClientBuilder</span> <span class="hljs-variable">apiClientBuilder</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LineApiClientBuilder</span>(getApplicationContext(), <span class="hljs-string">&quot;your channel id here&quot;</span>);
+lineApiClient = apiClientBuilder.build();
+</code></pre>
+</li>
+</ol>
+<!-- note start -->
+<p><strong>참고</strong></p>
+<p>LINE SDK for Android의 모든 메서드는 네트워크 작업을 수행하므로, 메인 스레드에서 호출하면 <code>NetworkOnMainThreadException</code>이 발생합니다. 이 문제를 피하려면 <code>AsyncTask</code>를 사용하여 메서드를 호출하십시오.</p>
+<!-- note end -->
+</article></main>
+</div>
+<script>
+(function(){
+  var a=document.querySelector('.sidebar a.active');
+  if(a)a.scrollIntoView({block:'center'});
+  var input=document.getElementById('nav-search');
+  if(!input)return;
+  var items=[].slice.call(document.querySelectorAll('.sidebar li'));
+  input.addEventListener('input',function(){
+    var q=input.value.trim().toLowerCase();
+    items.forEach(function(li){
+      if(!q){li.classList.remove('hidden');return;}
+      var own=(li.querySelector(':scope > a, :scope > details > summary')||li).textContent.toLowerCase();
+      var hit=own.indexOf(q)!==-1||li.textContent.toLowerCase().indexOf(q)!==-1;
+      li.classList.toggle('hidden',!hit);
+      if(hit){var d=li.querySelector(':scope > details');if(d)d.open=true;}
+    });
+  });
+})();
+</script>
+</body>
+</html>

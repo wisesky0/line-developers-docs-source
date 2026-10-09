@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>메시지 보내기 | LINE Developers</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#fff;--fg:#1a1a1a;--fg2:#595959;--border:#e5e5e5;--bg2:#f5f5f7;--accent:#0066ff;--code-bg:#f3f4f6;--hover:rgba(0,102,255,.07);--header-h:57px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Neo','Noto Sans KR',Roboto,sans-serif;line-height:1.6;margin:0}
+header{position:sticky;top:0;z-index:20;height:var(--header-h);background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;padding:0 1.25rem}
+.logo{font-weight:700;font-size:1.2rem;color:var(--fg);text-decoration:none;white-space:nowrap}
+.search{flex:1;max-width:320px;margin-left:auto}
+.search input{width:100%;padding:.45rem .75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--fg);font-size:.875rem}
+.search input:focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--bg)}
+.nav-btn{display:none;cursor:pointer;font-size:1.3rem;line-height:1;padding:.25rem .4rem;border:1px solid var(--border);border-radius:6px}
+#nav-toggle{position:absolute;opacity:0;pointer-events:none}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr)}
+.sidebar{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto;border-right:1px solid var(--border);background:var(--bg2);padding:.75rem 0 2rem;font-size:.875rem}
+.sidebar ul{list-style:none;margin:0;padding:0}
+.sidebar ul ul{padding-left:.9rem;border-left:1px solid var(--border);margin-left:1.1rem}
+.nav-title{padding:.9rem 1.25rem .35rem;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg2)}
+.sidebar a,.sidebar summary>span{display:inline-block;padding:.28rem .5rem;color:var(--fg2);text-decoration:none;border-radius:4px}
+.sidebar li>a{display:block;margin:0 .5rem 0 1rem}
+.sidebar a:hover{color:var(--accent);background:var(--hover)}
+.sidebar a.active{color:var(--accent);background:var(--hover);font-weight:600}
+.sidebar summary{cursor:pointer;padding:.1rem .75rem .1rem 1rem;list-style-position:inside}
+.sidebar summary>span{font-weight:600;color:var(--fg)}
+.sidebar summary a{padding-left:.2rem}
+.sidebar li.hidden{display:none}
+.content{min-width:0;padding:2rem 2.5rem 4rem}
+article{max-width:880px;margin:0 auto}
+h1,h2,h3,h4{line-height:1.3;color:var(--fg);text-wrap:balance}
+h1{font-size:2.1rem;margin:0 0 1rem}
+h2{font-size:1.5rem;margin:2.2rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.2rem;margin:1.6rem 0 .6rem}
+p,li{color:var(--fg2);line-height:1.75}
+a{color:var(--accent)}
+code{background:var(--code-bg);padding:.15em .4em;border-radius:3px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;line-height:1.5}
+pre code{background:none;padding:0;color:var(--fg)}
+blockquote{border-left:4px solid var(--accent);padding:.6rem 1.2rem;margin:1.2rem 0;background:var(--bg2);border-radius:4px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:1.2rem 0}
+th,td{padding:.6rem .8rem;border:1px solid var(--border);text-align:left;vertical-align:top}
+th{background:var(--bg2);color:var(--fg)}
+.doc-figure{margin:1.5rem 0;text-align:center}
+.doc-figure img{max-width:100%;height:auto;border:1px solid var(--border);border-radius:8px}
+.doc-figure figcaption{margin-top:.4rem;font-size:.85rem;color:var(--fg2)}
+.tip{background:var(--bg2);border-left:4px solid var(--accent);padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:4px}
+.feature-box{background:var(--bg2);border-left:4px solid var(--accent);border-radius:6px;padding:1rem 1.4rem;margin:1.2rem 0}
+.feature-box h4{margin:0 0 .4rem;color:var(--accent)}
+.feature-box p{margin:0}
+@media (max-width:860px){
+  .nav-btn{display:block}
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .sidebar{display:none;position:fixed;inset:var(--header-h) 0 0 0;height:auto;z-index:15;width:100%}
+  #nav-toggle:checked~.layout .sidebar{display:block}
+  .content{padding:1.25rem 1rem 3rem}
+  h1{font-size:1.6rem}
+  .search{max-width:none}
+}
+</style>
+</head>
+<body>
+<input type="checkbox" id="nav-toggle">
+<header>
+  <label for="nav-toggle" class="nav-btn" aria-label="메뉴">☰</label>
+  <a href="../../../" class="logo">LINE Developers</a>
+  <div class="search"><input id="nav-search" type="search" placeholder="문서 검색..." aria-label="문서 검색"></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" aria-label="문서 목차"><div class="nav-section"><div class="nav-title">문서</div><ul><li><details><summary><span>기본</span></summary><ul><li><a href="../../basics/channel-access-token/">채널 액세스 토큰</a></li><li><a href="../../basics/line-api-status/">LINE Platform 가용성 확인 (LINE API Status)</a></li><li><a href="../../basics/user-profile/">사용자 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LIFF</span></summary><ul><li><a href="../../liff/overview/">LIFF 개요</a></li><li><a href="../../liff/getting-started/">채널 생성하기</a></li><li><a href="../../liff/cli-tool-create-liff-app/">Create LIFF App로 LIFF 앱 개발 환경 구축하기</a></li><li><a href="../../liff/developing-liff-apps/">LIFF 앱 개발하기</a></li><li><a href="../../liff/development-guidelines/">LIFF 앱 개발 가이드라인</a></li><li><a href="../../liff/differences-between-liff-browser-and-external-browser/">LIFF 브라우저와 외부 브라우저의 차이</a></li><li><a href="../../liff/differences-between-liff-browser-and-line-in-app-browser/">LIFF 브라우저와 LINE 인앱 브라우저의 차이</a></li><li><a href="../../liff/liff-cli/">LIFF CLI</a></li><li><a href="../../liff/liff-plugin/">LIFF 플러그인</a></li><li><a href="../../liff/minimizing-liff-browser/">LIFF 브라우저 최소화</a></li><li><a href="../../liff/opening-liff-app/">LIFF 앱 열기</a></li><li><a href="../../liff/pluggable-sdk/">플러거블 SDK</a></li><li><a href="../../liff/registering-liff-apps/">채널에 LIFF 앱 추가하기</a></li><li><a href="../../liff/release-notes/">릴리스 노트</a></li><li><a href="../../liff/trying-liff-app/">LIFF 스타터 앱 체험하기</a></li><li><a href="../../liff/using-user-profile/">LIFF 앱 및 서버에서 사용자 데이터 사용하기</a></li><li><a href="../../liff/versioning-policy/">버전 정책</a></li></ul></details></li><li><details><summary><span>LINE Ads API</span></summary><ul><li><a href="../../line-ads-api/about/">LINE Ads API 소개</a></li><li><a href="../../line-ads-api/development-guidelines/">LINE Ads API 개발 가이드라인</a></li></ul></details></li><li><a href="../../line-conversion-api/">LINE Conversion API</a></li><li><details><summary><span>LINE Developers 콘솔</span></summary><ul><li><a href="../../line-developers-console/overview/">LINE Developers Console 개요</a></li><li><a href="../../line-developers-console/best-practices-for-provider-and-channel-management/">프로바이더 및 채널 관리 모범 사례</a></li><li><a href="../../line-developers-console/delete-developer-account/">개발자 계정 삭제하기</a></li><li><a href="../../line-developers-console/login-account/">LINE Developers Console에 로그인하기</a></li><li><a href="../../line-developers-console/managing-roles/">역할 관리하기</a></li><li><a href="../../line-developers-console/notification/">이메일 또는 알림 센터로 알림 받기</a></li></ul></details></li><li><details><summary><span>LINE 로그인</span></summary><ul><li><a href="../../line-login/overview/">LINE Login 개요</a></li><li><a href="../../line-login/getting-started/">LINE Login 시작하기</a></li><li><a href="../../line-login/development-guidelines/">LINE Login 개발 가이드라인</a></li><li><a href="../../line-login/how-to-handle-auto-login-failure/">자동 로그인 실패 처리 방법</a></li><li><a href="../../line-login/integrate-line-login/">웹 앱에 LINE Login 연동하기</a></li><li><a href="../../line-login/integrate-line-login-v2/">웹 앱에 LINE Login(v2.0) 연동하기</a></li><li><a href="../../line-login/integrate-pkce/">LINE Login의 PKCE 지원</a></li><li><a href="../../line-login/link-a-bot/">로그인 시 LINE 공식 계정을 친구로 추가하기(친구 추가 옵션)</a></li><li><a href="../../line-login/login-button/">LINE Login 버튼 디자인 가이드라인</a></li><li><a href="../../line-login/managing-access-tokens/">액세스 토큰 관리</a></li><li><a href="../../line-login/managing-access-tokens-v2/">액세스 토큰 관리(LINE Login v2.0)</a></li><li><a href="../../line-login/managing-authorized-apps/">승인된 앱 관리하기</a></li><li><a href="../../line-login/managing-users/">사용자 관리</a></li><li><a href="../../line-login/managing-users-v2/">사용자 관리(LINE Login v2.0)</a></li><li><a href="../../line-login/secure-login-process/">앱과 서버 간의 안전한 로그인 프로세스 만들기</a></li><li><a href="../../line-login/security-checklist/">LINE Login 보안 체크리스트</a></li><li><a href="../../line-login/using-line-url-scheme/">LINE URL scheme을 사용하여 LINE 기능 이용하기</a></li><li><a href="../../line-login/verify-id-token/">ID 토큰에서 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LINE 로그인 SDK</span></summary><ul><li><details><summary><span>Android SDK</span></summary><ul><li><a href="../../line-login-sdks/android-sdk/overview/">LINE SDK for Android 개요</a></li><li><a href="../../line-login-sdks/android-sdk/handling-errors/">오류 처리</a></li><li><a href="../../line-login-sdks/android-sdk/integrate-line-login/">Android 앱에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/android-sdk/link-a-bot/">SDK로 친구 추가 옵션 활성화하기</a></li><li><a href="../../line-login-sdks/android-sdk/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../line-login-sdks/android-sdk/managing-users/">사용자 관리하기</a></li><li><a href="../../line-login-sdks/android-sdk/release-notes/">LINE SDK for Android 릴리스 노트</a></li><li><a href="../../line-login-sdks/android-sdk/try-line-login/">샘플 앱 체험하기</a></li></ul></details></li><li><a href="../../line-login-sdks/flutter-sdk/">Flutter SDK</a></li><li><details><summary><span>iOS SDK</span></summary><ul><li><a href="../../line-login-sdks/ios-sdk/release-notes/">LINE SDK for iOS 릴리스 노트</a></li><li><details><summary><span>Swift</span></summary><ul><li><a href="../../line-login-sdks/ios-sdk/swift/overview/">LINE SDK for iOS Swift 개요</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/error-handling/">오류 처리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/integrate-line-login/">iOS 앱에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/link-a-bot/">SDK로 추가 친구 옵션 활성화하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/managing-users/">사용자 관리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/migration-guide/">SDK 업그레이드하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/setting-up-project/">프로젝트 설정하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/universal-links-support/">유니버설 링크 사용하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/using-objc/">Objective-C 코드에서 SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>Unity SDK</span></summary><ul><li><a href="../../line-login-sdks/unity-sdk/overview/">LINE SDK for Unity 개요</a></li><li><a href="../../line-login-sdks/unity-sdk/integrate-line-login/">Unity 게임에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/unity-sdk/project-setup/">프로젝트 설정하기</a></li><li><a href="../../line-login-sdks/unity-sdk/release-notes/">LINE SDK for Unity 릴리스 노트</a></li><li><a href="../../line-login-sdks/unity-sdk/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../line-login-sdks/unity-sdk/using-sdk/">결과 처리와 기타 API에 LINE SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>LINE 미니앱</span></summary><ul><li><a href="../../line-mini-app/quickstart/">LINE MINI App 시작하기</a></li><li><details><summary><span>Design</span></summary><ul><li><a href="../../line-mini-app/design/landscape/">LINE MINI App의 안전 영역</a></li><li><a href="../../line-mini-app/design/line-mini-app-icon/">LINE MINI App 아이콘 사양 및 가이드라인</a></li><li><a href="../../line-mini-app/design/loading-icon/">로딩 아이콘</a></li></ul></details></li><li><details><summary><span>Develop</span></summary><ul><li><a href="../../line-mini-app/develop/add-to-home-screen/">LINE MINI App의 바로가기를 사용자 기기의 홈 화면에 추가하기</a></li><li><a href="../../line-mini-app/develop/channel-consent-simplification/">LINE MINI App 인증 흐름</a></li><li><a href="../../line-mini-app/develop/configure-console/">LINE MINI App 사용자에게 표시되는 설정</a></li><li><a href="../../line-mini-app/develop/custom-path/">커스텀 경로 설정하기</a></li><li><a href="../../line-mini-app/develop/develop-overview/">시작하기</a></li><li><a href="../../line-mini-app/develop/external-browser/">외부 브라우저에서 LINE MINI App 열기</a></li><li><a href="../../line-mini-app/develop/payment/">결제 처리하기</a></li><li><a href="../../line-mini-app/develop/performance-guidelines/">성능 가이드라인</a></li><li><a href="../../line-mini-app/develop/permanent-links/">영구 링크 만들기</a></li><li><a href="../../line-mini-app/develop/service-messages/">서비스 메시지 보내기</a></li><li><a href="../../line-mini-app/develop/share-messages/">커스텀 액션 버튼 구현하기</a></li><li><a href="../../line-mini-app/develop/share-messages-standard/">가이드라인을 따르는 JSON 파일 예시</a></li><li><a href="../../line-mini-app/develop/web-to-mini-app/">운영 중인 웹 앱을 LINE MINI App으로 구현하기</a></li></ul></details></li><li><a href="../../line-mini-app/development-guidelines/">LINE MINI App 개발 가이드라인</a></li><li><details><summary><span>Discover</span></summary><ul><li><a href="../../line-mini-app/discover/introduction/">LINE MINI App 소개</a></li><li><a href="../../line-mini-app/discover/builtin-features/">기본 제공 기능</a></li><li><a href="../../line-mini-app/discover/console-guide/">LINE MINI App용 LINE Developers Console 가이드</a></li><li><a href="../../line-mini-app/discover/custom-features/">커스텀 기능</a></li><li><a href="../../line-mini-app/discover/native-mini/">네이티브 앱과 LINE MINI App의 차이</a></li><li><a href="../../line-mini-app/discover/specifications/">LINE MINI App 사양</a></li><li><a href="../../line-mini-app/discover/ui-components/">LINE MINI App UI 컴포넌트</a></li></ul></details></li><li><details><summary><span>In App Purchase</span></summary><ul><li><a href="../../line-mini-app/in-app-purchase/overview/">인앱 결제 개요</a></li><li><a href="../../line-mini-app/in-app-purchase/apple-mini-apps-partner-program/">Mini Apps Partner Program을 통한 App Store 수수료 인하</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-guidelines/">인앱 결제 개발 가이드라인</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-product-id/">인앱 결제로 구매 가능한 아이템의 상품 ID 목록</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-settings/">인앱 결제 설정</a></li><li><a href="../../line-mini-app/in-app-purchase/implement-in-app-purchase/">인앱 결제 기능 연동</a></li><li><a href="../../line-mini-app/in-app-purchase/request-iap-review/">인앱 결제 사용 신청</a></li></ul></details></li><li><details><summary><span>Quick Fill</span></summary><ul><li><a href="../../line-mini-app/quick-fill/overview/">공통 프로필 Quick-fill 개요</a></li><li><a href="../../line-mini-app/quick-fill/design-regulations/">공통 프로필 Quick-fill 디자인 규정</a></li></ul></details></li><li><details><summary><span>Service</span></summary><ul><li><a href="../../line-mini-app/service/add-friend-option/">LINE MINI App에서 LINE 공식 계정을 친구로 추가하기 (친구 추가 옵션)</a></li><li><a href="../../line-mini-app/service/business-manager-link/">LINE MINI App 채널을 Business Manager 조직에 연결하기</a></li><li><a href="../../line-mini-app/service/line-mini-app-ads/">LINE MINI App에 광고 게재하기</a></li><li><a href="../../line-mini-app/service/line-mini-app-oa/">LINE 공식 계정 활용하기</a></li><li><a href="../../line-mini-app/service/service-operation/">서비스 운영하기</a></li><li><a href="../../line-mini-app/service/update-service/">인증된 MINI App 업데이트 후 재심사</a></li></ul></details></li><li><details><summary><span>Submit</span></summary><ul><li><a href="../../line-mini-app/submit/submission-guide/">LINE MINI App 제출하기</a></li></ul></details></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../../line-mini-app/technicalcase/bravetechnology/">&#039;대기 줄 관리 솔루션이 LINE MINI App으로 확장되는 방식: &quot;matoca&quot;와 &quot;yoboca&quot;의 개발 사례&#039;</a></li><li><a href="../../line-mini-app/technicalcase/classmethod/">모바일 주문 시스템 CX ORDER 사례 연구</a></li><li><a href="../../line-mini-app/technicalcase/grandream/">GDL 플랫폼의 기술 사례 연구: 비용 효율성과 유연성을 함께 실현</a></li><li><a href="../../line-mini-app/technicalcase/hakuhodo/">도야마현 아사히마치의 모빌리티 및 건강 증진을 위한 디지털 활성화 프로젝트 &quot;PoHUNT&quot; 개발 사례</a></li><li><a href="../../line-mini-app/technicalcase/kirifuda-morikaranotegami/">놀이를 통한 자연 보호: LINE MINI App으로 출시한 &quot;Letters from the Forest&quot;의 기술 사례 연구</a></li></ul></details></li></ul></details></li><li><details open><summary><span>Messaging API</span></summary><ul><li><a href="../overview/">Messaging API 개요</a></li><li><a href="../getting-started/">Messaging API 시작하기</a></li><li><a href="../actions/">액션</a></li><li><a href="../beacon-device-spec/">LINE Beacon 디바이스 사양</a></li><li><a href="../building-bot/">봇 만들기</a></li><li><a href="../check-webhook-error-statistics/">웹훅 오류 원인 및 통계 확인하기</a></li><li><a href="../create-flex-message-including-video/">동영상이 포함된 Flex Message 만들기</a></li><li><a href="../development-guidelines/">Messaging API 개발 가이드라인</a></li><li><a href="../download-bot-designer/">LINE Bot Designer 다운로드</a></li><li><a href="../flex-message-elements/">Flex Message 요소</a></li><li><a href="../flex-message-layout/">Flex Message 레이아웃</a></li><li><a href="../generate-json-web-token/">채널 액세스 토큰 v2.1 발급</a></li><li><a href="../get-quote-tokens/">인용 토큰 가져오기</a></li><li><a href="../getting-user-ids/">사용자 ID 가져오기</a></li><li><a href="../group-chats/">그룹 채팅 및 다인 채팅</a></li><li><a href="../icon-nickname-switch/">아이콘 및 표시 이름 설정하기</a></li><li><a href="../line-bot-sdk/">LINE Messaging API SDK</a></li><li><a href="../linking-accounts/">사용자 계정 연동</a></li><li><a href="../mark-as-read/">메시지를 읽음으로 표시하기</a></li><li><a href="../measure-impressions/">노출 수 측정하기</a></li><li><a href="../message-types/">메시지 타입</a></li><li><a href="../nodejs-sample/">튜토리얼 - 응답 봇 만들기</a></li><li><a href="../pricing/">Messaging API 요금</a></li><li><a href="../receiving-messages/">메시지 수신하기(웹훅)</a></li><li><a href="../retrying-api-request/">API 요청 재시도</a></li><li><a href="../rich-menus-overview/">리치 메뉴 개요</a></li><li><a href="../secure-message-sample/">보안 메시지 생성을 위한 샘플 코드와 데이터</a></li><li><a href="../send-coupons-to-users/">쿠폰을 만들어 사용자에게 보내기</a></li><li><a href="./" class="active" aria-current="page">메시지 보내기</a></li><li><a href="../sharing-bot/">LINE 공식 계정 친구 늘리기</a></li><li><a href="../ssl-tls-spec-of-the-webhook-source/">웹훅 소스의 SSL/TLS 사양</a></li><li><a href="../stop-using-line-official-account/">LINE 공식 계정 사용 중단하기</a></li><li><a href="../stop-using-messaging-api/">Messaging API 사용 중단하기</a></li><li><a href="../switch-rich-menus/">리치 메뉴에서 탭 전환하기</a></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../technicalcase/boldly/">온디맨드 자율주행 버스 예약 시스템의 LINE MINI App 사례</a></li><li><a href="../technicalcase/evolany-ai/">anybot for ChatGPT 기술 사례 연구: ChatGPT를 적극 활용하여 더 원활한 커뮤니케이션 구현하기</a></li><li><a href="../technicalcase/heptagon/">이주 및 정착 관련 문의를 처리하는 LINE 봇 개발 사례 연구</a></li><li><a href="../technicalcase/playnext-lab/">Smart Public Lab 기술 사례 연구: 행정 디지털 전환을 지원하는 LINE 활용 전략</a></li><li><a href="../technicalcase/resortbaito-dive/">임시직 직원의 만족도를 높이기 위한 &quot;Resort Baito Dive&quot; 개발 사례</a></li><li><a href="../technicalcase/skillbox/">SkillBox 기술 사례 연구: 이메일 주소가 없는 직원까지 LINE 알림으로 참여도 설문 응답률을 크게 높이다</a></li><li><a href="../technicalcase/softbank/">인프라를 로우 코드로 도입하기: CNAP으로 개발 효율을 높인 LINE 기반 서비스 개발 사례</a></li></ul></details></li><li><a href="../text-character-count/">텍스트의 글자 수 세기</a></li><li><a href="../try-rich-menu/">리치 메뉴 체험하기</a></li><li><a href="../unit-based-statistics-aggregation/">발송한 메시지의 통계 조회하기</a></li><li><a href="../use-loading-indicator/">로딩 애니메이션 표시하기</a></li><li><a href="../use-membership-features/">멤버십 기능 사용하기</a></li><li><a href="../use-per-user-rich-menus/">사용자별 리치 메뉴 사용하기</a></li><li><a href="../user-consent/">사용자 프로필 정보 제공 동의</a></li><li><a href="../using-audience/">오디언스 사용하기</a></li><li><a href="../using-beacons/">LINE 비콘 사용하기</a></li><li><a href="../using-bot-designer/">LINE Bot Designer</a></li><li><a href="../using-flex-message-simulator/">튜토리얼 - Flex Message Simulator로 디지털 명함 만들기</a></li><li><a href="../using-flex-messages/">Flex Message 보내기</a></li><li><a href="../using-line-url-scheme/">LINE URL 스킴으로 LINE 기능 사용하기</a></li><li><a href="../using-quick-reply/">퀵 리플라이 사용하기</a></li><li><a href="../using-rich-menus/">리치 메뉴 사용하기</a></li><li><a href="../verify-webhook-signature/">웹훅 서명 검증하기</a></li><li><a href="../verify-webhook-url/">웹훅 URL 확인하기</a></li></ul></details></li><li><details><summary><span>파트너 문서</span></summary><ul><li><a href="../../partner-docs/overview/">개요</a></li><li><a href="../../partner-docs/api-policy-handbook/">LINE API 정책 핸드북</a></li><li><a href="../../partner-docs/development-guidelines/">법인 고객을 위한 개발 가이드라인</a></li><li><a href="../../partner-docs/error-notification/">오류 알림</a></li><li><a href="../../partner-docs/line-beacon/">LINE Beacon</a></li><li><details><summary><span>Line Notification Messages</span></summary><ul><li><a href="../../partner-docs/line-notification-messages/overview/">LINE 알림 메시지 개요</a></li><li><a href="../../partner-docs/line-notification-messages/flow-when-receiving-message/">LINE 알림 메시지를 수신할 때의 흐름</a></li><li><a href="../../partner-docs/line-notification-messages/message-sending-complete-webhook-event/">웹훅 발송 완료 이벤트</a></li><li><a href="../../partner-docs/line-notification-messages/statistics/">LINE 알림 메시지 통계 가져오기</a></li><li><a href="../../partner-docs/line-notification-messages/technical-specs/">LINE 알림 메시지 API 기술 사양</a></li><li><a href="../../partner-docs/line-notification-messages/template/">LINE 알림 메시지(템플릿)</a></li></ul></details></li><li><a href="../../partner-docs/line-profile-plus/">LINE Profile+</a></li><li><a href="../../partner-docs/mark-as-read/">Mark as read API(이전 버전)</a></li><li><a href="../../partner-docs/mission-stickers/">Mission Sticker API</a></li><li><a href="../../partner-docs/module/">모듈</a></li><li><a href="../../partner-docs/module-technical-attach-channel/">모듈 채널 연결</a></li><li><a href="../../partner-docs/module-technical-chat-control/">채팅 주도권 제어(Chat Control)</a></li><li><a href="../../partner-docs/module-technical-console/">모듈 채널 설정 구성</a></li><li><a href="../../partner-docs/module-technical-using-messaging-api/">모듈 채널에서 Messaging API 사용하기</a></li><li><a href="../../partner-docs/notice/">법인 고객 공지</a></li><li><a href="../../partner-docs/provider-page/">Provider page</a></li></ul></details></li></ul></div><div class="nav-section"><div class="nav-title">레퍼런스</div><ul><li><a href="../../../reference/liff/">LIFF API reference</a></li><li><a href="../../../reference/liff-server/">Server API</a></li><li><a href="../../../reference/line-login/">LINE Login v2.1 API reference</a></li><li><a href="../../../reference/line-login-v2/">LINE Login API v2.0 reference</a></li><li><a href="../../../reference/line-mini-app/">LINE MINI App API reference</a></li><li><a href="../../../reference/line-notification-messages/">LINE notification messages API reference</a></li><li><a href="../../../reference/messaging-api/">Messaging API reference</a></li><li><a href="../../../reference/partner-docs/">Options for corporate customers API reference</a></li></ul></div></nav>
+  <main class="content"><article><h1>메시지 보내기</h1><p>Messaging API를 사용하면 봇이 사용자에게 메시지를 보내도록 할 수 있습니다. 언제든지 사용자에게 메시지 전송을 시작할 수 있고, 사용자의 메시지에 응답할 수도 있습니다. 또한 다양한 메시지 유형을 사용할 수 있습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>메시징 유형</td>
+<td><ul><li>응답 메시지</li><li>푸시 메시지: 1:1</li><li>멀티캐스트 메시지: 1:다수(사용자 ID 목록 대상)</li><li>내로캐스트 메시지: 1:다수(세분화된 목록 대상)</li><li>브로드캐스트 메시지: 1:다수(모든 친구 대상)</li></ul></td>
+</tr>
+<tr>
+<td>메시지 유형</td>
+<td><ul><li>텍스트 메시지</li><li>텍스트 메시지(v2)</li><li>스티커 메시지</li><li>이미지 메시지</li><li>동영상 메시지</li><li>오디오 메시지</li><li>위치 메시지</li><li>이미지맵 메시지</li><li>템플릿 메시지</li><li>Flex Message</li></ul>메시지 유형에 대한 자세한 내용은 <a href="../message-types/">메시지 유형</a>을 참고하십시오.</td>
+</tr>
+</tbody>
+</table></div>
+<h2>메시징 유형</h2>
+<p>Messaging API에서 사용할 수 있는 전송 방법은 크게 두 가지입니다.</p>
+<ul>
+<li><a href="./#reply-messages">사용자의 메시지 및 액션에 응답하기(응답 메시지)</a></li>
+<li><a href="./#send-messages-at-any-time">언제든지 메시지 보내기</a></li>
+</ul>
+<h3>사용자의 메시지 및 액션에 응답하기(응답 메시지)</h3>
+<p>사용자가 LINE 공식 계정을 친구로 추가하거나 LINE 공식 계정에 메시지를 보내면, Messaging API로 응답할 수 있습니다. 사용자의 액션으로 <a href="../../../reference/messaging-api/#webhook-event-objects">웹훅 이벤트</a>를 통해 받은 응답 토큰을 <code>replyToken</code> 속성에 설정하십시오. 한 번의 요청으로 최대 5개의 <a href="../../../reference/messaging-api/#message-objects">메시지 객체</a>를 보낼 수 있습니다.</p>
+<div class="tip">
+<p><strong>응답 메시지를 준비하는 동안 로딩 애니메이션을 표시할 수 있습니다</strong></p>
+<p>LINE 공식 계정이 사용자의 메시지를 받은 후에는 메시지 준비나 예약 처리 때문에 응답에 시간이 걸릴 수 있습니다. 이런 경우에는 로딩 애니메이션을 표시하여 사용자에게 기다려 달라는 신호를 시각적으로 전달할 수 있습니다. 자세한 내용은 <a href="../use-loading-indicator/">로딩 애니메이션 표시하기</a>를 참고하십시오.</p>
+</div>
+<p>응답 메시지를 보내는 요청 예시는 다음과 같습니다.</p>
+<pre><code class="language-sh">curl -v -X POST https://api.line.me/v2/bot/message/reply \
+-H <span class="hljs-string">&#x27;Content-Type: application/json&#x27;</span> \
+-H <span class="hljs-string">&#x27;Authorization: Bearer {channel access token}&#x27;</span> \
+-d <span class="hljs-string">&#x27;{
+    &quot;replyToken&quot;:&quot;nHuyWiB7yP5Zw52FIkcQobQuGDXCTA&quot;,
+    &quot;messages&quot;:[
+        {
+            &quot;type&quot;:&quot;text&quot;,
+            &quot;text&quot;:&quot;Hello, user&quot;
+        },
+        {
+            &quot;type&quot;:&quot;text&quot;,
+            &quot;text&quot;:&quot;May I help you?&quot;
+        }
+    ]
+}&#x27;</span>
+</code></pre>
+<p>자세한 내용은 Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#send-reply-message">응답 메시지 전송</a>을 참고하십시오.</p>
+<h3>언제든지 메시지 보내기</h3>
+<p>다음 방법 중 하나를 사용하여 언제든지 사용자에게 메시지를 보낼 수 있습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>메시징 유형</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../../reference/messaging-api/#send-push-message">푸시 메시지</a></td>
+<td>사용자, 그룹 채팅, 다인 채팅에 메시지를 보냅니다. 예를 들어 쇼핑 사이트에서 구매한 상품이 발송되었음을 사용자에게 알릴 때 사용할 수 있습니다.</td>
+</tr>
+<tr>
+<td><a href="../../../reference/messaging-api/#send-multicast-message">멀티캐스트 메시지</a></td>
+<td>여러 사용자에게 한 번에 메시지를 보냅니다. 내로캐스트와의 차이점은 사용자 ID로 수신자를 지정한다는 것입니다. 예를 들어 쇼핑 사이트의 모든 회원에게 신기능을 알릴 때 사용할 수 있습니다.</td>
+</tr>
+<tr>
+<td><a href="./#send-narrowcast-message">내로캐스트 메시지</a></td>
+<td>여러 사용자에게 한 번에 메시지를 보냅니다. 멀티캐스트와의 차이점은 사용자의 속성 데이터 또는 리타겟팅(오디언스)으로 수신자를 지정한다는 것입니다. 사용자 속성 데이터에는 성별, 연령, OS 유형, 지역 등이 포함됩니다.</td>
+</tr>
+<tr>
+<td><a href="../../../reference/messaging-api/#send-broadcast-message">브로드캐스트 메시지</a></td>
+<td>LINE 공식 계정의 모든 친구에게 같은 메시지를 보낼 수 있습니다.</td>
+</tr>
+</tbody>
+</table></div>
+<p>한 번의 요청으로 최대 5개의 <a href="../../../reference/messaging-api/#message-objects">메시지 객체</a>를 보낼 수 있습니다.</p>
+<div class="tip">
+<p><strong>메시지 수를 세는 방법</strong></p>
+<p>전송된 메시지로 집계되는 수는 메시지를 받는 사람의 수입니다. 한 번의 요청에 지정한 <a href="../../../reference/messaging-api/#message-objects">메시지 객체</a>의 수는 전송된 메시지 수에 영향을 주지 않습니다. 예를 들어 사람이 5명 있는 채팅방에 한 번의 요청으로 메시지 객체 4개를 포함한 푸시 메시지를 보냈다고 가정하십시오. 이때 전송된 메시지 수는 5입니다.</p>
+<p>메시지를 받을 수 없는 사용자에게 보낸 메시지는 집계에서 제외됩니다. 이러한 사용자는 LINE 공식 계정을 차단한 사용자 ID이거나, 존재하지 않는 사용자 ID인 경우입니다.</p>
+</div>
+<p>푸시 메시지를 보내는 요청 예시는 다음과 같습니다.</p>
+<pre><code class="language-sh">curl -v -X POST https://api.line.me/v2/bot/message/push \
+-H <span class="hljs-string">&#x27;Content-Type: application/json&#x27;</span> \
+-H <span class="hljs-string">&#x27;Authorization: Bearer {channel access token}&#x27;</span> \
+-d <span class="hljs-string">&#x27;{
+    &quot;to&quot;: &quot;U4af4980629...&quot;,
+    &quot;messages&quot;:[
+        {
+            &quot;type&quot;:&quot;text&quot;,
+            &quot;text&quot;:&quot;Hello, world1&quot;
+        },
+        {
+            &quot;type&quot;:&quot;text&quot;,
+            &quot;text&quot;:&quot;Hello, world2&quot;
+        }
+    ]
+}&#x27;</span>
+</code></pre>
+<h2>내로캐스트 메시지 보내기</h2>
+<p>내로캐스트 메시지를 사용하면 원하는 시점에 여러 사용자에게 메시지를 보낼 수 있습니다. 그룹 채팅이나 다인 채팅에는 내로캐스트 메시지를 보낼 수 없습니다. 내로캐스트 메시지는 나이, 성별, OS, 지역 등의 속성 데이터 또는 리타겟팅(오디언스)으로 수신자를 지정합니다.</p>
+<p>내로캐스트 메시지를 보내려면 다음 단계를 따르십시오.</p>
+<ol>
+<li><a href="./#prepare-audience-or-request-id">오디언스 또는 요청 ID 준비하기</a></li>
+<li><a href="./#send-narrowcast-message-detail">내로캐스트 메시지 전송 시작하기</a></li>
+<li><a href="./#get-narrowcast-progress-status">내로캐스트 메시지의 상태 확인하기</a></li>
+</ol>
+<h3>오디언스 또는 요청 ID 준비하기</h3>
+<p>내로캐스트 메시지를 보내려면 수신 대상에 따라 오디언스 또는 요청 ID를 준비해야 합니다. 논리 연산자(AND, OR, NOT)를 사용하여 수신 대상을 조합할 수 있습니다. 예를 들어 OR 연산으로 메시지 A를 받은 사용자와 메시지 B의 URL을 클릭한 사용자를 수신 대상에 포함할 수 있습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>수신 대상</th>
+<th>준비할 데이터</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LINE 공식 계정을 친구로 추가한 모든 사용자</td>
+<td>필요 없음</td>
+</tr>
+<tr>
+<td><a href="./#user-id">사용자 ID</a> 또는 광고 식별자(IFA)로 식별되는 사용자</td>
+<td><ul><li><a href="../../../reference/messaging-api/#create-upload-audience-group">사용자 ID 업로드용 오디언스(JSON)</a></li><li><a href="../../../reference/messaging-api/#create-upload-audience-group-by-file">사용자 ID 업로드용 오디언스(파일)</a></li></ul></td>
+</tr>
+<tr>
+<td>보낸 메시지의 URL을 클릭한 사용자</td>
+<td><a href="../../../reference/messaging-api/#create-click-audience-group">메시지 클릭 오디언스</a></td>
+</tr>
+<tr>
+<td>보낸 메시지를 연 사용자</td>
+<td><a href="../../../reference/messaging-api/#create-imp-audience-group">메시지 노출 오디언스</a></td>
+</tr>
+<tr>
+<td>내로캐스트 메시지를 받은 사용자</td>
+<td><a href="../../../reference/messaging-api/#narrowcast-recipient">수신자 객체</a>의 재전송 객체에 이전에 전송한 내로캐스트 메시지의 요청 ID를 지정합니다.</td>
+</tr>
+<tr>
+<td>채팅에 특정 태그가 붙은 사용자</td>
+<td>채팅 태그 오디언스. <a href="https://manager.line.biz/" target="_blank" rel="noopener noreferrer">LINE Official Account Manager</a>에서 만들 수 있습니다.</td>
+</tr>
+<tr>
+<td>특정 경로로 LINE 공식 계정을 친구로 추가한 사용자</td>
+<td>친구 경로 오디언스. <a href="https://manager.line.biz/" target="_blank" rel="noopener noreferrer">LINE Official Account Manager</a>를 사용하십시오.</td>
+</tr>
+<tr>
+<td>이전에 방문을 예약한 사용자</td>
+<td>예약 오디언스. <a href="https://manager.line.biz/" target="_blank" rel="noopener noreferrer">LINE Official Account Manager</a>에서 만들 수 있습니다.</td>
+</tr>
+<tr>
+<td>리치 메뉴를 본 사용자</td>
+<td>리치 메뉴 노출 오디언스. <a href="https://manager.line.biz/" target="_blank" rel="noopener noreferrer">LINE Official Account Manager</a>에서 만들 수 있습니다.</td>
+</tr>
+<tr>
+<td>리치 메뉴를 클릭한 사용자</td>
+<td>리치 메뉴 클릭 오디언스. <a href="https://manager.line.biz/" target="_blank" rel="noopener noreferrer">LINE Official Account Manager</a>에서 만들 수 있습니다.</td>
+</tr>
+<tr>
+<td>LINE 태그 추적 정보로 좁힌 사용자</td>
+<td>웹 트래픽 오디언스(LINE 태그). <a href="https://manager.line.biz/" target="_blank" rel="noopener noreferrer">LINE Official Account Manager</a> 또는 <a href="https://admanager.line.biz/" target="_blank" rel="noopener noreferrer">LINE Ad Manager</a>에서 만들 수 있습니다.</td>
+</tr>
+<tr>
+<td>추적 태그 정보로 좁힌 사용자</td>
+<td>웹 트래픽 오디언스(추적 태그). <a href="https://manager.line.biz/" target="_blank" rel="noopener noreferrer">LINE Official Account Manager</a>에서 만들 수 있습니다.</td>
+</tr>
+<tr>
+<td>보낸 동영상을 시청한 사용자</td>
+<td>동영상 시청 오디언스. <a href="https://admanager.line.biz/" target="_blank" rel="noopener noreferrer">LINE Ad Manager</a>에서 만들 수 있습니다.</td>
+</tr>
+<tr>
+<td>앱 내에서 특정 이벤트(예: 앱 실행, 앱 내 구매)에 참여한 사용자</td>
+<td>앱 이벤트 오디언스. <a href="https://admanager.line.biz/" target="_blank" rel="noopener noreferrer">LINE Ad Manager</a>에서 만들 수 있습니다.</td>
+</tr>
+<tr>
+<td>보낸 이미지를 클릭한 사용자</td>
+<td>이미지 클릭 오디언스. <a href="https://admanager.line.biz/" target="_blank" rel="noopener noreferrer">LINE Ad Manager</a>에서 만들 수 있습니다.</td>
+</tr>
+<tr>
+<td><a href="../using-beacons/#beacon-banner">비콘 배너</a>를 본 사용자</td>
+<td>LINE 비콘 네트워크 광고 노출 오디언스. <a href="https://admanager.line.biz/" target="_blank" rel="noopener noreferrer">LINE Ad Manager</a>에서 만들 수 있습니다. LINE 비콘 네트워크 광고 노출 오디언스는 대만 사용자가 만든 LINE 공식 계정에서만 사용할 수 있습니다.</td>
+</tr>
+</tbody>
+</table></div>
+<!-- note start -->
+<p><strong>참고</strong></p>
+<p>다음 유형의 오디언스는 Messaging API로 만들 수 없습니다.</p>
+<ul>
+<li>채팅 태그 오디언스</li>
+<li>친구 경로 오디언스</li>
+<li>예약 오디언스</li>
+<li>리치 메뉴 노출 오디언스</li>
+<li>리치 메뉴 클릭 오디언스</li>
+<li>웹 트래픽 오디언스(LINE 태그)</li>
+<li>웹 트래픽 오디언스(추적 태그)</li>
+<li>앱 이벤트 오디언스</li>
+<li>동영상 시청 오디언스</li>
+<li>이미지 클릭 오디언스</li>
+<li>LINE 비콘 네트워크 광고 노출 오디언스</li>
+</ul>
+<!-- note end -->
+<p>오디언스를 만든 후에는 아래 지침에 따라 메시지를 받을 준비가 되었는지 확인하십시오.</p>
+<h4>오디언스를 전송에 사용할 수 있는지 확인하기</h4>
+<p>오디언스는 백그라운드에서 비동기로 만들어집니다. 오디언스에 내로캐스트 메시지를 보내기 전에 오디언스의 상태가 <code>READY</code>(메시지를 받을 준비가 됨)인지 확인하십시오.</p>
+<p>다음 엔드포인트를 사용하여 오디언스의 상태를 확인할 수 있습니다.</p>
+<pre><code class="language-sh">curl -v -X GET https://api.line.me/v2/bot/audienceGroup/{audienceGroupId} \
+-H <span class="hljs-string">&#x27;Authorization: Bearer {channel access token}&#x27;</span>
+</code></pre>
+<p>응답의 <code>audienceGroup.status</code> 속성이 <code>READY</code>(메시지를 받을 준비가 됨)이면 해당 오디언스에 내로캐스트 메시지를 보낼 수 있습니다.</p>
+<p>다만 사용자 ID 업로드용 오디언스의 경우, <code>audienceGroup.status</code> 속성이 <code>READY</code>인 오디언스에 사용자 ID 또는 IFA를 추가해도 상태는 <code>READY</code>로 유지됩니다. 추가한 수신 대상을 포함한 사용자에게 메시지를 보내려면 해당 작업의 <code>jobs[].jobStatus</code> 속성이 <code>FINISHED</code>인지 확인하십시오.</p>
+<p>오디언스 상태를 확인하는 방법에 대한 자세한 내용은 Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#get-audience-group">오디언스 데이터 조회</a>를 참고하십시오.</p>
+<h3>내로캐스트 메시지 전송 시작하기</h3>
+<p>내로캐스트 메시지를 보낼 때 다음 객체를 조합하여 수신 대상을 좁힐 수 있습니다.</p>
+<ul>
+<li><a href="./#recipient-object">수신자 객체</a>
+<ul>
+<li><a href="./#audience-object">오디언스 객체</a></li>
+<li><a href="./#redelivery-object">재전송 객체</a></li>
+</ul>
+</li>
+<li><a href="./#demographic-filter-object">인구 통계 필터 객체</a></li>
+<li><a href="./#operator-object">연산자 객체</a></li>
+<li><a href="./#limit-object">제한 객체</a></li>
+</ul>
+<p>예를 들어 두 오디언스에 속한 여성 중 15~20세가 아닌 사용자를 수신 대상으로 지정할 수 있습니다. 객체들은 논리 연산자(AND, OR, NOT)로 조합할 수 있습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/narrowcast-message/narrow_cast.png" alt="" loading="lazy"><figcaption></figcaption></figure></p>
+<p>보낼 수 있는 메시지 수에는 월별 한도가 있습니다. 한도를 초과하여 보내려고 하면 전송이 실패합니다. 발송 메시지 수를 한도 이내로 유지하려면 <code>limit.upToRemainingQuota</code> 속성을 <code>true</code>로 설정하십시오. 보낼 수 있는 메시지의 최대 수에 대한 자세한 내용은 <a href="../pricing/">Messaging API 요금</a>을 참고하십시오.</p>
+<!-- note start -->
+<p><strong>내로캐스트 메시지 전송이 완료될 때까지 다른 메시지가 전송되지 않을 수 있습니다</strong></p>
+<p>내로캐스트 메시지를 보내면, 실제 전송 수와 관계없이 그 달에 예약할 수 있는 메시지의 대략적인 한도에 도달할 수 있습니다. 대략적인 한도에 도달하면 한도를 넘을 수 없으므로 내로캐스트 메시지 전송이 완료될 때까지 기다려야 합니다. 이 상태에서 다른 메시지를 보내려고 하면 <code>You have reached your monthly limit.</code>이 반환되고 메시지 전송이 실패합니다.</p>
+<p>자세한 내용은 Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#send-narrowcast-message-cautions">이번 달 남은 발송 가능 메시지 수에 대한 참고 사항</a>을 참고하십시오.</p>
+<!-- note end -->
+<h4>수신자 객체</h4>
+<p>내로캐스트 메시지를 보낼 때는 요청 본문의 <code>messages</code> 속성에 메시지 내용을, <code>recipient</code> 속성에 메시지 대상을 지정하십시오. <code>recipient</code> 속성을 지정하지 않으면 LINE 공식 계정을 친구로 추가한 모든 사용자가 수신자가 됩니다.</p>
+<p><code>recipient</code> 속성에는 <a href="./#audience-object">오디언스 객체</a> 또는 <a href="./#redelivery-object">재전송 객체</a>를 지정할 수 있습니다.</p>
+<h5>오디언스 객체</h5>
+<p>오디언스에 내로캐스트 메시지를 보내려면 요청 본문의 <code>recipient</code> 속성을 오디언스 객체로 설정하십시오. 오디언스 객체를 만들려면 객체에 <code>type</code> 속성은 <code>&quot;audience&quot;</code>로, <code>audienceGroupId</code> 속성은 오디언스 ID로 지정하십시오. 오디언스가 없다면 <a href="../../../reference/messaging-api/#manage-audience-group">오디언스 관리</a> API로 만드십시오.</p>
+<p>오디언스 객체의 예시는 다음과 같습니다.</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audience&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;audienceGroupId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">5614991017776</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h5>재전송 객체</h5>
+<p>이전에 내로캐스트 메시지를 받은 사용자에게 내로캐스트 메시지를 보내려면 요청 본문의 <code>recipient</code> 속성을 재전송 객체로 설정하십시오. 재전송 객체는 <code>type</code> 속성을 <code>&quot;redelivery&quot;</code>로 설정합니다. <code>requestId</code> 속성에는 내로캐스트 메시지를 보낼 때 받은 요청 ID(<code>X-Line-Request-Id</code>)를 설정하십시오.</p>
+<p>재전송 객체의 예시는 다음과 같습니다.</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;redelivery&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;requestId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;5b59509c-c57b-11e9-aa8c-2a2ae2dbcce4&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/news/redeliver-narrowcast-en.svg" alt="Interactive SVG" loading="lazy"><figcaption>Interactive SVG</figcaption></figure></p>
+<!-- note start -->
+<p><strong>“There weren’t enough recipients” 오류</strong></p>
+<p>재전송 객체로 이전에 보낸 메시지의 요청 ID를 지정하여 메시지를 보내려 했는데 <code>errorCode</code>가 <code>2</code>(수신자가 충분하지 않아 오류가 발생했음을 의미합니다)로 반환되는 경우, 다음과 같은 원인이 있을 수 있습니다.</p>
+<ul>
+<li>참조한 내로캐스트 메시지를 받은 후 일부 사용자가 LINE 공식 계정을 차단하여 이전 수신 대상의 수가 줄어든 경우</li>
+<li><a href="./#operator-object">연산자</a>(AND 또는 NOT)를 사용하여 다른 오디언스 객체나 인구 통계 필터 객체와 조합함으로써 수신 대상을 좁혀서 수신 대상의 수가 줄어든 경우</li>
+</ul>
+<p>사용자의 속성을 추측할 수 없도록, 수신자 수가 필요한 최소 인원보다 적으면 내로캐스트 메시지를 보낼 수 없습니다. 자세한 내용은 <a href="../../../reference/messaging-api/#send-narrowcast-message-restrictions">속성 및 오디언스를 사용한 메시지 전송의 제한 사항</a>을 참고하십시오.</p>
+<!-- note end -->
+<p>오디언스 객체와 재전송 객체에 대한 자세한 내용은 Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#narrowcast-recipient">수신자 객체</a>를 참고하십시오.</p>
+<h4>인구 통계 필터 객체</h4>
+<p>인구 통계 필터 객체(<code>filter.demographic</code> 속성)를 지정하면 사용자의 속성(성별, 연령, OS 유형, 지역 등)에 따라 메시지를 세분화하여 보낼 수 있습니다.</p>
+<p>성별로 필터링하는 인구 통계 필터 객체의 예시는 다음과 같습니다.</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;gender&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;oneOf&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;male&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;female&quot;</span><span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>자세한 내용은 Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#narrowcast-demographic-filter">인구 통계 필터 객체</a>를 참고하십시오.</p>
+<h4>연산자 객체</h4>
+<p>연산자 객체의 교집합(AND), 합집합(OR), 차집합(NOT)을 사용하면 수신자 객체와 인구 통계 필터 객체의 여러 조건을 조합하여 수신 대상을 지정할 수 있습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/narrowcast-message/operator_object.png" alt="" loading="lazy"><figcaption></figcaption></figure></p>
+<p>연산자 객체로 수신 대상을 지정한 수신자 객체의 예시는 다음과 같습니다.</p>
+<pre><code class="language-json"><span class="hljs-attr">&quot;recipient&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;operator&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;and&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+        <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audience&quot;</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">&quot;audienceGroupId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">5614991017776</span>
+        <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;operator&quot;</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">&quot;not&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+                <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;redelivery&quot;</span><span class="hljs-punctuation">,</span>
+                <span class="hljs-attr">&quot;requestId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;5b59509c-c57b-11e9-aa8c-2a2ae2dbcce4&quot;</span>
+            <span class="hljs-punctuation">}</span>
+        <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<div class="tip">
+<p><strong>연산자 객체를 사용하여 중첩 구조로 수신 대상을 지정할 수 있습니다</strong></p>
+<p>연산자 객체를 사용하면 수신자 객체와 인구 통계 필터 객체를 중첩하여 수신 대상을 지정할 수 있습니다. 연산자 객체는 중첩이 가장 깊은 단계부터 먼저 적용됩니다.</p>
+<p>이 다이어그램의 수신 대상은 &quot;<strong>A, B, E에 해당하지만 C와 D에는 해당하지 않는 사용자</strong>(<code>AudienceA AND AudienceB AND NOT (AudienceC AND Audience D) AND Audience E</code>)&quot;로 해석됩니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/narrowcast-message/operator_object_nest_sample.png" alt="" loading="lazy"><figcaption></figcaption></figure></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;operator&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;and&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+        <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audience&quot;</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">&quot;audienceGroupId&quot;</span><span class="hljs-punctuation">:</span> AudienceA
+        <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audience&quot;</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">&quot;audienceGroupId&quot;</span><span class="hljs-punctuation">:</span> AudienceB
+        <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;operator&quot;</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">&quot;not&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+                <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;operator&quot;</span><span class="hljs-punctuation">,</span>
+                <span class="hljs-attr">&quot;and&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+                    <span class="hljs-punctuation">{</span>
+                       <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audience&quot;</span><span class="hljs-punctuation">,</span>
+                       <span class="hljs-attr">&quot;audienceGroupId&quot;</span><span class="hljs-punctuation">:</span> AudienceC
+                    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+                    <span class="hljs-punctuation">{</span>
+                       <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audience&quot;</span><span class="hljs-punctuation">,</span>
+                       <span class="hljs-attr">&quot;audienceGroupId&quot;</span><span class="hljs-punctuation">:</span> AudienceD
+                    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+                 <span class="hljs-punctuation">]</span>
+            <span class="hljs-punctuation">}</span>
+        <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;audience&quot;</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">&quot;audienceGroupId&quot;</span><span class="hljs-punctuation">:</span> AudienceE
+        <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</div>
+<h4>제한 객체</h4>
+<p>제한 객체를 설정하여 내로캐스트 메시지의 최대 전송 수를 제한할 수 있습니다. 수신자를 제한하는 경우에는 수신자가 무작위로 선택됩니다.</p>
+<p>제한 객체의 예시는 다음과 같습니다.</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;max&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;upToRemainingQuota&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;forbidPartialDelivery&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>자세한 내용은 Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#send-narrowcast-limit">제한 객체</a>를 참고하십시오.</p>
+<h5>제한 객체로 최대 전송 메시지 수 제어하기</h5>
+<p>다음은 제한 객체를 사용하여 최대 전송 수를 제어하는 예시입니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>조건 *</th>
+<th>도달 대상: 100<br>월간 한도: 90<br>수신 대상: 80</th>
+<th>도달 대상: 100<br>월간 한도: 50<br>수신 대상: 80</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>제한 객체를 지정하지 않음</td>
+<td>❌ 요청 오류<br>(도달 대상이 월간 한도를 초과함)</td>
+<td>❌ 요청 오류<br>(도달 대상이 월간 한도를 초과함)</td>
+</tr>
+<tr>
+<td><code>max</code> 미지정<br><code>upToRemainingQuota</code>=<code>true</code><br><code>forbidPartialDelivery</code>=<code>false</code></td>
+<td>✅ 모든 수신자에게 전송</td>
+<td>✅ 월간 한도 이내인 50명에게 전송</td>
+</tr>
+<tr>
+<td><code>max</code> 미지정<br><code>upToRemainingQuota</code>=<code>true</code><br><code>forbidPartialDelivery</code>=<code>true</code></td>
+<td>✅ 모든 수신자에게 전송</td>
+<td>❌ 부분 전송으로 인해 전송이 취소됨</td>
+</tr>
+<tr>
+<td><code>max</code>=30<br><code>upToRemainingQuota</code>=<code>true</code><br><code>forbidPartialDelivery</code>=<code>false</code></td>
+<td>✅ <code>max</code> 값과 같은 30명에게 전송</td>
+<td>✅ <code>max</code> 값과 같은 30명에게 전송</td>
+</tr>
+<tr>
+<td><code>max</code>=30<br><code>upToRemainingQuota</code>=<code>true</code><br><code>forbidPartialDelivery</code>=<code>true</code></td>
+<td>❌ 부분 전송으로 인해 전송이 취소됨</td>
+<td>❌ 부분 전송으로 인해 전송이 취소됨</td>
+</tr>
+</tbody>
+</table></div>
+<p>* 조건에 사용된 용어의 설명은 다음과 같습니다.</p>
+<ul>
+<li>도달 대상: 메시지를 통해 도달할 수 있는 사용자 수입니다.</li>
+<li>월간 한도: 이번 달에 보낼 수 있는 메시지 수의 추정 상한입니다. 자세한 내용은 Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#get-quota">이번 달 메시지 전송 대상 한도 조회</a>를 참고하십시오.</li>
+<li>수신 대상: 속성(나이, 성별, OS, 지역 등) 또는 리타겟팅(오디언스)으로 필터링된 수신자입니다.</li>
+</ul>
+<h3>내로캐스트 메시지 전송 요청 예시</h3>
+<p>다음 조건을 만족하는 사용자에게 내로캐스트 메시지를 보내려고 한다고 가정하겠습니다.</p>
+<ul>
+<li>오디언스(오디언스 ID: <code>5614991017776</code>)에 속한 사용자</li>
+<li>내로캐스트 메시지를 받은 적이 없는 사용자(요청 ID: <code>5b59509c-c57b-11e9-aa8c-2a2ae2dbcce4</code>)</li>
+<li>나이가 20~25세인 남성 또는 여성</li>
+<li>아키타현 또는 아이치현에 거주하는 사용자</li>
+<li>이 예시의 LINE 공식 계정을 7~30일 동안 친구로 유지한 사용자</li>
+<li>35~40세 여성(남성 제외)</li>
+</ul>
+<p>위에서 지정한 수신 대상에게 내로캐스트 메시지를 보내는 요청 예시는 다음과 같습니다.</p>
+<pre><code class="language-sh">curl -v -X POST https://api.line.me/v2/bot/message/narrowcast \
+-H <span class="hljs-string">&#x27;Authorization: Bearer {channel access token}&#x27;</span> \
+-H <span class="hljs-string">&#x27;Content-Type: application/json&#x27;</span> \
+-d <span class="hljs-string">&#x27;{
+    &quot;messages&quot;: [
+        {
+            &quot;type&quot;: &quot;text&quot;,
+            &quot;text&quot;: &quot;test message&quot;
+        }
+    ],
+    &quot;recipient&quot;: {
+        &quot;type&quot;: &quot;operator&quot;,
+        &quot;and&quot;: [
+            {
+                &quot;type&quot;: &quot;audience&quot;,
+                &quot;audienceGroupId&quot;: 5614991017776
+            },
+            {
+                &quot;type&quot;: &quot;operator&quot;,
+                &quot;not&quot;: {
+                    &quot;type&quot;: &quot;redelivery&quot;,
+                    &quot;requestId&quot;: &quot;5b59509c-c57b-11e9-aa8c-2a2ae2dbcce4&quot;
+                }
+            }
+        ]
+    },
+    &quot;filter&quot;: {
+        &quot;demographic&quot;: {
+            &quot;type&quot;: &quot;operator&quot;,
+            &quot;or&quot;: [
+                {
+                    &quot;type&quot;: &quot;operator&quot;,
+                    &quot;and&quot;: [
+                        {
+                            &quot;type&quot;: &quot;gender&quot;,
+                            &quot;oneOf&quot;: [
+                                &quot;male&quot;,
+                                &quot;female&quot;
+                            ]
+                        },
+                        {
+                            &quot;type&quot;: &quot;age&quot;,
+                            &quot;gte&quot;: &quot;age_20&quot;,
+                            &quot;lt&quot;: &quot;age_25&quot;
+                        },
+                        {
+                            &quot;type&quot;: &quot;appType&quot;,
+                            &quot;oneOf&quot;: [
+                                &quot;android&quot;,
+                                &quot;ios&quot;
+                            ]
+                        },
+                        {
+                            &quot;type&quot;: &quot;area&quot;,
+                            &quot;oneOf&quot;: [
+                                &quot;jp_23&quot;,
+                                &quot;jp_05&quot;
+                            ]
+                        },
+                        {
+                            &quot;type&quot;: &quot;subscriptionPeriod&quot;,
+                            &quot;gte&quot;: &quot;day_7&quot;,
+                            &quot;lt&quot;: &quot;day_30&quot;
+                        }
+                    ]
+                },
+                {
+                    &quot;type&quot;: &quot;operator&quot;,
+                    &quot;and&quot;: [
+                        {
+                            &quot;type&quot;: &quot;age&quot;,
+                            &quot;gte&quot;: &quot;age_35&quot;,
+                            &quot;lt&quot;: &quot;age_40&quot;
+                        },
+                        {
+                            &quot;type&quot;: &quot;operator&quot;,
+                            &quot;not&quot;: {
+                                &quot;type&quot;: &quot;gender&quot;,
+                                &quot;oneOf&quot;: [
+                                    &quot;male&quot;
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    &quot;limit&quot;: {
+        &quot;max&quot;: 100,
+        &quot;upToRemainingQuota&quot;: true
+    }
+}&#x27;</span>
+</code></pre>
+<p>자세한 내용은 Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#send-narrowcast-message">내로캐스트 메시지 전송</a>을 참고하십시오.</p>
+<h3>내로캐스트 메시지의 상태 확인하기</h3>
+<p>내로캐스트 메시지는 백그라운드에서 비동기로 전송됩니다. 내로캐스트 메시지가 성공적으로 전송되었는지 확인하려면 아래 예시와 같이 <a href="../../../reference/messaging-api/#get-narrowcast-progress-status">내로캐스트 메시지 상태 조회</a> 엔드포인트를 호출하십시오.</p>
+<pre><code class="language-sh">curl -v -X GET <span class="hljs-string">&#x27;https://api.line.me/v2/bot/message/progress/narrowcast?requestId={request_id}&#x27;</span> \
+-H <span class="hljs-string">&#x27;Authorization: Bearer {channel access token}&#x27;</span>
+</code></pre>
+<h2>인용 메시지 보내기</h2>
+<p>Messaging API를 사용하여 과거 메시지를 인용하는 메시지를 보낼 수 있습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/sending-messages/quote-message.webp" alt="" loading="lazy"><figcaption></figcaption></figure></p>
+<p>과거 메시지를 인용하는 메시지를 보내려면 인용할 메시지의 인용 토큰(<code>quoteToken</code>)을 지정하십시오. 인용 토큰을 가져오는 방법에 대한 자세한 내용은 <a href="../get-quote-tokens/">인용 토큰 가져오기</a>를 참고하십시오.</p>
+<p><strong>과거 메시지를 인용하는 푸시 메시지 요청 예시</strong></p>
+<pre><code class="language-sh">curl -v -X POST https://api.line.me/v2/bot/message/push \
+-H <span class="hljs-string">&#x27;Content-Type: application/json&#x27;</span> \
+-H <span class="hljs-string">&#x27;Authorization: Bearer {channel access token}&#x27;</span> \
+-d <span class="hljs-string">&#x27;{
+  &quot;to&quot;: &quot;U4af4980629...&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;type&quot;: &quot;text&quot;,
+      &quot;text&quot;: &quot;Yes, you can.&quot;,
+      &quot;quoteToken&quot;: &quot;yHAz4Ua2wx7...&quot; // 인용할 메시지의 인용 토큰을 지정합니다
+    }
+  ]
+}&#x27;</span>
+</code></pre>
+<p>인용할 메시지의 전송이 취소되었거나 기기에서 과거 채팅 기록이 삭제된 경우, 인용된 메시지는 표시되지 않습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/sending-messages/delete-quoted-message-en.png" alt="인용할 메시지가 존재하지 않으면 &quot;Message unavailable.&quot;로 표시됩니다." loading="lazy"><figcaption>인용할 메시지가 존재하지 않으면 &quot;Message unavailable.&quot;로 표시됩니다.</figcaption></figure></p>
+<p>인용 토큰은 다음 엔드포인트에서만 사용해 메시지를 보낼 수 있습니다.</p>
+<ul>
+<li><a href="../../../reference/messaging-api/#send-reply-message">응답 메시지 전송</a></li>
+<li><a href="../../../reference/messaging-api/#send-push-message">푸시 메시지 전송</a></li>
+</ul>
+<p>또한 인용 토큰을 사용하여 메시지를 보낼 때는 다음 메시지 객체만 사용할 수 있습니다.</p>
+<ul>
+<li><a href="../message-types/#text-messages">텍스트 메시지</a></li>
+<li><a href="../message-types/#text-messages-v2">텍스트 메시지(v2)</a></li>
+<li><a href="../message-types/#sticker-messages">스티커 메시지</a></li>
+</ul>
+</article></main>
+</div>
+<script>
+(function(){
+  var a=document.querySelector('.sidebar a.active');
+  if(a)a.scrollIntoView({block:'center'});
+  var input=document.getElementById('nav-search');
+  if(!input)return;
+  var items=[].slice.call(document.querySelectorAll('.sidebar li'));
+  input.addEventListener('input',function(){
+    var q=input.value.trim().toLowerCase();
+    items.forEach(function(li){
+      if(!q){li.classList.remove('hidden');return;}
+      var own=(li.querySelector(':scope > a, :scope > details > summary')||li).textContent.toLowerCase();
+      var hit=own.indexOf(q)!==-1||li.textContent.toLowerCase().indexOf(q)!==-1;
+      li.classList.toggle('hidden',!hit);
+      if(hit){var d=li.querySelector(':scope > details');if(d)d.open=true;}
+    });
+  });
+})();
+</script>
+</body>
+</html>

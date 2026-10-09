@@ -1,145 +1,43 @@
-# LINE Developers Docs Builder
+# 문서 빌드와 로컬 서버
 
-`docs/ko` (및 다른 언어) 디렉토리의 마크다운 파일들을 HTML로 렌더링하여 `html/ko`에 생성하는 빌드 도구입니다.
+`docs/<lang>`의 마크다운(`index.html.md`)을 HTML로 렌더링해 `html/<lang>`에 생성합니다.
+모든 페이지에 폴더 구조 기반 사이드바 트리가 들어갑니다.
 
-## 설치
+## 빌드
 
 ```bash
 cd deploy
-npm install
+npm install          # 최초 1회
+npm run build:ko     # docs/ko -> html/ko
+node build.js ja     # 다른 언어
+npm run build:watch  # 마크다운 변경 시 자동 재빌드
 ```
 
-## 사용법
-
-### 기본 빌드 (한국어)
+## 로컬 서버
 
 ```bash
-npm run build:ko
-# 또는
-npm run build  # 기본값: ko
+python3 scripts/serve.py                 # http://127.0.0.1:8000 (html/ko), 브라우저 자동 열기
+python3 scripts/serve.py 3000            # 포트 지정 (사용 중이면 다음 포트로 이동)
+python3 scripts/serve.py --no-open       # 브라우저 열지 않음
+python3 scripts/serve.py --host 0.0.0.0  # 외부 접속 허용
 ```
 
-### 특정 언어 빌드
+Python 3 표준 라이브러리만 사용하며, 응답은 `charset=utf-8`로 전송하고 캐시를 끕니다.
 
-```bash
-node build.js en
-node build.js ja
-```
+## 파일 구성
 
-### 변경 감시 모드
+| 파일 | 역할 |
+|------|------|
+| `deploy/build.js` | 마크다운 변환, 사이드바 트리, 페이지 레이아웃 |
+| `deploy/home.html` | 시작 페이지(`html/ko/index.html`) 본문 |
+| `scripts/serve.py` | 로컬 개발 서버 |
 
-파일이 변경될 때마다 자동으로 빌드합니다.
+## 빌드 규칙
 
-```bash
-npm run build:watch
-# 또는
-node build.js ko --watch
-```
-
-## 기능
-
-✨ **마크다운 → HTML 변환**
-- `markdown-it` 기반의 완전한 마크다운 파싱
-- `highlight.js`를 사용한 코드 하이라이팅
-
-📁 **파일 구조 유지**
-- `docs/ko/docs/messaging-api/overview/index.html.md`
-- → `html/ko/docs/messaging-api/overview/index.html`
-
-🎨 **자동 스타일링**
-- 반응형 디자인
-- 라이트/다크 모드 지원
-- 전문적인 문서 레이아웃
-
-🔗 **스마트 링크 처리**
-- 외부 링크에 자동으로 `target="_blank"` 추가
-- 상대 경로 유지
-
-📸 **이미지 처리**
-- Figure 태그로 래핑
-- 반응형 이미지 크기 조정
-- 이미지 캡션 표시
-
-## 출력 구조
-
-```
-html/
-├── ko/
-│   ├── docs/
-│   │   ├── messaging-api/
-│   │   │   ├── overview/
-│   │   │   │   └── index.html
-│   │   │   ├── getting-started/
-│   │   │   │   └── index.html
-│   │   │   └── ...
-│   │   ├── line-login/
-│   │   │   └── ...
-│   │   └── ...
-│   └── reference/
-│       └── ...
-└── ...
-```
-
-## 빌드 결과
-
-빌드 완료 후 다음과 같은 출력을 볼 수 있습니다:
-
-```
-📚 KO 문서 빌드 시작...
-✅ docs/messaging-api/overview/index.html.md
-✅ docs/messaging-api/getting-started/index.html.md
-...
-
-📊 빌드 완료:
-   ✅ 성공: 250개
-   ❌ 실패: 0개
-   📁 출력: /path/to/html/ko
-```
-
-## 마크다운 포맷
-
-### 기본 문서 구조
-
-```markdown
-# 문서 제목
-
-문서 소개 텍스트
-
-## 섹션 1
-
-내용...
-
-### 하위 섹션
-
-더 자세한 내용...
-```
-
-### 팁 박스 (강조)
-
-```markdown
-<!-- tip start -->
-
-**중요한 정보**
-
-팁 내용...
-
-<!-- tip end -->
-```
-
-### 코드 예제
-
-````markdown
-```javascript
-const message = { type: 'text', text: 'Hello' };
-```
-````
-
-## 의존성
-
-- `markdown-it`: 마크다운 파싱
-- `front-matter`: YAML 메타데이터 추출
-- `highlight.js`: 문법 강조
-
-## 라이선스
-
-Apache-2.0
+- 출력 경로: `docs/ko/docs/messaging-api/overview/index.html.md` → `html/ko/docs/messaging-api/overview/index.html`
+- 제목: 본문 첫 `# 제목`을 페이지 제목으로 사용하고 본문에서는 제거
+- 사이드바 라벨: 폴더 이름은 `build.js`의 `FOLDER_LABELS`, 문서는 첫 `# 제목`
+- 링크: `developers.line.biz` 문서 링크는 로컬 페이지가 있으면 상대 경로로 변환, 없으면 새 탭으로 열기
+- 이미지: `/media/...`는 `https://developers.line.biz/media/...`로 변환
+- 팁 박스: `<!-- tip start -->` ~ `<!-- tip end -->` 구간을 강조 박스로 렌더링
+- 시작 페이지를 바꾸려면 `deploy/home.html`을 수정하고 다시 빌드

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>튜토리얼 - Flex Message Simulator로 디지털 명함 만들기 | LINE Developers</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#fff;--fg:#1a1a1a;--fg2:#595959;--border:#e5e5e5;--bg2:#f5f5f7;--accent:#0066ff;--code-bg:#f3f4f6;--hover:rgba(0,102,255,.07);--header-h:57px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Neo','Noto Sans KR',Roboto,sans-serif;line-height:1.6;margin:0}
+header{position:sticky;top:0;z-index:20;height:var(--header-h);background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;padding:0 1.25rem}
+.logo{font-weight:700;font-size:1.2rem;color:var(--fg);text-decoration:none;white-space:nowrap}
+.search{flex:1;max-width:320px;margin-left:auto}
+.search input{width:100%;padding:.45rem .75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--fg);font-size:.875rem}
+.search input:focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--bg)}
+.nav-btn{display:none;cursor:pointer;font-size:1.3rem;line-height:1;padding:.25rem .4rem;border:1px solid var(--border);border-radius:6px}
+#nav-toggle{position:absolute;opacity:0;pointer-events:none}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr)}
+.sidebar{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto;border-right:1px solid var(--border);background:var(--bg2);padding:.75rem 0 2rem;font-size:.875rem}
+.sidebar ul{list-style:none;margin:0;padding:0}
+.sidebar ul ul{padding-left:.9rem;border-left:1px solid var(--border);margin-left:1.1rem}
+.nav-title{padding:.9rem 1.25rem .35rem;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg2)}
+.sidebar a,.sidebar summary>span{display:inline-block;padding:.28rem .5rem;color:var(--fg2);text-decoration:none;border-radius:4px}
+.sidebar li>a{display:block;margin:0 .5rem 0 1rem}
+.sidebar a:hover{color:var(--accent);background:var(--hover)}
+.sidebar a.active{color:var(--accent);background:var(--hover);font-weight:600}
+.sidebar summary{cursor:pointer;padding:.1rem .75rem .1rem 1rem;list-style-position:inside}
+.sidebar summary>span{font-weight:600;color:var(--fg)}
+.sidebar summary a{padding-left:.2rem}
+.sidebar li.hidden{display:none}
+.content{min-width:0;padding:2rem 2.5rem 4rem}
+article{max-width:880px;margin:0 auto}
+h1,h2,h3,h4{line-height:1.3;color:var(--fg);text-wrap:balance}
+h1{font-size:2.1rem;margin:0 0 1rem}
+h2{font-size:1.5rem;margin:2.2rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.2rem;margin:1.6rem 0 .6rem}
+p,li{color:var(--fg2);line-height:1.75}
+a{color:var(--accent)}
+code{background:var(--code-bg);padding:.15em .4em;border-radius:3px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;line-height:1.5}
+pre code{background:none;padding:0;color:var(--fg)}
+blockquote{border-left:4px solid var(--accent);padding:.6rem 1.2rem;margin:1.2rem 0;background:var(--bg2);border-radius:4px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:1.2rem 0}
+th,td{padding:.6rem .8rem;border:1px solid var(--border);text-align:left;vertical-align:top}
+th{background:var(--bg2);color:var(--fg)}
+.doc-figure{margin:1.5rem 0;text-align:center}
+.doc-figure img{max-width:100%;height:auto;border:1px solid var(--border);border-radius:8px}
+.doc-figure figcaption{margin-top:.4rem;font-size:.85rem;color:var(--fg2)}
+.tip{background:var(--bg2);border-left:4px solid var(--accent);padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:4px}
+.feature-box{background:var(--bg2);border-left:4px solid var(--accent);border-radius:6px;padding:1rem 1.4rem;margin:1.2rem 0}
+.feature-box h4{margin:0 0 .4rem;color:var(--accent)}
+.feature-box p{margin:0}
+@media (max-width:860px){
+  .nav-btn{display:block}
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .sidebar{display:none;position:fixed;inset:var(--header-h) 0 0 0;height:auto;z-index:15;width:100%}
+  #nav-toggle:checked~.layout .sidebar{display:block}
+  .content{padding:1.25rem 1rem 3rem}
+  h1{font-size:1.6rem}
+  .search{max-width:none}
+}
+</style>
+</head>
+<body>
+<input type="checkbox" id="nav-toggle">
+<header>
+  <label for="nav-toggle" class="nav-btn" aria-label="메뉴">☰</label>
+  <a href="../../../" class="logo">LINE Developers</a>
+  <div class="search"><input id="nav-search" type="search" placeholder="문서 검색..." aria-label="문서 검색"></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" aria-label="문서 목차"><div class="nav-section"><div class="nav-title">문서</div><ul><li><details><summary><span>기본</span></summary><ul><li><a href="../../basics/channel-access-token/">채널 액세스 토큰</a></li><li><a href="../../basics/line-api-status/">LINE Platform 가용성 확인 (LINE API Status)</a></li><li><a href="../../basics/user-profile/">사용자 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LIFF</span></summary><ul><li><a href="../../liff/overview/">LIFF 개요</a></li><li><a href="../../liff/getting-started/">채널 생성하기</a></li><li><a href="../../liff/cli-tool-create-liff-app/">Create LIFF App로 LIFF 앱 개발 환경 구축하기</a></li><li><a href="../../liff/developing-liff-apps/">LIFF 앱 개발하기</a></li><li><a href="../../liff/development-guidelines/">LIFF 앱 개발 가이드라인</a></li><li><a href="../../liff/differences-between-liff-browser-and-external-browser/">LIFF 브라우저와 외부 브라우저의 차이</a></li><li><a href="../../liff/differences-between-liff-browser-and-line-in-app-browser/">LIFF 브라우저와 LINE 인앱 브라우저의 차이</a></li><li><a href="../../liff/liff-cli/">LIFF CLI</a></li><li><a href="../../liff/liff-plugin/">LIFF 플러그인</a></li><li><a href="../../liff/minimizing-liff-browser/">LIFF 브라우저 최소화</a></li><li><a href="../../liff/opening-liff-app/">LIFF 앱 열기</a></li><li><a href="../../liff/pluggable-sdk/">플러거블 SDK</a></li><li><a href="../../liff/registering-liff-apps/">채널에 LIFF 앱 추가하기</a></li><li><a href="../../liff/release-notes/">릴리스 노트</a></li><li><a href="../../liff/trying-liff-app/">LIFF 스타터 앱 체험하기</a></li><li><a href="../../liff/using-user-profile/">LIFF 앱 및 서버에서 사용자 데이터 사용하기</a></li><li><a href="../../liff/versioning-policy/">버전 정책</a></li></ul></details></li><li><details><summary><span>LINE Ads API</span></summary><ul><li><a href="../../line-ads-api/about/">LINE Ads API 소개</a></li><li><a href="../../line-ads-api/development-guidelines/">LINE Ads API 개발 가이드라인</a></li></ul></details></li><li><a href="../../line-conversion-api/">LINE Conversion API</a></li><li><details><summary><span>LINE Developers 콘솔</span></summary><ul><li><a href="../../line-developers-console/overview/">LINE Developers Console 개요</a></li><li><a href="../../line-developers-console/best-practices-for-provider-and-channel-management/">프로바이더 및 채널 관리 모범 사례</a></li><li><a href="../../line-developers-console/delete-developer-account/">개발자 계정 삭제하기</a></li><li><a href="../../line-developers-console/login-account/">LINE Developers Console에 로그인하기</a></li><li><a href="../../line-developers-console/managing-roles/">역할 관리하기</a></li><li><a href="../../line-developers-console/notification/">이메일 또는 알림 센터로 알림 받기</a></li></ul></details></li><li><details><summary><span>LINE 로그인</span></summary><ul><li><a href="../../line-login/overview/">LINE Login 개요</a></li><li><a href="../../line-login/getting-started/">LINE Login 시작하기</a></li><li><a href="../../line-login/development-guidelines/">LINE Login 개발 가이드라인</a></li><li><a href="../../line-login/how-to-handle-auto-login-failure/">자동 로그인 실패 처리 방법</a></li><li><a href="../../line-login/integrate-line-login/">웹 앱에 LINE Login 연동하기</a></li><li><a href="../../line-login/integrate-line-login-v2/">웹 앱에 LINE Login(v2.0) 연동하기</a></li><li><a href="../../line-login/integrate-pkce/">LINE Login의 PKCE 지원</a></li><li><a href="../../line-login/link-a-bot/">로그인 시 LINE 공식 계정을 친구로 추가하기(친구 추가 옵션)</a></li><li><a href="../../line-login/login-button/">LINE Login 버튼 디자인 가이드라인</a></li><li><a href="../../line-login/managing-access-tokens/">액세스 토큰 관리</a></li><li><a href="../../line-login/managing-access-tokens-v2/">액세스 토큰 관리(LINE Login v2.0)</a></li><li><a href="../../line-login/managing-authorized-apps/">승인된 앱 관리하기</a></li><li><a href="../../line-login/managing-users/">사용자 관리</a></li><li><a href="../../line-login/managing-users-v2/">사용자 관리(LINE Login v2.0)</a></li><li><a href="../../line-login/secure-login-process/">앱과 서버 간의 안전한 로그인 프로세스 만들기</a></li><li><a href="../../line-login/security-checklist/">LINE Login 보안 체크리스트</a></li><li><a href="../../line-login/using-line-url-scheme/">LINE URL scheme을 사용하여 LINE 기능 이용하기</a></li><li><a href="../../line-login/verify-id-token/">ID 토큰에서 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LINE 로그인 SDK</span></summary><ul><li><details><summary><span>Android SDK</span></summary><ul><li><a href="../../line-login-sdks/android-sdk/overview/">LINE SDK for Android 개요</a></li><li><a href="../../line-login-sdks/android-sdk/handling-errors/">오류 처리</a></li><li><a href="../../line-login-sdks/android-sdk/integrate-line-login/">Android 앱에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/android-sdk/link-a-bot/">SDK로 친구 추가 옵션 활성화하기</a></li><li><a href="../../line-login-sdks/android-sdk/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../line-login-sdks/android-sdk/managing-users/">사용자 관리하기</a></li><li><a href="../../line-login-sdks/android-sdk/release-notes/">LINE SDK for Android 릴리스 노트</a></li><li><a href="../../line-login-sdks/android-sdk/try-line-login/">샘플 앱 체험하기</a></li></ul></details></li><li><a href="../../line-login-sdks/flutter-sdk/">Flutter SDK</a></li><li><details><summary><span>iOS SDK</span></summary><ul><li><a href="../../line-login-sdks/ios-sdk/release-notes/">LINE SDK for iOS 릴리스 노트</a></li><li><details><summary><span>Swift</span></summary><ul><li><a href="../../line-login-sdks/ios-sdk/swift/overview/">LINE SDK for iOS Swift 개요</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/error-handling/">오류 처리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/integrate-line-login/">iOS 앱에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/link-a-bot/">SDK로 추가 친구 옵션 활성화하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/managing-users/">사용자 관리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/migration-guide/">SDK 업그레이드하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/setting-up-project/">프로젝트 설정하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/universal-links-support/">유니버설 링크 사용하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/using-objc/">Objective-C 코드에서 SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>Unity SDK</span></summary><ul><li><a href="../../line-login-sdks/unity-sdk/overview/">LINE SDK for Unity 개요</a></li><li><a href="../../line-login-sdks/unity-sdk/integrate-line-login/">Unity 게임에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/unity-sdk/project-setup/">프로젝트 설정하기</a></li><li><a href="../../line-login-sdks/unity-sdk/release-notes/">LINE SDK for Unity 릴리스 노트</a></li><li><a href="../../line-login-sdks/unity-sdk/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../line-login-sdks/unity-sdk/using-sdk/">결과 처리와 기타 API에 LINE SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>LINE 미니앱</span></summary><ul><li><a href="../../line-mini-app/quickstart/">LINE MINI App 시작하기</a></li><li><details><summary><span>Design</span></summary><ul><li><a href="../../line-mini-app/design/landscape/">LINE MINI App의 안전 영역</a></li><li><a href="../../line-mini-app/design/line-mini-app-icon/">LINE MINI App 아이콘 사양 및 가이드라인</a></li><li><a href="../../line-mini-app/design/loading-icon/">로딩 아이콘</a></li></ul></details></li><li><details><summary><span>Develop</span></summary><ul><li><a href="../../line-mini-app/develop/add-to-home-screen/">LINE MINI App의 바로가기를 사용자 기기의 홈 화면에 추가하기</a></li><li><a href="../../line-mini-app/develop/channel-consent-simplification/">LINE MINI App 인증 흐름</a></li><li><a href="../../line-mini-app/develop/configure-console/">LINE MINI App 사용자에게 표시되는 설정</a></li><li><a href="../../line-mini-app/develop/custom-path/">커스텀 경로 설정하기</a></li><li><a href="../../line-mini-app/develop/develop-overview/">시작하기</a></li><li><a href="../../line-mini-app/develop/external-browser/">외부 브라우저에서 LINE MINI App 열기</a></li><li><a href="../../line-mini-app/develop/payment/">결제 처리하기</a></li><li><a href="../../line-mini-app/develop/performance-guidelines/">성능 가이드라인</a></li><li><a href="../../line-mini-app/develop/permanent-links/">영구 링크 만들기</a></li><li><a href="../../line-mini-app/develop/service-messages/">서비스 메시지 보내기</a></li><li><a href="../../line-mini-app/develop/share-messages/">커스텀 액션 버튼 구현하기</a></li><li><a href="../../line-mini-app/develop/share-messages-standard/">가이드라인을 따르는 JSON 파일 예시</a></li><li><a href="../../line-mini-app/develop/web-to-mini-app/">운영 중인 웹 앱을 LINE MINI App으로 구현하기</a></li></ul></details></li><li><a href="../../line-mini-app/development-guidelines/">LINE MINI App 개발 가이드라인</a></li><li><details><summary><span>Discover</span></summary><ul><li><a href="../../line-mini-app/discover/introduction/">LINE MINI App 소개</a></li><li><a href="../../line-mini-app/discover/builtin-features/">기본 제공 기능</a></li><li><a href="../../line-mini-app/discover/console-guide/">LINE MINI App용 LINE Developers Console 가이드</a></li><li><a href="../../line-mini-app/discover/custom-features/">커스텀 기능</a></li><li><a href="../../line-mini-app/discover/native-mini/">네이티브 앱과 LINE MINI App의 차이</a></li><li><a href="../../line-mini-app/discover/specifications/">LINE MINI App 사양</a></li><li><a href="../../line-mini-app/discover/ui-components/">LINE MINI App UI 컴포넌트</a></li></ul></details></li><li><details><summary><span>In App Purchase</span></summary><ul><li><a href="../../line-mini-app/in-app-purchase/overview/">인앱 결제 개요</a></li><li><a href="../../line-mini-app/in-app-purchase/apple-mini-apps-partner-program/">Mini Apps Partner Program을 통한 App Store 수수료 인하</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-guidelines/">인앱 결제 개발 가이드라인</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-product-id/">인앱 결제로 구매 가능한 아이템의 상품 ID 목록</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-settings/">인앱 결제 설정</a></li><li><a href="../../line-mini-app/in-app-purchase/implement-in-app-purchase/">인앱 결제 기능 연동</a></li><li><a href="../../line-mini-app/in-app-purchase/request-iap-review/">인앱 결제 사용 신청</a></li></ul></details></li><li><details><summary><span>Quick Fill</span></summary><ul><li><a href="../../line-mini-app/quick-fill/overview/">공통 프로필 Quick-fill 개요</a></li><li><a href="../../line-mini-app/quick-fill/design-regulations/">공통 프로필 Quick-fill 디자인 규정</a></li></ul></details></li><li><details><summary><span>Service</span></summary><ul><li><a href="../../line-mini-app/service/add-friend-option/">LINE MINI App에서 LINE 공식 계정을 친구로 추가하기 (친구 추가 옵션)</a></li><li><a href="../../line-mini-app/service/business-manager-link/">LINE MINI App 채널을 Business Manager 조직에 연결하기</a></li><li><a href="../../line-mini-app/service/line-mini-app-ads/">LINE MINI App에 광고 게재하기</a></li><li><a href="../../line-mini-app/service/line-mini-app-oa/">LINE 공식 계정 활용하기</a></li><li><a href="../../line-mini-app/service/service-operation/">서비스 운영하기</a></li><li><a href="../../line-mini-app/service/update-service/">인증된 MINI App 업데이트 후 재심사</a></li></ul></details></li><li><details><summary><span>Submit</span></summary><ul><li><a href="../../line-mini-app/submit/submission-guide/">LINE MINI App 제출하기</a></li></ul></details></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../../line-mini-app/technicalcase/bravetechnology/">&#039;대기 줄 관리 솔루션이 LINE MINI App으로 확장되는 방식: &quot;matoca&quot;와 &quot;yoboca&quot;의 개발 사례&#039;</a></li><li><a href="../../line-mini-app/technicalcase/classmethod/">모바일 주문 시스템 CX ORDER 사례 연구</a></li><li><a href="../../line-mini-app/technicalcase/grandream/">GDL 플랫폼의 기술 사례 연구: 비용 효율성과 유연성을 함께 실현</a></li><li><a href="../../line-mini-app/technicalcase/hakuhodo/">도야마현 아사히마치의 모빌리티 및 건강 증진을 위한 디지털 활성화 프로젝트 &quot;PoHUNT&quot; 개발 사례</a></li><li><a href="../../line-mini-app/technicalcase/kirifuda-morikaranotegami/">놀이를 통한 자연 보호: LINE MINI App으로 출시한 &quot;Letters from the Forest&quot;의 기술 사례 연구</a></li></ul></details></li></ul></details></li><li><details open><summary><span>Messaging API</span></summary><ul><li><a href="../overview/">Messaging API 개요</a></li><li><a href="../getting-started/">Messaging API 시작하기</a></li><li><a href="../actions/">액션</a></li><li><a href="../beacon-device-spec/">LINE Beacon 디바이스 사양</a></li><li><a href="../building-bot/">봇 만들기</a></li><li><a href="../check-webhook-error-statistics/">웹훅 오류 원인 및 통계 확인하기</a></li><li><a href="../create-flex-message-including-video/">동영상이 포함된 Flex Message 만들기</a></li><li><a href="../development-guidelines/">Messaging API 개발 가이드라인</a></li><li><a href="../download-bot-designer/">LINE Bot Designer 다운로드</a></li><li><a href="../flex-message-elements/">Flex Message 요소</a></li><li><a href="../flex-message-layout/">Flex Message 레이아웃</a></li><li><a href="../generate-json-web-token/">채널 액세스 토큰 v2.1 발급</a></li><li><a href="../get-quote-tokens/">인용 토큰 가져오기</a></li><li><a href="../getting-user-ids/">사용자 ID 가져오기</a></li><li><a href="../group-chats/">그룹 채팅 및 다인 채팅</a></li><li><a href="../icon-nickname-switch/">아이콘 및 표시 이름 설정하기</a></li><li><a href="../line-bot-sdk/">LINE Messaging API SDK</a></li><li><a href="../linking-accounts/">사용자 계정 연동</a></li><li><a href="../mark-as-read/">메시지를 읽음으로 표시하기</a></li><li><a href="../measure-impressions/">노출 수 측정하기</a></li><li><a href="../message-types/">메시지 타입</a></li><li><a href="../nodejs-sample/">튜토리얼 - 응답 봇 만들기</a></li><li><a href="../pricing/">Messaging API 요금</a></li><li><a href="../receiving-messages/">메시지 수신하기(웹훅)</a></li><li><a href="../retrying-api-request/">API 요청 재시도</a></li><li><a href="../rich-menus-overview/">리치 메뉴 개요</a></li><li><a href="../secure-message-sample/">보안 메시지 생성을 위한 샘플 코드와 데이터</a></li><li><a href="../send-coupons-to-users/">쿠폰을 만들어 사용자에게 보내기</a></li><li><a href="../sending-messages/">메시지 보내기</a></li><li><a href="../sharing-bot/">LINE 공식 계정 친구 늘리기</a></li><li><a href="../ssl-tls-spec-of-the-webhook-source/">웹훅 소스의 SSL/TLS 사양</a></li><li><a href="../stop-using-line-official-account/">LINE 공식 계정 사용 중단하기</a></li><li><a href="../stop-using-messaging-api/">Messaging API 사용 중단하기</a></li><li><a href="../switch-rich-menus/">리치 메뉴에서 탭 전환하기</a></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../technicalcase/boldly/">온디맨드 자율주행 버스 예약 시스템의 LINE MINI App 사례</a></li><li><a href="../technicalcase/evolany-ai/">anybot for ChatGPT 기술 사례 연구: ChatGPT를 적극 활용하여 더 원활한 커뮤니케이션 구현하기</a></li><li><a href="../technicalcase/heptagon/">이주 및 정착 관련 문의를 처리하는 LINE 봇 개발 사례 연구</a></li><li><a href="../technicalcase/playnext-lab/">Smart Public Lab 기술 사례 연구: 행정 디지털 전환을 지원하는 LINE 활용 전략</a></li><li><a href="../technicalcase/resortbaito-dive/">임시직 직원의 만족도를 높이기 위한 &quot;Resort Baito Dive&quot; 개발 사례</a></li><li><a href="../technicalcase/skillbox/">SkillBox 기술 사례 연구: 이메일 주소가 없는 직원까지 LINE 알림으로 참여도 설문 응답률을 크게 높이다</a></li><li><a href="../technicalcase/softbank/">인프라를 로우 코드로 도입하기: CNAP으로 개발 효율을 높인 LINE 기반 서비스 개발 사례</a></li></ul></details></li><li><a href="../text-character-count/">텍스트의 글자 수 세기</a></li><li><a href="../try-rich-menu/">리치 메뉴 체험하기</a></li><li><a href="../unit-based-statistics-aggregation/">발송한 메시지의 통계 조회하기</a></li><li><a href="../use-loading-indicator/">로딩 애니메이션 표시하기</a></li><li><a href="../use-membership-features/">멤버십 기능 사용하기</a></li><li><a href="../use-per-user-rich-menus/">사용자별 리치 메뉴 사용하기</a></li><li><a href="../user-consent/">사용자 프로필 정보 제공 동의</a></li><li><a href="../using-audience/">오디언스 사용하기</a></li><li><a href="../using-beacons/">LINE 비콘 사용하기</a></li><li><a href="../using-bot-designer/">LINE Bot Designer</a></li><li><a href="./" class="active" aria-current="page">튜토리얼 - Flex Message Simulator로 디지털 명함 만들기</a></li><li><a href="../using-flex-messages/">Flex Message 보내기</a></li><li><a href="../using-line-url-scheme/">LINE URL 스킴으로 LINE 기능 사용하기</a></li><li><a href="../using-quick-reply/">퀵 리플라이 사용하기</a></li><li><a href="../using-rich-menus/">리치 메뉴 사용하기</a></li><li><a href="../verify-webhook-signature/">웹훅 서명 검증하기</a></li><li><a href="../verify-webhook-url/">웹훅 URL 확인하기</a></li></ul></details></li><li><details><summary><span>파트너 문서</span></summary><ul><li><a href="../../partner-docs/overview/">개요</a></li><li><a href="../../partner-docs/api-policy-handbook/">LINE API 정책 핸드북</a></li><li><a href="../../partner-docs/development-guidelines/">법인 고객을 위한 개발 가이드라인</a></li><li><a href="../../partner-docs/error-notification/">오류 알림</a></li><li><a href="../../partner-docs/line-beacon/">LINE Beacon</a></li><li><details><summary><span>Line Notification Messages</span></summary><ul><li><a href="../../partner-docs/line-notification-messages/overview/">LINE 알림 메시지 개요</a></li><li><a href="../../partner-docs/line-notification-messages/flow-when-receiving-message/">LINE 알림 메시지를 수신할 때의 흐름</a></li><li><a href="../../partner-docs/line-notification-messages/message-sending-complete-webhook-event/">웹훅 발송 완료 이벤트</a></li><li><a href="../../partner-docs/line-notification-messages/statistics/">LINE 알림 메시지 통계 가져오기</a></li><li><a href="../../partner-docs/line-notification-messages/technical-specs/">LINE 알림 메시지 API 기술 사양</a></li><li><a href="../../partner-docs/line-notification-messages/template/">LINE 알림 메시지(템플릿)</a></li></ul></details></li><li><a href="../../partner-docs/line-profile-plus/">LINE Profile+</a></li><li><a href="../../partner-docs/mark-as-read/">Mark as read API(이전 버전)</a></li><li><a href="../../partner-docs/mission-stickers/">Mission Sticker API</a></li><li><a href="../../partner-docs/module/">모듈</a></li><li><a href="../../partner-docs/module-technical-attach-channel/">모듈 채널 연결</a></li><li><a href="../../partner-docs/module-technical-chat-control/">채팅 주도권 제어(Chat Control)</a></li><li><a href="../../partner-docs/module-technical-console/">모듈 채널 설정 구성</a></li><li><a href="../../partner-docs/module-technical-using-messaging-api/">모듈 채널에서 Messaging API 사용하기</a></li><li><a href="../../partner-docs/notice/">법인 고객 공지</a></li><li><a href="../../partner-docs/provider-page/">Provider page</a></li></ul></details></li></ul></div><div class="nav-section"><div class="nav-title">레퍼런스</div><ul><li><a href="../../../reference/liff/">LIFF API reference</a></li><li><a href="../../../reference/liff-server/">Server API</a></li><li><a href="../../../reference/line-login/">LINE Login v2.1 API reference</a></li><li><a href="../../../reference/line-login-v2/">LINE Login API v2.0 reference</a></li><li><a href="../../../reference/line-mini-app/">LINE MINI App API reference</a></li><li><a href="../../../reference/line-notification-messages/">LINE notification messages API reference</a></li><li><a href="../../../reference/messaging-api/">Messaging API reference</a></li><li><a href="../../../reference/partner-docs/">Options for corporate customers API reference</a></li></ul></div></nav>
+  <main class="content"><article><h1>튜토리얼 - Flex Message Simulator로 디지털 명함 만들기</h1><p>Flex Message는 <a href="https://www.w3.org/TR/css-flexbox-1/" target="_blank" rel="noopener noreferrer">CSS Flexible Box(CSS Flexbox)</a>를 기반으로 자유롭게 꾸밀 수 있는 메시지입니다. 필요에 따라 메시지 크기를 조정하고, 텍스트, 이미지, 아이콘을 원하는 위치에 배치하며, 상호작용 버튼을 추가할 수 있습니다.</p>
+<p>이 튜토리얼에서는 <a href="https://developers.line.biz/flex-simulator/" target="_blank" rel="noopener noreferrer">Flex Message Simulator</a>를 사용하여 디지털 명함을 만드는 방법을 배웁니다. Flex Message Simulator는 <strong>코드를 작성하지 않고</strong> Flex Message를 구상하고, 디자인하고, 프로토타입을 만들 수 있도록 도와주는 도구입니다. Flex Message가 처음이라면 먼저 <a href="../using-flex-messages/">Flex Message 보내기</a>를 읽어 보세요.</p>
+<h2>목표</h2>
+<p>이 튜토리얼의 결과물은 아래와 같은 디지털 명함입니다. 이 <a href="https://developers.line.biz/media/code-samples/flex-message-simulator-example.json" target="_blank" rel="noopener noreferrer">다운로드 링크</a>에서 JSON으로 정의된 결과물을 확인할 수 있습니다. 하지만 Flex Message Simulator에 익숙해지기 위해 이 튜토리얼을 직접 따라 해 보기를 권장합니다. 이 도구는 Flex Message의 무한한 활용 사례를 다룰 때 매우 유용할 것입니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/en-final-output.png" alt="최종 결과물" loading="lazy"><figcaption>최종 결과물</figcaption></figure></p>
+<h2>시작하기 전에</h2>
+<p>이 튜토리얼을 따라 하려면 시작하기 전에 <a href="../overview/">Messaging API 개요</a>와 <a href="../using-flex-messages/">Flex Message 보내기</a>를 읽는 것을 권장합니다. 또한 시뮬레이터가 처음이라면 이 섹션을 읽고 Flex Message Simulator에 대해 알아보세요. 이미 시뮬레이터에 익숙하다면 지금 바로 <a href="./#select-flex-message">튜토리얼을 시작</a>하세요.</p>
+<h3>Flex Message Simulator 알아보기</h3>
+<p>Flex Message Simulator는 Flex Message를 작성하고 미리 볼 수 있는 도구입니다. Flex Message를 작성하고 미리 보기로 전송하는 데 개발 환경을 설정하거나 코드를 작성할 필요가 없습니다.</p>
+<p>먼저 <a href="https://developers.line.biz/flex-simulator/" target="_blank" rel="noopener noreferrer">Flex Message Simulator</a>를 엽니다. <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에 로그인되어 있지 않다면 로그인하라는 메시지가 표시됩니다. LINE Developers 계정이 있다면 해당 계정으로 로그인하세요. 계정이 없다면 <strong>Create an account</strong>를 클릭하여 계정을 만드세요.</p>
+<p>Flex Message Simulator의 UI는 세 개의 영역으로 구성됩니다.</p>
+<ul>
+<li><strong>미리 보기 영역</strong>: 트리 보기 영역과 속성 영역에서 지정한 데이터로 생성된 Flex Message를 표시합니다.</li>
+<li><strong>트리 보기 영역</strong>: Flex Message의 데이터 구조를 표시하고 편집할 수 있습니다.</li>
+<li><strong>속성 영역</strong>: 트리 보기 영역에서 선택한 항목의 속성을 설정할 수 있습니다. 시뮬레이터는 여기에 입력한 데이터로 Flex Message를 생성합니다.</li>
+</ul>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/en-areas.webp" alt="Flex Message 영역" loading="lazy"><figcaption>Flex Message 영역</figcaption></figure></p>
+<p>트리 보기 영역에서 항목 위에 마우스를 올리면 미리 보기 영역에서 해당 영역이 강조 표시됩니다. 동영상에서 이 기능을 직접 확인해 보세요.</p>
+<video width="883" height="381" controls>
+  <source src="https://vos.line-scdn.net/line-developers/docs/media/video/flex-message-simulator.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+<h4>Flex Message 레이아웃 프리셋 사용하기</h4>
+<p>Flex Message Simulator에서는 미리 정의된 Flex Message 레이아웃을 제공합니다.</p>
+<p>미리 정의된 레이아웃을 사용하려면 시뮬레이터 상단의 <strong>Showcase</strong>를 클릭하세요. 레이아웃을 선택한 후 <strong>Create</strong>를 클릭합니다.</p>
+<!-- note start -->
+<p><strong>레이아웃에 관하여</strong></p>
+<p>이 튜토리얼에서는 미리 정의된 레이아웃을 사용하지 않습니다. Flex Message를 처음부터 직접 만듭니다.</p>
+<!-- note end -->
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/showcase.webp" alt="Flex Message Simulator Showcase" loading="lazy"><figcaption>Flex Message Simulator Showcase</figcaption></figure></p>
+<h4>Flex Message를 JSON으로 복사하기</h4>
+<p>JSON으로 생성된 Flex Message를 복사하려면 <strong>&lt;/&gt;View as JSON</strong>을 클릭한 후 <strong>Copy</strong> 버튼을 클릭하세요.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/view-as-json.png" alt="View as JSON" loading="lazy"><figcaption>View as JSON</figcaption></figure></p>
+<h2>튜토리얼 바로 가기</h2>
+<p>설명을 읽지 않고 바로 결과를 미리 보려면 Flex Message 객체를 JSON으로 <a href="https://developers.line.biz/media/code-samples/flex-message-simulator-example.json" target="_blank" rel="noopener noreferrer">다운로드</a>하세요. Flex Message Simulator에서 결과를 미리 보려면 다음과 같이 하세요.</p>
+<ol>
+<li><strong>&lt;/&gt;View as JSON</strong>을 클릭합니다. JSON 데이터가 있는 모달이 표시됩니다.</li>
+<li>모달의 내용을 삭제합니다.</li>
+<li>다운로드한 JSON 파일의 내용을 복사하여 모달에 붙여 넣습니다.</li>
+<li><strong>Apply</strong>를 클릭하여 변경 사항을 저장합니다. 미리 보기 영역에 붙여 넣은 Flex Message가 표시됩니다.</li>
+</ol>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/en-confirm-example-code-output.webp" alt="샘플 JSON 데이터로 만든 Flex Message 미리 보기" loading="lazy"><figcaption>샘플 JSON 데이터로 만든 Flex Message 미리 보기</figcaption></figure></p>
+<h2>1. 컨테이너 유형 선택하기</h2>
+<p>Flex Message Simulator에 대해 알아보았으니 이제 디지털 명함을 만들어 보겠습니다. 명함에는 버블 하나만 있으면 되므로 Flex Message 컨테이너를 <a href="../flex-message-elements/#bubble">버블 유형</a>으로 설정합니다.</p>
+<p>버블 컨테이너를 만들려면 <strong>New</strong>를 클릭하고 드롭다운 메뉴에서 <strong>bubble</strong>을 선택하세요.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/select-bubble-type.webp" alt="버블 유형 컨테이너 선택" loading="lazy"><figcaption>버블 유형 컨테이너 선택</figcaption></figure></p>
+<div class="tip">
+<p><strong>팁</strong></p>
+<p>드롭다운 메뉴에서 <strong>bubble</strong>을 선택하면 미리 보기 영역 하단에 “OK” 메시지가 나타납니다. 이는 변경 사항이 미리 보기 영역에 성공적으로 반영되었다는 뜻입니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/type.png" alt="메시지 유형 선택" loading="lazy"><figcaption>메시지 유형 선택</figcaption></figure></p>
+</div>
+<p>컨테이너 유형에 대한 자세한 내용은 <a href="../flex-message-elements/#container">컨테이너</a>를 참고하세요.</p>
+<h2>2. 헤더 추가하기</h2>
+<p>만든 컨테이너에 회사 이름을 보여 줄 헤더를 추가해 보겠습니다. 헤더는 <a href="../flex-message-elements/#block">블록</a>의 한 종류이며, 히어로, 바디, 푸터도 블록입니다. 헤더는 주로 메시지 제목이나 내용의 머리글을 표시할 때 사용합니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/elements.png" alt="블록 스타일 예시" loading="lazy"><figcaption>블록 스타일 예시</figcaption></figure></p>
+<ol>
+<li>
+<p>헤더를 추가하려면 트리 보기 영역에서 <strong>header</strong> 노드를 선택합니다. 상단의 **+**를 클릭한 후 <strong>box</strong>를 클릭합니다.</p>
+</li>
+<li>
+<p>헤더의 배경색을 설정합니다. 속성 영역에서 <strong>backgroundColor</strong> 필드에 16진수 색상 코드를 입력합니다. 이 튜토리얼에서는 <code>#00B900</code>을 사용하고 Enter 키를 누릅니다. 이제 헤더가 바디 블록과 시각적으로 구분됩니다.</p>
+<div class="tip">
+<p><strong>Enter 키를 눌러 입력 내용 적용하기</strong></p>
+<p>속성 영역에서 속성을 추가하거나 선택할 때마다 Enter 키를 눌러 입력 내용을 미리 보기 영역에 적용하세요. 그러면 미리 보기 영역에서 결과를 확인할 수 있습니다. 이 튜토리얼에서는 번거로움을 줄이기 위해 이후 이 안내를 생략하겠습니다.</p>
+</div>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/set-header-color.png" alt="헤더 배경색 설정" loading="lazy"><figcaption>헤더 배경색 설정</figcaption></figure></p>
+</li>
+<li>
+<p>헤더에 텍스트를 추가합니다.</p>
+<ol>
+<li>
+<p>트리 보기에서 <strong>header</strong> 아래의 <strong>box [vertical]</strong> 노드를 클릭합니다.</p>
+<!-- tip}
+<p>Vertical box is one of the box types for Flex Messages, that determines how the box’s child components are placed within the box. For more information, see <a href="../flex-message-layout/#box-component-orientation">Box component orientation</a>.</p>
+<p>::</p>
+</li>
+<li>
+<p>트리 보기에서 **+**를 클릭한 후 드롭다운 메뉴에서 <strong>text</strong>를 클릭합니다. <strong>box [vertical]</strong> 노드 아래에 <strong>text</strong> 노드가 생성됩니다.</p>
+</li>
+<li>
+<p>트리 보기에서 텍스트 노드를 클릭합니다.</p>
+</li>
+<li>
+<p>속성 영역의 <strong>text</strong> 필드에서 &quot;hello, world&quot;를 &quot;Flex Message Corp&quot;로 바꿉니다.</p>
+</li>
+</ol>
+</li>
+</ol>
+<p>새 배경색으로 헤더를 구분할 수 있게 되었지만 헤더 텍스트는 조금 읽기 어렵습니다. 새로운 색상과 스타일로 텍스트를 돋보이게 만들어 보겠습니다. 트리 보기에서 텍스트 노드를 클릭하고 <strong>color</strong> 속성을 <code>#FFFFFF</code>로, <strong>weight</strong> 속성을 <code>bold</code>로 설정하세요.</p>
+<p>이제 아래와 비슷한 화면이 보일 것입니다. 구분이 잘 되는 헤더에 텍스트가 선명하게 보입니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/add-header-final.png" alt="헤더 추가 최종 결과물" loading="lazy"><figcaption>헤더 추가 최종 결과물</figcaption></figure></p>
+<h2>3. 이미지 추가하기</h2>
+<p>디지털 명함을 시각적으로 보완하는 방법 중 하나는 이미지를 추가하는 것입니다. Flex Message Simulator를 사용하면 이미지를 추가하고 스타일을 지정하는 작업이 아주 간단합니다. 이미지를 추가하려면 주로 이미지 타입 콘텐츠를 표시할 때 사용하는 <a href="../flex-message-elements/#block">히어로 블록</a>을 사용합니다.</p>
+<ol>
+<li>
+<p>트리 보기에서 <strong>hero</strong> 노드를 클릭합니다.</p>
+</li>
+<li>
+<p>**+**를 클릭한 후 드롭다운 목록에서 <strong>image</strong>를 클릭합니다. 미리 보기에 기본 이미지가 표시됩니다.</p>
+</li>
+<li>
+<p>이미지를 바꾸려면 트리 보기에서 <strong>image</strong> 노드를 클릭합니다. 속성 영역에서 <strong>url</strong> 속성 값을 원하는 이미지의 위치로 바꿉니다. 이미지는 세로 방향이어야 합니다. 튜토리얼에서는 <a href="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/mary.png" target="_blank" rel="noopener noreferrer">이 이미지</a>를 사용할 수 있습니다. start --&gt;</p>
+<p><strong>이미지 요구 사항</strong></p>
+<p>Flex Message Simulator에는 이미지 파일을 업로드할 수 없습니다. 웹에 업로드된 이미지의 URL을 지정하세요. 이미지와 이미지 URL은 다음 조건을 충족해야 합니다.</p>
+<ul>
+<li>프로토콜: HTTPS(TLS 1.2 이상)</li>
+<li>이미지 형식: JPEG 또는 PNG</li>
+<li>최대 이미지 크기: 1024 x 1024px</li>
+<li>최대 파일 크기: 10MB</li>
+</ul>
+<!-- tip}
+<p>Vertical box is one of the box types for Flex Messages, that determines how the box’s child components are placed within the box. For more information, see <a href="../flex-message-layout/#box-component-orientation">Box component orientation</a>.</p>
+<p>::</p>
+<ol>
+<li>트리 보기에서 **+**를 클릭한 후 드롭다운 메뉴에서 <strong>text</strong>를 클릭합니다. <strong>box [vertical]</strong> 노드 아래에 <strong>text</strong> 노드가 생성됩니다.</li>
+<li>트리 보기에서 텍스트 노드를 클릭합니다.</li>
+<li>속성 영역의 <strong>text</strong> 필드에서 &quot;hello, world&quot;를 &quot;Flex Message Corp&quot;로 바꿉니다.</li>
+</ol>
+</li>
+</ol>
+<p>새 배경색으로 헤더를 구분할 수 있게 되었지만 헤더 텍스트는 조금 읽기 어렵습니다. 새로운 색상과 스타일로 텍스트를 돋보이게 만들어 보겠습니다. 트리 보기에서 텍스트 노드를 클릭하고 <strong>color</strong> 속성을 <code>#FFFFFF</code>로, <strong>weight</strong> 속성을 <code>bold</code>로 설정하세요.</p>
+<p>이제 아래와 비슷한 화면이 보일 것입니다. 구분이 잘 되는 헤더에 텍스트가 선명하게 보입니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/add-header-final.png" alt="헤더 추가 최종 결과물" loading="lazy"><figcaption>헤더 추가 최종 결과물</figcaption></figure></p>
+<h2>3. 이미지 추가하기</h2>
+<p>디지털 명함을 시각적으로 보완하는 방법 중 하나는 이미지를 추가하는 것입니다. Flex Message Simulator를 사용하면 이미지를 추가하고 스타일을 지정하는 작업이 아주 간단합니다. 이미지를 추가하려면 주로 이미지 타입 콘텐츠를 표시할 때 사용하는 <a href="../flex-message-elements/#block">히어로 블록</a>을 사용합니다.</p>
+<ol>
+<li>
+<p>트리 보기에서 <strong>hero</strong> 노드를 클릭합니다.</p>
+</li>
+<li>
+<p>**+**를 클릭한 후 드롭다운 목록에서 <strong>image</strong>를 클릭합니다. 미리 보기에 기본 이미지가 표시됩니다.</p>
+</li>
+<li>
+<p>이미지를 바꾸려면 트리 보기에서 <strong>image</strong> 노드를 클릭합니다. 속성 영역에서 <strong>url</strong> 속성 값을 원하는 이미지의 위치로 바꿉니다. 이미지는 세로 방향이어야 합니다. 튜토리얼에서는 <a href="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/mary.png" target="_blank" rel="noopener noreferrer">이 이미지</a>를 사용할 수 있습니다. end --&gt;</p>
+<div class="tip">
+<p><strong>파일 크기 권장 사항</strong></p>
+<p>메시지를 지연 없이 표시하려면 각 이미지 파일의 크기를 1MB 이하로 유지하는 것을 권장합니다.</p>
+</div>
+</li>
+</ol>
+<p>이미지가 성공적으로 바뀌었지만 배경에 비해 이미지가 조금 작아 보입니다. 이미지를 더 크게 만들어 보겠습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/add-image.png" alt="이미지 추가" loading="lazy"><figcaption>이미지 추가</figcaption></figure></p>
+<p>이미지 크기를 바꾸려면 트리 보기에서 <strong>image</strong> 노드를 클릭하고 <strong>size</strong> 속성에서 최대 이미지 너비를 설정합니다. 이 튜토리얼에서는 속성 입력 필드 옆의 버튼을 클릭한 후 드롭다운 목록에서 <code>xl</code> 키워드를 선택합니다. 대신 픽셀(px)이나 퍼센트(%) 값을 <em>직접</em> 입력할 수도 있습니다. 자세한 내용은 <a href="../../../reference/messaging-api/#f-image">Image</a>의 “size” 속성 사양을 참고하세요.</p>
+<p>이제 확대된 이미지가 들어간 명함이 완성되었습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/add-image-final.png" alt="이미지 추가 최종 결과물" loading="lazy"><figcaption>이미지 추가 최종 결과물</figcaption></figure></p>
+<h2>4. 이름 추가하기</h2>
+<p>명함에는 이름이 반드시 들어가야 합니다. 이름과 같은 핵심 정보를 눈에 띄는 스타일로 보여 주면 좋습니다. 이미지 아래에 이름을 추가하려면 다음과 같이 하세요.</p>
+<ol>
+<li>트리 보기에서 <strong>body</strong> 아래의 <strong>box [vertical]</strong> 노드를 클릭합니다.</li>
+<li>**+**를 클릭한 후 드롭다운 메뉴에서 <strong>text</strong>를 클릭합니다. box 노드 아래에 text 노드가 생성됩니다.</li>
+<li>트리 보기에서 <strong>text</strong> 노드를 클릭합니다.</li>
+<li>속성 영역의 <strong>text</strong> 필드에서 &quot;hello, world&quot;를 이름으로 바꿉니다.</li>
+</ol>
+<p><a href="./#add-header">헤더 텍스트</a>에 했던 것처럼 이름 텍스트에도 스타일을 지정해 보겠습니다. 글꼴 크기를 키우고, 굵게 만들고, 가운데 정렬하려고 합니다.</p>
+<ul>
+<li><strong>크기</strong>: <strong>size</strong> 속성을 <code>xl</code>로 설정합니다. (기본 크기는 &quot;md&quot;입니다.)</li>
+<li><strong>굵게</strong>: <strong>weight</strong> 속성을 <code>bold</code>로 설정합니다.</li>
+<li><strong>가운데 정렬</strong>: <strong>align</strong> 속성을 <code>center</code>로 설정합니다.</li>
+</ul>
+<p>이제 명함의 이미지 아래에 이름이 표시됩니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/en-add-name-final.png" alt="이름 추가 최종 결과물" loading="lazy"><figcaption>이름 추가 최종 결과물</figcaption></figure></p>
+<h2>5. 직함 추가하기</h2>
+<p>명함에서 이름만큼 중요한 정보는 직함입니다. 이름 아래에 직함을 추가해 보겠습니다.</p>
+<ol>
+<li>트리 보기에서 <strong>body</strong> 아래의 <strong>box [vertical]</strong> 노드를 클릭합니다.</li>
+<li>**+**를 클릭한 후 드롭다운 메뉴에서 <strong>text</strong>를 클릭합니다. 새 text 노드가 생성됩니다.</li>
+<li>트리 보기에서 새 <strong>text</strong> 노드를 클릭합니다.</li>
+<li>속성 영역의 <strong>text</strong> 필드에서 &quot;hello, world&quot;를 직함으로 바꿉니다.</li>
+</ol>
+<p>이름을 가운데 정렬했으므로 직함도 가운데 정렬하겠습니다. 텍스트 노드가 선택된 상태에서 <strong>align</strong> 속성을 <code>center</code>로 설정하세요.</p>
+<p>이제 명함에 직함이 표시됩니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/en-add-job-title-final.png" alt="직함 추가 최종 결과물" loading="lazy"><figcaption>직함 추가 최종 결과물</figcaption></figure></p>
+<h2>6. 구분선 추가하기</h2>
+<p>이후 명함을 상호작용할 수 있도록 버튼을 추가할 것입니다. 그 전에 <a href="../../../reference/messaging-api/#separator">구분선(separator)</a>을 추가하여 정보 영역과 상호작용 영역을 시각적으로 나누어 보겠습니다.</p>
+<ol>
+<li>트리 보기에서 <strong>body</strong> 아래의 <strong>box [vertical]</strong> 노드를 클릭합니다.</li>
+<li>**+**를 클릭한 후 드롭다운 메뉴에서 <strong>separator</strong>를 클릭합니다. 직함 바로 아래에 구분선이 생성됩니다.</li>
+</ol>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/en-add-separator.png" alt="구분선 추가" loading="lazy"><figcaption>구분선 추가</figcaption></figure></p>
+<p>구분선과 직함 사이의 간격이 거의 없습니다. 구분선에 <a href="../../../reference/messaging-api/#separator">여백(margin)</a>을 주어 두 요소 사이에 공간을 만들어 보겠습니다. 여백에 대한 자세한 내용은 Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#separator">Separator</a>를 참고하세요.</p>
+<ol>
+<li>트리 보기에서 <strong>separator</strong> 노드를 클릭합니다.</li>
+<li>속성 영역에서 <strong>margin</strong> 속성을 <code>md</code>로 설정합니다.</li>
+</ol>
+<p>이제 여백이 있는 구분선이 명함에 추가되었습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/en-add-separator-final.png" alt="구분선 추가 최종 결과물" loading="lazy"><figcaption>구분선 추가 최종 결과물</figcaption></figure></p>
+<h2>7. 버튼 추가하기</h2>
+<p>6단계에서 언급했듯이 명함을 상호작용할 수 있도록 버튼을 추가하려고 합니다. 구분선 아래에 버튼 두 개를 추가하겠습니다. 먼저 버튼을 묶을 컴포넌트가 필요합니다.</p>
+<ol>
+<li><strong>body</strong> 아래의 **box [vertical]**를 클릭합니다.</li>
+<li>**+**를 클릭한 후 드롭다운 메뉴에서 <strong>box</strong>를 클릭합니다. 버튼을 추가할 box 노드가 생성됩니다.</li>
+</ol>
+<p>버튼을 누르면 액션이 실행되도록 하려고 합니다. 버튼에 사용할 수 있는 액션 유형은 <a href="../../../reference/messaging-api/#uri-action">URI 액션</a>과 <a href="../../../reference/messaging-api/#postback-action">포스트백 액션</a>입니다. 이 튜토리얼에서는 다음 기능을 하는 버튼을 추가합니다.</p>
+<ol>
+<li><a href="./#add-action-1">회사 웹사이트로 이동</a></li>
+<li><a href="./#add-action-2">LIFF로 만든 등록 양식 열기</a></li>
+</ol>
+<h3>7-1. 회사 웹사이트로 이동하는 버튼 추가하기</h3>
+<p>회사 웹사이트를 여는 버튼을 설정하려면 다음과 같이 하세요.</p>
+<ol>
+<li>트리 보기에서 버튼용으로 만든 **box [vertical]**를 클릭합니다.</li>
+<li>**+**를 클릭한 후 드롭다운 메뉴에서 <strong>button</strong>을 클릭합니다.</li>
+<li><strong>button [action]</strong> 노드를 클릭합니다.</li>
+<li>속성 영역에서 <strong>Action</strong> 섹션까지 아래로 스크롤합니다. 기본적으로 <strong>type</strong> 속성은 <code>uri</code>로 설정되어 있습니다. 웹사이트 URL을 열려고 하므로 이 값을 그대로 둡니다.</li>
+<li><strong>Action</strong> 섹션에서 <strong>label</strong> 속성을 &quot;Visit our website&quot;로 설정합니다. 이 값이 버튼 레이블이 됩니다.</li>
+<li>웹사이트를 열려면 <strong>uri</strong> 속성을 원하는 URL로 설정합니다.</li>
+</ol>
+<!-- note start -->
+<p><strong>URI에 퍼센트 인코딩 적용하기</strong></p>
+<p><code>uri</code> 속성의 도메인 이름, 경로, 쿼리 파라미터, 프래그먼트는 UTF-8 인코딩으로 <a href="https://en.wikipedia.org/wiki/Percent-encoding" target="_blank" rel="noopener noreferrer">퍼센트 인코딩</a>해야 합니다. 예를 들어 다음 설정이면 최종 URL은 <code>https://example.com/path?q=Good%20morning#Good%20afternoon</code>이 됩니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>스킴</th>
+<th>도메인 이름</th>
+<th>경로</th>
+<th>쿼리 파라미터</th>
+<th>프래그먼트</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>https</td>
+<td><a href="http://example.com" target="_blank" rel="noopener noreferrer">example.com</a></td>
+<td>/path</td>
+<td>q=Good morning</td>
+<td>Good afternoon</td>
+</tr>
+</tbody>
+</table></div>
+<!-- note end -->
+<p>이제 명함에 회사 웹사이트를 여는 버튼이 생겼습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/en-add-uri-button.png" alt="URI 액션 버튼 추가" loading="lazy"><figcaption>URI 액션 버튼 추가</figcaption></figure></p>
+<p>헤더 텍스트, 이름, 직함에 했던 것처럼 버튼에도 스타일을 지정하겠습니다. 누를 수 있는 영역을 더 잘 보이게 하려면 버튼에 색을 줄 수 있습니다. 색을 적용하려면 세 가지 사전 설정 버튼 스타일 중에서 선택할 수 있습니다.</p>
+<ul>
+<li><strong>Primary</strong>: 어두운 색 버튼용 스타일</li>
+<li><strong>Secondary</strong>: 밝은 색 버튼용 스타일</li>
+<li><strong>Link</strong>: 버튼을 HTML 텍스트 링크처럼 표시합니다</li>
+</ul>
+<p>이 튜토리얼처럼 버튼을 세로로 여러 개 쌓는 경우에는 링크 스타일을 사용하는 것을 권장합니다. 배경에 색을 주는 대신 버튼에 링크 스타일을 적용해 보겠습니다.</p>
+<ol>
+<li>트리 보기에서 <strong>button</strong> 노드를 클릭합니다.</li>
+<li>속성 영역에서 <strong>style</strong> 속성을 <code>link</code>로 설정합니다.</li>
+</ol>
+<p>버튼이 아래와 비슷하게 보일 것입니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/en-change-button-color.png" alt="버튼 색 변경" loading="lazy"><figcaption>버튼 색 변경</figcaption></figure></p>
+<h3>7-2. LIFF로 만든 등록 양식을 여는 버튼 추가하기</h3>
+<p>나머지 버튼도 추가해 보겠습니다. 두 번째 버튼에는 사업체의 등록 양식에 대한 <a href="../../liff/overview/">LINE Front-end Framework(LIFF)</a> URL을 추가하려고 합니다. LIFF로 등록 양식을 만들고, 양식에서 얻은 정보를 활용하여 나중에 사용자에게 새 메시지를 보낼 수 있습니다. LIFF에 대한 자세한 내용은 <a href="../../liff/developing-liff-apps/">LIFF 앱 개발하기</a> 또는 <a href="../../liff/trying-liff-app/">LIFF 스타터 앱 체험하기</a>를 참고하세요.</p>
+<p>두 번째 버튼을 만들려면 다음과 같이 하세요.</p>
+<ol>
+<li>트리 보기에서 첫 번째 버튼용으로 만든 <strong>box [vertical]</strong> 노드를 클릭합니다.</li>
+<li>**+**를 클릭한 후 드롭다운 메뉴에서 <strong>button</strong>을 클릭합니다. button 노드가 생성됩니다.</li>
+<li>속성 영역에서 다음과 같이 설정합니다.
+<ul>
+<li><strong>style</strong> 속성을 <code>link</code>로 설정합니다.</li>
+<li><strong>label</strong> 속성을 &quot;Register with us&quot;로 설정합니다.</li>
+<li><strong>type</strong> 속성은 <code>uri</code>로 그대로 둡니다.</li>
+<li><strong>uri</strong> 속성을 LIFF 앱 URL로 설정합니다.</li>
+</ul>
+</li>
+</ol>
+<p>이제 두 번째 버튼에 LIFF URL이 설정되었습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/en-add-liff-button.png" alt="LIFF 버튼 추가" loading="lazy"><figcaption>LIFF 버튼 추가</figcaption></figure></p>
+<h3>7-3. 버튼 간격 조정하기</h3>
+<p>버튼이 서로 아주 촘촘하게 붙어 있습니다. 겉보기에는 그렇지 않아 보이지만, 버튼 스타일을 primary나 secondary로 바꾸면 바로 차이를 알 수 있습니다. 버튼 사이에 여백을 두려면 상위 노드(여기서는 box 컴포넌트)에 <a href="../flex-message-layout/#margin-property">margin</a>이나 <a href="../flex-message-layout/#padding-property">padding</a>을 설정할 수 있습니다. 이 튜토리얼에서는 padding을 추가하겠습니다.</p>
+<ol>
+<li>트리 보기에서 버튼 두 개가 들어 있는 **box [vertical]**를 클릭합니다.</li>
+<li>속성 영역의 <strong>Padding</strong> 섹션에서 <strong>paddingTop</strong> 속성을 <code>10px</code>로 설정합니다.</li>
+</ol>
+<p>이제 버튼 사이에 더 넓은 간격이 생겼습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/using-flex-message-simulator/en-style-buttons.webp" alt="버튼 스타일 지정" loading="lazy"><figcaption>버튼 스타일 지정</figcaption></figure></p>
+<p>이것으로 디지털 명함 만들기 튜토리얼을 모두 마쳤습니다.</p>
+<h2>다음 단계</h2>
+<p>Flex Message를 작성했다면 <a href="./#copy-json">이 튜토리얼의 시작 부분</a>에서 소개한 것처럼 결과를 JSON으로 내보내세요. Messaging API로 Flex Message를 보낼 때 편리합니다. 자세한 내용은 <a href="../using-flex-messages/#sending-messages-with-the-messaging-api">Messaging API를 호출하여 Flex Message 보내기</a>를 참고하세요.</p>
+<h2>결론</h2>
+<p>Flex Message Simulator는 코드를 작성하지 않고도 Flex Message를 구상하고, 디자인하고, 프로토타입을 만들 수 있도록 도와주는 간단한 도구입니다. 이 튜토리얼처럼 Flex Message를 활용할 수 있는 사례는 무궁무진합니다. Flex Message Simulator를 사용하여 아이디어를 구체화하고, 프로토타입을 테스트하고, 기술적 장벽 없이 Flex Message 제작 속도를 높이세요. Flex Message Simulator로 독창적인 Flex Message를 만들어 보세요!</p>
+<h2>관련 페이지</h2>
+<ul>
+<li><a href="../using-flex-messages/">Flex Message 보내기</a></li>
+<li><a href="../flex-message-elements/">Flex Message 요소</a></li>
+<li><a href="../flex-message-layout/">Flex Message 레이아웃</a></li>
+<li><a href="../../../reference/messaging-api/#flex-message">Flex Message</a> (Messaging API 레퍼런스)</li>
+</ul>
+</article></main>
+</div>
+<script>
+(function(){
+  var a=document.querySelector('.sidebar a.active');
+  if(a)a.scrollIntoView({block:'center'});
+  var input=document.getElementById('nav-search');
+  if(!input)return;
+  var items=[].slice.call(document.querySelectorAll('.sidebar li'));
+  input.addEventListener('input',function(){
+    var q=input.value.trim().toLowerCase();
+    items.forEach(function(li){
+      if(!q){li.classList.remove('hidden');return;}
+      var own=(li.querySelector(':scope > a, :scope > details > summary')||li).textContent.toLowerCase();
+      var hit=own.indexOf(q)!==-1||li.textContent.toLowerCase().indexOf(q)!==-1;
+      li.classList.toggle('hidden',!hit);
+      if(hit){var d=li.querySelector(':scope > details');if(d)d.open=true;}
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,2431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>릴리스 노트 | LINE Developers</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#fff;--fg:#1a1a1a;--fg2:#595959;--border:#e5e5e5;--bg2:#f5f5f7;--accent:#0066ff;--code-bg:#f3f4f6;--hover:rgba(0,102,255,.07);--header-h:57px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Neo','Noto Sans KR',Roboto,sans-serif;line-height:1.6;margin:0}
+header{position:sticky;top:0;z-index:20;height:var(--header-h);background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;padding:0 1.25rem}
+.logo{font-weight:700;font-size:1.2rem;color:var(--fg);text-decoration:none;white-space:nowrap}
+.search{flex:1;max-width:320px;margin-left:auto}
+.search input{width:100%;padding:.45rem .75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--fg);font-size:.875rem}
+.search input:focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--bg)}
+.nav-btn{display:none;cursor:pointer;font-size:1.3rem;line-height:1;padding:.25rem .4rem;border:1px solid var(--border);border-radius:6px}
+#nav-toggle{position:absolute;opacity:0;pointer-events:none}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr)}
+.sidebar{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto;border-right:1px solid var(--border);background:var(--bg2);padding:.75rem 0 2rem;font-size:.875rem}
+.sidebar ul{list-style:none;margin:0;padding:0}
+.sidebar ul ul{padding-left:.9rem;border-left:1px solid var(--border);margin-left:1.1rem}
+.nav-title{padding:.9rem 1.25rem .35rem;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg2)}
+.sidebar a,.sidebar summary>span{display:inline-block;padding:.28rem .5rem;color:var(--fg2);text-decoration:none;border-radius:4px}
+.sidebar li>a{display:block;margin:0 .5rem 0 1rem}
+.sidebar a:hover{color:var(--accent);background:var(--hover)}
+.sidebar a.active{color:var(--accent);background:var(--hover);font-weight:600}
+.sidebar summary{cursor:pointer;padding:.1rem .75rem .1rem 1rem;list-style-position:inside}
+.sidebar summary>span{font-weight:600;color:var(--fg)}
+.sidebar summary a{padding-left:.2rem}
+.sidebar li.hidden{display:none}
+.content{min-width:0;padding:2rem 2.5rem 4rem}
+article{max-width:880px;margin:0 auto}
+h1,h2,h3,h4{line-height:1.3;color:var(--fg);text-wrap:balance}
+h1{font-size:2.1rem;margin:0 0 1rem}
+h2{font-size:1.5rem;margin:2.2rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.2rem;margin:1.6rem 0 .6rem}
+p,li{color:var(--fg2);line-height:1.75}
+a{color:var(--accent)}
+code{background:var(--code-bg);padding:.15em .4em;border-radius:3px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;line-height:1.5}
+pre code{background:none;padding:0;color:var(--fg)}
+blockquote{border-left:4px solid var(--accent);padding:.6rem 1.2rem;margin:1.2rem 0;background:var(--bg2);border-radius:4px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:1.2rem 0}
+th,td{padding:.6rem .8rem;border:1px solid var(--border);text-align:left;vertical-align:top}
+th{background:var(--bg2);color:var(--fg)}
+.doc-figure{margin:1.5rem 0;text-align:center}
+.doc-figure img{max-width:100%;height:auto;border:1px solid var(--border);border-radius:8px}
+.doc-figure figcaption{margin-top:.4rem;font-size:.85rem;color:var(--fg2)}
+.tip{background:var(--bg2);border-left:4px solid var(--accent);padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:4px}
+.feature-box{background:var(--bg2);border-left:4px solid var(--accent);border-radius:6px;padding:1rem 1.4rem;margin:1.2rem 0}
+.feature-box h4{margin:0 0 .4rem;color:var(--accent)}
+.feature-box p{margin:0}
+@media (max-width:860px){
+  .nav-btn{display:block}
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .sidebar{display:none;position:fixed;inset:var(--header-h) 0 0 0;height:auto;z-index:15;width:100%}
+  #nav-toggle:checked~.layout .sidebar{display:block}
+  .content{padding:1.25rem 1rem 3rem}
+  h1{font-size:1.6rem}
+  .search{max-width:none}
+}
+</style>
+</head>
+<body>
+<input type="checkbox" id="nav-toggle">
+<header>
+  <label for="nav-toggle" class="nav-btn" aria-label="메뉴">☰</label>
+  <a href="../../../" class="logo">LINE Developers</a>
+  <div class="search"><input id="nav-search" type="search" placeholder="문서 검색..." aria-label="문서 검색"></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" aria-label="문서 목차"><div class="nav-section"><div class="nav-title">문서</div><ul><li><details><summary><span>기본</span></summary><ul><li><a href="../../basics/channel-access-token/">채널 액세스 토큰</a></li><li><a href="../../basics/line-api-status/">LINE Platform 가용성 확인 (LINE API Status)</a></li><li><a href="../../basics/user-profile/">사용자 프로필 정보 가져오기</a></li></ul></details></li><li><details open><summary><span>LIFF</span></summary><ul><li><a href="../overview/">LIFF 개요</a></li><li><a href="../getting-started/">채널 생성하기</a></li><li><a href="../cli-tool-create-liff-app/">Create LIFF App로 LIFF 앱 개발 환경 구축하기</a></li><li><a href="../developing-liff-apps/">LIFF 앱 개발하기</a></li><li><a href="../development-guidelines/">LIFF 앱 개발 가이드라인</a></li><li><a href="../differences-between-liff-browser-and-external-browser/">LIFF 브라우저와 외부 브라우저의 차이</a></li><li><a href="../differences-between-liff-browser-and-line-in-app-browser/">LIFF 브라우저와 LINE 인앱 브라우저의 차이</a></li><li><a href="../liff-cli/">LIFF CLI</a></li><li><a href="../liff-plugin/">LIFF 플러그인</a></li><li><a href="../minimizing-liff-browser/">LIFF 브라우저 최소화</a></li><li><a href="../opening-liff-app/">LIFF 앱 열기</a></li><li><a href="../pluggable-sdk/">플러거블 SDK</a></li><li><a href="../registering-liff-apps/">채널에 LIFF 앱 추가하기</a></li><li><a href="./" class="active" aria-current="page">릴리스 노트</a></li><li><a href="../trying-liff-app/">LIFF 스타터 앱 체험하기</a></li><li><a href="../using-user-profile/">LIFF 앱 및 서버에서 사용자 데이터 사용하기</a></li><li><a href="../versioning-policy/">버전 정책</a></li></ul></details></li><li><details><summary><span>LINE Ads API</span></summary><ul><li><a href="../../line-ads-api/about/">LINE Ads API 소개</a></li><li><a href="../../line-ads-api/development-guidelines/">LINE Ads API 개발 가이드라인</a></li></ul></details></li><li><a href="../../line-conversion-api/">LINE Conversion API</a></li><li><details><summary><span>LINE Developers 콘솔</span></summary><ul><li><a href="../../line-developers-console/overview/">LINE Developers Console 개요</a></li><li><a href="../../line-developers-console/best-practices-for-provider-and-channel-management/">프로바이더 및 채널 관리 모범 사례</a></li><li><a href="../../line-developers-console/delete-developer-account/">개발자 계정 삭제하기</a></li><li><a href="../../line-developers-console/login-account/">LINE Developers Console에 로그인하기</a></li><li><a href="../../line-developers-console/managing-roles/">역할 관리하기</a></li><li><a href="../../line-developers-console/notification/">이메일 또는 알림 센터로 알림 받기</a></li></ul></details></li><li><details><summary><span>LINE 로그인</span></summary><ul><li><a href="../../line-login/overview/">LINE Login 개요</a></li><li><a href="../../line-login/getting-started/">LINE Login 시작하기</a></li><li><a href="../../line-login/development-guidelines/">LINE Login 개발 가이드라인</a></li><li><a href="../../line-login/how-to-handle-auto-login-failure/">자동 로그인 실패 처리 방법</a></li><li><a href="../../line-login/integrate-line-login/">웹 앱에 LINE Login 연동하기</a></li><li><a href="../../line-login/integrate-line-login-v2/">웹 앱에 LINE Login(v2.0) 연동하기</a></li><li><a href="../../line-login/integrate-pkce/">LINE Login의 PKCE 지원</a></li><li><a href="../../line-login/link-a-bot/">로그인 시 LINE 공식 계정을 친구로 추가하기(친구 추가 옵션)</a></li><li><a href="../../line-login/login-button/">LINE Login 버튼 디자인 가이드라인</a></li><li><a href="../../line-login/managing-access-tokens/">액세스 토큰 관리</a></li><li><a href="../../line-login/managing-access-tokens-v2/">액세스 토큰 관리(LINE Login v2.0)</a></li><li><a href="../../line-login/managing-authorized-apps/">승인된 앱 관리하기</a></li><li><a href="../../line-login/managing-users/">사용자 관리</a></li><li><a href="../../line-login/managing-users-v2/">사용자 관리(LINE Login v2.0)</a></li><li><a href="../../line-login/secure-login-process/">앱과 서버 간의 안전한 로그인 프로세스 만들기</a></li><li><a href="../../line-login/security-checklist/">LINE Login 보안 체크리스트</a></li><li><a href="../../line-login/using-line-url-scheme/">LINE URL scheme을 사용하여 LINE 기능 이용하기</a></li><li><a href="../../line-login/verify-id-token/">ID 토큰에서 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LINE 로그인 SDK</span></summary><ul><li><details><summary><span>Android SDK</span></summary><ul><li><a href="../../line-login-sdks/android-sdk/overview/">LINE SDK for Android 개요</a></li><li><a href="../../line-login-sdks/android-sdk/handling-errors/">오류 처리</a></li><li><a href="../../line-login-sdks/android-sdk/integrate-line-login/">Android 앱에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/android-sdk/link-a-bot/">SDK로 친구 추가 옵션 활성화하기</a></li><li><a href="../../line-login-sdks/android-sdk/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../line-login-sdks/android-sdk/managing-users/">사용자 관리하기</a></li><li><a href="../../line-login-sdks/android-sdk/release-notes/">LINE SDK for Android 릴리스 노트</a></li><li><a href="../../line-login-sdks/android-sdk/try-line-login/">샘플 앱 체험하기</a></li></ul></details></li><li><a href="../../line-login-sdks/flutter-sdk/">Flutter SDK</a></li><li><details><summary><span>iOS SDK</span></summary><ul><li><a href="../../line-login-sdks/ios-sdk/release-notes/">LINE SDK for iOS 릴리스 노트</a></li><li><details><summary><span>Swift</span></summary><ul><li><a href="../../line-login-sdks/ios-sdk/swift/overview/">LINE SDK for iOS Swift 개요</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/error-handling/">오류 처리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/integrate-line-login/">iOS 앱에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/link-a-bot/">SDK로 추가 친구 옵션 활성화하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/managing-users/">사용자 관리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/migration-guide/">SDK 업그레이드하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/setting-up-project/">프로젝트 설정하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/universal-links-support/">유니버설 링크 사용하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/using-objc/">Objective-C 코드에서 SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>Unity SDK</span></summary><ul><li><a href="../../line-login-sdks/unity-sdk/overview/">LINE SDK for Unity 개요</a></li><li><a href="../../line-login-sdks/unity-sdk/integrate-line-login/">Unity 게임에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/unity-sdk/project-setup/">프로젝트 설정하기</a></li><li><a href="../../line-login-sdks/unity-sdk/release-notes/">LINE SDK for Unity 릴리스 노트</a></li><li><a href="../../line-login-sdks/unity-sdk/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../line-login-sdks/unity-sdk/using-sdk/">결과 처리와 기타 API에 LINE SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>LINE 미니앱</span></summary><ul><li><a href="../../line-mini-app/quickstart/">LINE MINI App 시작하기</a></li><li><details><summary><span>Design</span></summary><ul><li><a href="../../line-mini-app/design/landscape/">LINE MINI App의 안전 영역</a></li><li><a href="../../line-mini-app/design/line-mini-app-icon/">LINE MINI App 아이콘 사양 및 가이드라인</a></li><li><a href="../../line-mini-app/design/loading-icon/">로딩 아이콘</a></li></ul></details></li><li><details><summary><span>Develop</span></summary><ul><li><a href="../../line-mini-app/develop/add-to-home-screen/">LINE MINI App의 바로가기를 사용자 기기의 홈 화면에 추가하기</a></li><li><a href="../../line-mini-app/develop/channel-consent-simplification/">LINE MINI App 인증 흐름</a></li><li><a href="../../line-mini-app/develop/configure-console/">LINE MINI App 사용자에게 표시되는 설정</a></li><li><a href="../../line-mini-app/develop/custom-path/">커스텀 경로 설정하기</a></li><li><a href="../../line-mini-app/develop/develop-overview/">시작하기</a></li><li><a href="../../line-mini-app/develop/external-browser/">외부 브라우저에서 LINE MINI App 열기</a></li><li><a href="../../line-mini-app/develop/payment/">결제 처리하기</a></li><li><a href="../../line-mini-app/develop/performance-guidelines/">성능 가이드라인</a></li><li><a href="../../line-mini-app/develop/permanent-links/">영구 링크 만들기</a></li><li><a href="../../line-mini-app/develop/service-messages/">서비스 메시지 보내기</a></li><li><a href="../../line-mini-app/develop/share-messages/">커스텀 액션 버튼 구현하기</a></li><li><a href="../../line-mini-app/develop/share-messages-standard/">가이드라인을 따르는 JSON 파일 예시</a></li><li><a href="../../line-mini-app/develop/web-to-mini-app/">운영 중인 웹 앱을 LINE MINI App으로 구현하기</a></li></ul></details></li><li><a href="../../line-mini-app/development-guidelines/">LINE MINI App 개발 가이드라인</a></li><li><details><summary><span>Discover</span></summary><ul><li><a href="../../line-mini-app/discover/introduction/">LINE MINI App 소개</a></li><li><a href="../../line-mini-app/discover/builtin-features/">기본 제공 기능</a></li><li><a href="../../line-mini-app/discover/console-guide/">LINE MINI App용 LINE Developers Console 가이드</a></li><li><a href="../../line-mini-app/discover/custom-features/">커스텀 기능</a></li><li><a href="../../line-mini-app/discover/native-mini/">네이티브 앱과 LINE MINI App의 차이</a></li><li><a href="../../line-mini-app/discover/specifications/">LINE MINI App 사양</a></li><li><a href="../../line-mini-app/discover/ui-components/">LINE MINI App UI 컴포넌트</a></li></ul></details></li><li><details><summary><span>In App Purchase</span></summary><ul><li><a href="../../line-mini-app/in-app-purchase/overview/">인앱 결제 개요</a></li><li><a href="../../line-mini-app/in-app-purchase/apple-mini-apps-partner-program/">Mini Apps Partner Program을 통한 App Store 수수료 인하</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-guidelines/">인앱 결제 개발 가이드라인</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-product-id/">인앱 결제로 구매 가능한 아이템의 상품 ID 목록</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-settings/">인앱 결제 설정</a></li><li><a href="../../line-mini-app/in-app-purchase/implement-in-app-purchase/">인앱 결제 기능 연동</a></li><li><a href="../../line-mini-app/in-app-purchase/request-iap-review/">인앱 결제 사용 신청</a></li></ul></details></li><li><details><summary><span>Quick Fill</span></summary><ul><li><a href="../../line-mini-app/quick-fill/overview/">공통 프로필 Quick-fill 개요</a></li><li><a href="../../line-mini-app/quick-fill/design-regulations/">공통 프로필 Quick-fill 디자인 규정</a></li></ul></details></li><li><details><summary><span>Service</span></summary><ul><li><a href="../../line-mini-app/service/add-friend-option/">LINE MINI App에서 LINE 공식 계정을 친구로 추가하기 (친구 추가 옵션)</a></li><li><a href="../../line-mini-app/service/business-manager-link/">LINE MINI App 채널을 Business Manager 조직에 연결하기</a></li><li><a href="../../line-mini-app/service/line-mini-app-ads/">LINE MINI App에 광고 게재하기</a></li><li><a href="../../line-mini-app/service/line-mini-app-oa/">LINE 공식 계정 활용하기</a></li><li><a href="../../line-mini-app/service/service-operation/">서비스 운영하기</a></li><li><a href="../../line-mini-app/service/update-service/">인증된 MINI App 업데이트 후 재심사</a></li></ul></details></li><li><details><summary><span>Submit</span></summary><ul><li><a href="../../line-mini-app/submit/submission-guide/">LINE MINI App 제출하기</a></li></ul></details></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../../line-mini-app/technicalcase/bravetechnology/">&#039;대기 줄 관리 솔루션이 LINE MINI App으로 확장되는 방식: &quot;matoca&quot;와 &quot;yoboca&quot;의 개발 사례&#039;</a></li><li><a href="../../line-mini-app/technicalcase/classmethod/">모바일 주문 시스템 CX ORDER 사례 연구</a></li><li><a href="../../line-mini-app/technicalcase/grandream/">GDL 플랫폼의 기술 사례 연구: 비용 효율성과 유연성을 함께 실현</a></li><li><a href="../../line-mini-app/technicalcase/hakuhodo/">도야마현 아사히마치의 모빌리티 및 건강 증진을 위한 디지털 활성화 프로젝트 &quot;PoHUNT&quot; 개발 사례</a></li><li><a href="../../line-mini-app/technicalcase/kirifuda-morikaranotegami/">놀이를 통한 자연 보호: LINE MINI App으로 출시한 &quot;Letters from the Forest&quot;의 기술 사례 연구</a></li></ul></details></li></ul></details></li><li><details><summary><span>Messaging API</span></summary><ul><li><a href="../../messaging-api/overview/">Messaging API 개요</a></li><li><a href="../../messaging-api/getting-started/">Messaging API 시작하기</a></li><li><a href="../../messaging-api/actions/">액션</a></li><li><a href="../../messaging-api/beacon-device-spec/">LINE Beacon 디바이스 사양</a></li><li><a href="../../messaging-api/building-bot/">봇 만들기</a></li><li><a href="../../messaging-api/check-webhook-error-statistics/">웹훅 오류 원인 및 통계 확인하기</a></li><li><a href="../../messaging-api/create-flex-message-including-video/">동영상이 포함된 Flex Message 만들기</a></li><li><a href="../../messaging-api/development-guidelines/">Messaging API 개발 가이드라인</a></li><li><a href="../../messaging-api/download-bot-designer/">LINE Bot Designer 다운로드</a></li><li><a href="../../messaging-api/flex-message-elements/">Flex Message 요소</a></li><li><a href="../../messaging-api/flex-message-layout/">Flex Message 레이아웃</a></li><li><a href="../../messaging-api/generate-json-web-token/">채널 액세스 토큰 v2.1 발급</a></li><li><a href="../../messaging-api/get-quote-tokens/">인용 토큰 가져오기</a></li><li><a href="../../messaging-api/getting-user-ids/">사용자 ID 가져오기</a></li><li><a href="../../messaging-api/group-chats/">그룹 채팅 및 다인 채팅</a></li><li><a href="../../messaging-api/icon-nickname-switch/">아이콘 및 표시 이름 설정하기</a></li><li><a href="../../messaging-api/line-bot-sdk/">LINE Messaging API SDK</a></li><li><a href="../../messaging-api/linking-accounts/">사용자 계정 연동</a></li><li><a href="../../messaging-api/mark-as-read/">메시지를 읽음으로 표시하기</a></li><li><a href="../../messaging-api/measure-impressions/">노출 수 측정하기</a></li><li><a href="../../messaging-api/message-types/">메시지 타입</a></li><li><a href="../../messaging-api/nodejs-sample/">튜토리얼 - 응답 봇 만들기</a></li><li><a href="../../messaging-api/pricing/">Messaging API 요금</a></li><li><a href="../../messaging-api/receiving-messages/">메시지 수신하기(웹훅)</a></li><li><a href="../../messaging-api/retrying-api-request/">API 요청 재시도</a></li><li><a href="../../messaging-api/rich-menus-overview/">리치 메뉴 개요</a></li><li><a href="../../messaging-api/secure-message-sample/">보안 메시지 생성을 위한 샘플 코드와 데이터</a></li><li><a href="../../messaging-api/send-coupons-to-users/">쿠폰을 만들어 사용자에게 보내기</a></li><li><a href="../../messaging-api/sending-messages/">메시지 보내기</a></li><li><a href="../../messaging-api/sharing-bot/">LINE 공식 계정 친구 늘리기</a></li><li><a href="../../messaging-api/ssl-tls-spec-of-the-webhook-source/">웹훅 소스의 SSL/TLS 사양</a></li><li><a href="../../messaging-api/stop-using-line-official-account/">LINE 공식 계정 사용 중단하기</a></li><li><a href="../../messaging-api/stop-using-messaging-api/">Messaging API 사용 중단하기</a></li><li><a href="../../messaging-api/switch-rich-menus/">리치 메뉴에서 탭 전환하기</a></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../../messaging-api/technicalcase/boldly/">온디맨드 자율주행 버스 예약 시스템의 LINE MINI App 사례</a></li><li><a href="../../messaging-api/technicalcase/evolany-ai/">anybot for ChatGPT 기술 사례 연구: ChatGPT를 적극 활용하여 더 원활한 커뮤니케이션 구현하기</a></li><li><a href="../../messaging-api/technicalcase/heptagon/">이주 및 정착 관련 문의를 처리하는 LINE 봇 개발 사례 연구</a></li><li><a href="../../messaging-api/technicalcase/playnext-lab/">Smart Public Lab 기술 사례 연구: 행정 디지털 전환을 지원하는 LINE 활용 전략</a></li><li><a href="../../messaging-api/technicalcase/resortbaito-dive/">임시직 직원의 만족도를 높이기 위한 &quot;Resort Baito Dive&quot; 개발 사례</a></li><li><a href="../../messaging-api/technicalcase/skillbox/">SkillBox 기술 사례 연구: 이메일 주소가 없는 직원까지 LINE 알림으로 참여도 설문 응답률을 크게 높이다</a></li><li><a href="../../messaging-api/technicalcase/softbank/">인프라를 로우 코드로 도입하기: CNAP으로 개발 효율을 높인 LINE 기반 서비스 개발 사례</a></li></ul></details></li><li><a href="../../messaging-api/text-character-count/">텍스트의 글자 수 세기</a></li><li><a href="../../messaging-api/try-rich-menu/">리치 메뉴 체험하기</a></li><li><a href="../../messaging-api/unit-based-statistics-aggregation/">발송한 메시지의 통계 조회하기</a></li><li><a href="../../messaging-api/use-loading-indicator/">로딩 애니메이션 표시하기</a></li><li><a href="../../messaging-api/use-membership-features/">멤버십 기능 사용하기</a></li><li><a href="../../messaging-api/use-per-user-rich-menus/">사용자별 리치 메뉴 사용하기</a></li><li><a href="../../messaging-api/user-consent/">사용자 프로필 정보 제공 동의</a></li><li><a href="../../messaging-api/using-audience/">오디언스 사용하기</a></li><li><a href="../../messaging-api/using-beacons/">LINE 비콘 사용하기</a></li><li><a href="../../messaging-api/using-bot-designer/">LINE Bot Designer</a></li><li><a href="../../messaging-api/using-flex-message-simulator/">튜토리얼 - Flex Message Simulator로 디지털 명함 만들기</a></li><li><a href="../../messaging-api/using-flex-messages/">Flex Message 보내기</a></li><li><a href="../../messaging-api/using-line-url-scheme/">LINE URL 스킴으로 LINE 기능 사용하기</a></li><li><a href="../../messaging-api/using-quick-reply/">퀵 리플라이 사용하기</a></li><li><a href="../../messaging-api/using-rich-menus/">리치 메뉴 사용하기</a></li><li><a href="../../messaging-api/verify-webhook-signature/">웹훅 서명 검증하기</a></li><li><a href="../../messaging-api/verify-webhook-url/">웹훅 URL 확인하기</a></li></ul></details></li><li><details><summary><span>파트너 문서</span></summary><ul><li><a href="../../partner-docs/overview/">개요</a></li><li><a href="../../partner-docs/api-policy-handbook/">LINE API 정책 핸드북</a></li><li><a href="../../partner-docs/development-guidelines/">법인 고객을 위한 개발 가이드라인</a></li><li><a href="../../partner-docs/error-notification/">오류 알림</a></li><li><a href="../../partner-docs/line-beacon/">LINE Beacon</a></li><li><details><summary><span>Line Notification Messages</span></summary><ul><li><a href="../../partner-docs/line-notification-messages/overview/">LINE 알림 메시지 개요</a></li><li><a href="../../partner-docs/line-notification-messages/flow-when-receiving-message/">LINE 알림 메시지를 수신할 때의 흐름</a></li><li><a href="../../partner-docs/line-notification-messages/message-sending-complete-webhook-event/">웹훅 발송 완료 이벤트</a></li><li><a href="../../partner-docs/line-notification-messages/statistics/">LINE 알림 메시지 통계 가져오기</a></li><li><a href="../../partner-docs/line-notification-messages/technical-specs/">LINE 알림 메시지 API 기술 사양</a></li><li><a href="../../partner-docs/line-notification-messages/template/">LINE 알림 메시지(템플릿)</a></li></ul></details></li><li><a href="../../partner-docs/line-profile-plus/">LINE Profile+</a></li><li><a href="../../partner-docs/mark-as-read/">Mark as read API(이전 버전)</a></li><li><a href="../../partner-docs/mission-stickers/">Mission Sticker API</a></li><li><a href="../../partner-docs/module/">모듈</a></li><li><a href="../../partner-docs/module-technical-attach-channel/">모듈 채널 연결</a></li><li><a href="../../partner-docs/module-technical-chat-control/">채팅 주도권 제어(Chat Control)</a></li><li><a href="../../partner-docs/module-technical-console/">모듈 채널 설정 구성</a></li><li><a href="../../partner-docs/module-technical-using-messaging-api/">모듈 채널에서 Messaging API 사용하기</a></li><li><a href="../../partner-docs/notice/">법인 고객 공지</a></li><li><a href="../../partner-docs/provider-page/">Provider page</a></li></ul></details></li></ul></div><div class="nav-section"><div class="nav-title">레퍼런스</div><ul><li><a href="../../../reference/liff/">LIFF API reference</a></li><li><a href="../../../reference/liff-server/">Server API</a></li><li><a href="../../../reference/line-login/">LINE Login v2.1 API reference</a></li><li><a href="../../../reference/line-login-v2/">LINE Login API v2.0 reference</a></li><li><a href="../../../reference/line-mini-app/">LINE MINI App API reference</a></li><li><a href="../../../reference/line-notification-messages/">LINE notification messages API reference</a></li><li><a href="../../../reference/messaging-api/">Messaging API reference</a></li><li><a href="../../../reference/partner-docs/">Options for corporate customers API reference</a></li></ul></div></nav>
+  <main class="content"><article><h1>릴리스 노트</h1><h2>LIFF 버전 및 출시일</h2>
+<p>LIFF v2.2.0부터 LIFF는 <a href="https://semver.org/" target="_blank" rel="noopener noreferrer">Semantic Versioning</a>(SemVer)을 따릅니다. 자세한 내용은 <a href="../versioning-policy/">LIFF 버전 관리 정책</a>을 참조하세요.</p>
+<div class="tip">
+<p><strong>CDN 경로</strong></p>
+<p>CDN 경로는 고정 경로(fixed)와 에지 경로(edge) 두 가지를 제공합니다. CDN 에지 경로를 사용하면 항상 최신 MINOR 및 PATCH 업데이트가 적용됩니다. CDN 고정 경로를 사용하는 경우에는 업데이트할 때마다 URL을 직접 변경해야 합니다.</p>
+<p>자세한 내용은 LIFF 버전 관리 정책 문서의 <a href="../versioning-policy/#update-policy">LIFF SDK(sdk.js) 업데이트 정책</a>을 참조하세요.</p>
+</div>
+<h3>현재 버전</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하면 언제나 LIFF v2의 최신 기능을 사용할 수 있습니다.</p>
+<p><a href="./#liff-v2-31-2">LIFF v2.31.2: 2026년 10월 7일</a></p>
+<h3>버전 목록</h3>
+<p>CDN 고정 경로(예: <code>https://static.line-scdn.net/liff/edge/versions/2.31.2/sdk.js</code>)를 사용하면 지정한 LIFF 버전의 기능을 사용할 수 있습니다.</p>
+<!-- table of contents -->
+<p>2026/10/07</p>
+<h2>LIFF v2.31.2 출시</h2>
+<p>LIFF v2.31.2를 출시했습니다.</p>
+<p>LIFF v2.31.2에서는 다음과 같이 변경되었습니다.</p>
+<h3>LIFF URL 쿼리 파라미터 값의 <code>?</code> 문자 처리 방식을 변경했습니다</h3>
+<p><a href="https://developers.line.biz/en/news/2026/08/31/liff-query-parameter-change/" target="_blank" rel="noopener noreferrer">2026년 8월 31일</a>에 안내한 것처럼, <a href="https://developers.line.biz/en/glossary/#liff-url" target="_blank" rel="noopener noreferrer">LIFF URL</a>에 포함된 쿼리 파라미터 값의 <code>?</code> 문자 처리 방식을 변경했습니다.</p>
+<p>사용자가 LIFF URL에 접속하면 LIFF 앱은 먼저 기본 리디렉션 URL로 이동한 다음 <a href="../opening-liff-app/#redirect-flow">보조 리디렉션 URL</a>로 이동합니다. LIFF v2.31.2에서는 <a href="https://developers.line.biz/en/glossary/#liff-browser" target="_blank" rel="noopener noreferrer">LIFF 브라우저</a>에서 LIFF URL의 쿼리 파라미터 값을 보조 리디렉션 URL에 복원하는 처리 방식을 변경했습니다. 아래 <a href="./#query-parameter-examples-20261007">예시</a>와 같이 쿼리 파라미터 값의 <code>?</code> 문자가 더 이상 <code>&amp;</code>로 바뀌지 않습니다.</p>
+<p>이 변경은 LIFF 앱이 LIFF 브라우저에서 열릴 때 적용됩니다. <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">외부 브라우저</a>에서 LIFF 앱을 열 때의 동작은 변경되지 않았습니다.</p>
+<h4>예시</h4>
+<p>예를 들어 LIFF 앱의 엔드포인트 URL이 <code>https://example.com</code>이고 사용자가 <code>https://liff.line.me/{liffId}/?key=foo?bar</code>에 접속한다고 가정하겠습니다. 보조 리디렉션 URL은 다음과 같습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>변경 전(LIFF v2.31.1 이하)</th>
+<th>변경 후(LIFF v2.31.2 이상)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>https://example.com?key=foo&amp;bar</code></td>
+<td><code>https://example.com?key=foo?bar</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>쿼리 파라미터 값의 <code>?</code> 문자를 퍼센트 인코딩한 <code>https://liff.line.me/{liffId}/?key=foo%3Fbar</code>와 같은 LIFF URL에 접속하는 경우에도 접속 방법에 따라 LIFF 앱이 영향을 받을 수 있습니다. LIFF 브라우저에서 LIFF 앱을 여는 방법별 동작은 다음과 같습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>접속 방법</th>
+<th>변경 전(LIFF v2.31.1 이하)</th>
+<th>변경 후(LIFF v2.31.2 이상)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>iOS 기기에서 LINE 앱 이외의 앱으로 접속</td>
+<td><code>https://example.com?key=foo&amp;bar</code></td>
+<td><code>https://example.com?key=foo?bar</code></td>
+</tr>
+<tr>
+<td>iOS 기기에서 LINE 앱으로 접속</td>
+<td><code>https://example.com?key=foo%3Fbar</code></td>
+<td>변경 없음</td>
+</tr>
+<tr>
+<td>Android 기기</td>
+<td><code>https://example.com?key=foo%3Fbar</code></td>
+<td>변경 없음</td>
+</tr>
+</tbody>
+</table></div>
+<h4>사양 변경에 관한 참고 사항</h4>
+<p>LIFF 앱이 값으로 URL을 갖는 쿼리 파라미터를 사용하는 경우(예: <code>return_url</code>에 사용자가 이동해 온 페이지의 URL이 포함된 경우), LIFF 브라우저에서 열릴 때 이 변경의 영향을 받을 수 있습니다. 쿼리 파라미터 값을 퍼센트 인코딩하더라도 LIFF URL에 접속하는 방법에 따라 LIFF 앱이 영향을 받을 수 있습니다.</p>
+<p>LIFF SDK를 v2.31.2로 업데이트할 때는 변경 후에도 LIFF 앱이 올바르게 동작하는지 확인하세요.</p>
+<h3>LIFF v2.31.2로 업데이트하는 방법</h3>
+<p>필요한 작업은 LIFF SDK를 어떤 방식으로 통합했는지에 따라 다릅니다.</p>
+<ul>
+<li><a href="./#cdn-edge-path-20261007">CDN 에지 경로를 사용하는 경우</a></li>
+<li><a href="./#cdn-fixed-path-20261007">CDN 고정 경로를 사용하는 경우</a></li>
+<li><a href="./#npm-package-20261007">npm 패키지를 사용하는 경우</a></li>
+</ul>
+<h4>CDN 에지 경로를 사용하는 경우</h4>
+<p>CDN 에지 경로를 사용하는 경우 자동으로 v2.31.2로 업데이트되었습니다. 추가 작업은 필요하지 않습니다.</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;utf-8&quot;</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://static.line-scdn.net/liff/edge/2/sdk.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<h4>CDN 고정 경로를 사용하는 경우</h4>
+<p>CDN 고정 경로를 사용하는 경우 로드하는 버전을 v2.31.2로 변경하세요.</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;utf-8&quot;</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://static.line-scdn.net/liff/edge/versions/2.31.2/sdk.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<h4>npm 패키지를 사용하는 경우</h4>
+<p>npm 패키지를 사용하는 경우 <code>@line/liff</code>를 v2.31.2로 업데이트하세요.</p>
+<pre><code class="language-sh"><span class="hljs-comment"># npm의 경우</span>
+npm install @line/liff@2.31.2
+
+<span class="hljs-comment"># yarn의 경우</span>
+yarn add @line/liff@2.31.2
+</code></pre>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<!-- warning start -->
+<p><strong>LIFF v2.20.0 - v2.31.0은 지원이 종료되었습니다</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.20.0 - v2.31.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.20.0 - v2.31.0을 사용 중이라면 즉시 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">2026년 9월 30일</a>의 뉴스를 참조하세요.</p>
+<!-- warning end -->
+<p>2026/09/30</p>
+<h2>LIFF v2.31.1 출시</h2>
+<p>LIFF v2.31.1을 출시했습니다.</p>
+<p>LIFF v2.31.1에서는 다음 버그를 수정했습니다.</p>
+<h3>잠재적인 보안 영향이 있는 문제를 수정했습니다</h3>
+<!-- warning start -->
+<p><strong>LIFF v2.20.0 - v2.31.0은 지원이 종료되었습니다</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.20.0 - v2.31.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.20.0 - v2.31.0을 사용 중이라면 즉시 LIFF v2.31.1로 업데이트하세요.</p>
+<!-- warning end -->
+<h4>영향을 받는 버전</h4>
+<p>LIFF v2.20.0 - v2.31.0</p>
+<p>영향을 받는 버전을 사용 중이라면 보안에 영향이 있을 수 있으므로 즉시 LIFF v2.31.1로 업데이트하세요. 자세한 내용은 <a href="./#how-to-update-to-liff-v2-31-1-20260930">LIFF v2.31.1로 업데이트하는 방법</a>을 참조하세요.</p>
+<h4>발생 조건</h4>
+<p>이 문제는 조작된 쿼리 파라미터가 포함된 URL을 사용하여 LIFF 앱을 <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">외부 브라우저</a>에서 열 때 발생합니다.</p>
+<h4>변경 사항</h4>
+<p>보안을 강화하기 위해 LIFF SDK의 내부 처리를 변경했습니다. LIFF 앱의 기능은 변경되지 않았습니다.</p>
+<p>이 문제의 영향에 대한 자세한 정보는 추후 안내하겠습니다.</p>
+<h3>LIFF v2.31.1로 업데이트하는 방법</h3>
+<p>필요한 작업은 LIFF SDK를 어떤 방식으로 통합했는지에 따라 다릅니다.</p>
+<ul>
+<li><a href="./#cdn-edge-path-20260930">CDN 에지 경로를 사용하는 경우</a></li>
+<li><a href="./#cdn-fixed-path-20260930">CDN 고정 경로를 사용하는 경우</a></li>
+<li><a href="./#npm-package-20260930">npm 패키지를 사용하는 경우</a></li>
+</ul>
+<h4>CDN 에지 경로를 사용하는 경우</h4>
+<p>CDN 에지 경로를 사용하는 경우 자동으로 v2.31.1로 업데이트되었습니다. 추가 작업은 필요하지 않습니다.</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;utf-8&quot;</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://static.line-scdn.net/liff/edge/2/sdk.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<h4>CDN 고정 경로를 사용하는 경우</h4>
+<p>CDN 고정 경로를 사용하는 경우 경로의 버전을 v2.31.1로 변경하세요.</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;utf-8&quot;</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://static.line-scdn.net/liff/edge/versions/2.31.1/sdk.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<h4>npm 패키지를 사용하는 경우</h4>
+<p>npm 패키지를 사용하는 경우 <code>@line/liff</code>를 v2.31.1로 업데이트하세요.</p>
+<pre><code class="language-sh">npm install @line/liff@2.31.1
+</code></pre>
+<p>2026/08/31</p>
+<h2>LIFF v2.31.0 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.31.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.31.0을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.31.0을 출시했습니다.</p>
+<p>LIFF v2.31.0에서는 LIFF SDK의 내부 동작을 변경했습니다. 기능의 변경은 없습니다.</p>
+<h3>LIFF v2.31.0으로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.31.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.31.0</code> 또는 <code>yarn add @line/liff@2.31.0</code>을 실행하여 v2.31.0으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2026/08/17</p>
+<h2>LIFF v2.30.0 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.30.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.30.0을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.30.0을 출시했습니다.</p>
+<p>LIFF v2.30.0에서는 다음 기능을 추가했습니다.</p>
+<h3>LINE MINI App의 친구 추가 옵션에 대한 새 기능 출시에 앞서 일부 메서드에 인자를 전달할 수 있게 되었습니다</h3>
+<p>LINE MINI App의 <a href="../../line-mini-app/service/add-friend-option/">친구 추가 옵션</a>에서 여러 LINE 공식 계정을 연결할 수 있는 기능을 도입할 예정입니다. 이 출시에 앞서 다음 세 가지 메서드에 인자를 전달할 수 있게 되었습니다.</p>
+<ul>
+<li><a href="../../../reference/liff/#permission-request-all"><code>liff.permission.requestAll()</code></a></li>
+<li><a href="../../../reference/liff/#get-friendship"><code>liff.getFriendship()</code></a></li>
+<li><a href="../../../reference/liff/#request-friendship"><code>liff.requestFriendship()</code></a></li>
+</ul>
+<p>이 메서드들의 인자는 LINE MINI App 채널에서 <strong>Use multiple accounts</strong>가 활성화된 경우에만 사용할 수 있습니다. <strong>Use multiple accounts</strong>는 2026년 9월에 일본의 LINE MINI App에서 사용할 수 있을 예정입니다.</p>
+<h3>LIFF v2.30.0으로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.30.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.30.0</code> 또는 <code>yarn add @line/liff@2.30.0</code>을 실행하여 v2.30.0으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2026/07/31</p>
+<h2>LIFF v2.29.2 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.29.2는 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.29.2를 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.29.2를 출시했습니다.</p>
+<p>LIFF v2.29.2에서는 LIFF SDK의 내부 동작을 변경했습니다. 기능의 변경은 없습니다.</p>
+<h3>LIFF v2.29.2로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.29.2로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.29.2</code> 또는 <code>yarn add @line/liff@2.29.2</code>를 실행하여 v2.29.2로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2026/06/29</p>
+<h2>LIFF v2.29.1 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.29.1은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.29.1을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.29.1을 출시했습니다.</p>
+<p>LIFF v2.29.1에서는 LIFF SDK의 내부 동작을 변경했습니다. 기능의 변경은 없습니다.</p>
+<h3>LIFF v2.29.1로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.29.1로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.29.1</code> 또는 <code>yarn add @line/liff@2.29.1</code>을 실행하여 v2.29.1로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2026/05/13</p>
+<h2>LIFF v2.29.0 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.29.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.29.0을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.29.0을 출시했습니다.</p>
+<p>LIFF v2.29.0에서는 LIFF SDK의 내부 동작을 변경했습니다. 기능의 변경은 없습니다.</p>
+<h3>LIFF v2.29.0으로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.29.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.29.0</code> 또는 <code>yarn add @line/liff@2.29.0</code>을 실행하여 v2.29.0으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2026/03/24</p>
+<h2>LIFF v2.28.0 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.28.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.28.0을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.28.0을 출시했습니다.</p>
+<p>LIFF v2.28.0에서는 다음과 같이 변경했습니다.</p>
+<h3>사용자에게 LINE 공식 계정을 친구로 추가하도록 요청하는 <code>liff.requestFriendship()</code> 메서드를 추가했습니다</h3>
+<p>사용자에게 LINE 공식 계정을 친구로 추가하거나 차단을 해제하도록 요청하는 하위 창을 표시하는 <a href="../../../reference/liff/#request-friendship"><code>liff.requestFriendship()</code></a> 메서드를 추가했습니다.</p>
+<p>자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#request-friendship">사용자에게 LINE 공식 계정을 친구로 추가하거나 차단 해제하도록 요청하기</a>를 참조하세요.</p>
+<h3>LIFF v2.28.0으로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.28.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.28.0</code> 또는 <code>yarn add @line/liff@2.28.0</code>을 실행하여 v2.28.0으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2025/11/17</p>
+<h2>LIFF v2.27.3 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.27.3은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.27.3을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.27.3을 출시했습니다.</p>
+<p>LIFF v2.27.3에서는 LIFF SDK의 내부 동작을 변경했습니다. 기능의 변경은 없습니다.</p>
+<h3>LIFF v2.27.3으로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.27.3으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.27.3</code> 또는 <code>yarn add @line/liff@2.27.3</code>을 실행하여 v2.27.3으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2025/09/08</p>
+<h2>LIFF v2.27.2 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.27.2는 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.27.2를 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.27.2를 출시했습니다.</p>
+<p>LIFF v2.27.2에서는 다음과 같이 개선했습니다.</p>
+<h3><code>liff.init()</code> 메서드가 실행된 페이지의 URL이 엔드포인트 URL로 시작하지 않으면 브라우저 콘솔에 경고 메시지가 표시됩니다</h3>
+<p><a href="../../../reference/liff/#initialize-liff-app"><code>liff.init()</code></a> 메서드는 엔드포인트 URL(*)과 같은 URL이거나 엔드포인트 URL보다 하위 레벨인 URL에서만 동작합니다. 따라서 그 밖의 URL에서 <code>liff.init()</code> 메서드를 실행하면 <a href="../overview/#multi-tab-view">멀티 탭 뷰</a> 같은 일부 LIFF 앱 기능이 제대로 동작하지 않을 수 있습니다.</p>
+<p>개발자가 이 문제를 더 쉽게 파악할 수 있도록, <code>liff.init()</code> 메서드가 실행된 페이지의 URL이 엔드포인트 URL로 시작하지 않으면 콘솔에 경고 메시지가 표시됩니다.</p>
+<p>예를 들어 LIFF 앱의 엔드포인트 URL이 <code>https://example.com/path1/path2/</code>이고 <code>liff.init()</code> 메서드를 실행한 URL이 <code>https://example.com/path1/</code>이면 다음 경고 메시지가 표시됩니다.</p>
+<pre><code>liff.init() was called with a current URL that is not related to the endpoint URL.
+https://example.com/path1/ is not under https://example.com/path1/path2/
+</code></pre>
+<p>위 경고 메시지가 표시되면 엔드포인트 URL을 <code>https://example.com/</code> 또는 <code>https://example.com/path1/</code>로 변경하는 것을 고려하세요. 이 URL로 변경하면 <code>liff.init()</code> 메서드가 올바르게 동작하는 것이 보장됩니다.</p>
+<p>* LINE Developers Console의 <strong>Endpoint URL</strong>에 지정된 URL입니다.</p>
+<h3>LIFF v2.27.2로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.27.2로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.27.2</code> 또는 <code>yarn add @line/liff@2.27.2</code>를 실행하여 v2.27.2로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2025/07/24</p>
+<h2>LIFF v2.27.1 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.27.1은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.27.1을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.27.1을 출시했습니다.</p>
+<p>LIFF v2.27.1에서는 LIFF SDK의 내부 동작을 변경했습니다. 기능의 변경은 없습니다.</p>
+<h3>LIFF v2.27.1로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.27.1로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.27.1</code> 또는 <code>yarn add @line/liff@2.27.1</code>을 실행하여 v2.27.1로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2025/6/25</p>
+<h2>LIFF v2.27.0 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.27.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.27.0을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.27.0을 출시했습니다.</p>
+<p>LIFF v2.27.0에서는 다음 기능을 추가했습니다.</p>
+<h3>사용자가 권한 부여에 동의한 스코프 목록을 가져올 수 있게 되었습니다</h3>
+<p>LIFF SDK에 <a href="../../../reference/liff/#permission-get-granted-all"><code>liff.permission.getGrantedAll()</code></a> 메서드를 추가했습니다. <code>liff.permission.getGrantedAll()</code> 메서드를 사용하면 사용자가 권한 부여에 동의한 모든 스코프를 가져올 수 있습니다.</p>
+<pre><code class="language-javascript">liff.<span class="hljs-property">permission</span>.<span class="hljs-title function_">getGrantedAll</span>().<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">scopes</span>) =&gt;</span> {
+  <span class="hljs-comment">// [&quot;profile&quot;, &quot;chat_message.write&quot;, &quot;openid&quot;, &quot;email&quot;]</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(scopes);
+});
+</code></pre>
+<p>이 메서드로 가져올 수 있는 스코프는 다음과 같습니다.</p>
+<ul>
+<li><a href="../registering-liff-apps/#registering-liff-app"><code>profile</code></a></li>
+<li><a href="../registering-liff-apps/#registering-liff-app"><code>chat_message.write</code></a></li>
+<li><a href="../registering-liff-apps/#registering-liff-app"><code>openid</code></a></li>
+<li><a href="../registering-liff-apps/#registering-liff-app"><code>email</code></a></li>
+</ul>
+<div class="tip">
+<p><strong>liff.getContext()와 liff.permission.getGrantedAll()의 차이</strong></p>
+<p><a href="../../../reference/liff/#get-context"><code>liff.getContext()</code></a> 메서드는 LIFF 앱의 스코프 목록을 가져옵니다(*).</p>
+<p>반면 <code>liff.permission.getGrantedAll()</code> 메서드는 LIFF 앱의 스코프 중에서 사용자가 권한 부여에 동의한 스코프 목록을 가져옵니다.</p>
+<p>* LINE 로그인 채널의 <strong>LIFF</strong> 탭에 있는 “Scope” 섹션에 지정된 스코프입니다.</p>
+</div>
+<p>자세한 내용은 LIFF API 레퍼런스의 <a href="../../../reference/liff/#permission-get-granted-all">liff.permission.getGrantedAll()</a>을 참조하세요.</p>
+<h3>LIFF v2.27.0으로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.27.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.27.0</code> 또는 <code>yarn add @line/liff@2.27.0</code>을 실행하여 v2.27.0으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2025/5/26</p>
+<h2>LIFF v2.26.1 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.26.1은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.26.1을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.26.1을 출시했습니다.</p>
+<p>LIFF v2.26.1에서는 다음 버그를 수정했습니다.</p>
+<h3>LIFF URL에 접속했을 때 의도하지 않은 보조 리디렉션 URL로 이동하던 버그를 수정했습니다</h3>
+<p>LIFF 앱에서 <a href="https://developers.line.biz/en/glossary/#liff-url" target="_blank" rel="noopener noreferrer">LIFF URL</a>에 접속하면 LIFF 앱은 먼저 기본 리디렉션 URL로 이동한 다음 보조 리디렉션 URL로 이동합니다. 보조 리디렉션 URL의 경로 끝에 슬래시(<code>/</code>)를 붙이는 조건에 버그가 있어, LIFF 앱이 의도하지 않은 보조 리디렉션 URL로 이동하는 문제가 있었습니다.</p>
+<h4>보조 리디렉션 URL의 경로 끝에 슬래시(<code>/</code>)를 붙이는 조건</h4>
+<p>LIFF v2.26.0 이하에서는 다음 조건 중 하나라도 충족하면 보조 리디렉션 URL의 경로 끝에 슬래시(<code>/</code>)가 붙습니다.</p>
+<ul>
+<li>엔드포인트 URL이 슬래시(<code>/</code>)로 끝나는 경우</li>
+<li><code>liff.state</code>가 슬래시(<code>/</code>)로 끝나는 경우</li>
+</ul>
+<p>예를 들어 LIFF 앱의 엔드포인트 URL이 <code>https://example.com/?key=value/</code>이고 접속한 LIFF URL이 <code>https://liff.line.me/1234567890-AbcdEfgh/foo/bar</code>라면, 올바른 보조 리디렉션 URL은 <code>https://example.com/foo/bar?key=value/</code>입니다.</p>
+<p>그러나 이 상황에서는 “엔드포인트 URL이 슬래시(<code>/</code>)로 끝나는 경우” 조건이 충족되므로, LIFF 앱은 실제로 경로 끝에 슬래시(<code>/</code>)가 추가된 <code>https://example.com/foo/bar/?key=value/</code>로 이동합니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>올바른 보조 리디렉션 URL</th>
+<th>실제 보조 리디렉션 URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://example.com/foo/bar?key=value/" target="_blank" rel="noopener noreferrer">https://example.com/foo/bar?key=value/</a></td>
+<td><a href="https://example.com/foo/bar" target="_blank" rel="noopener noreferrer">https://example.com/foo/bar</a><b style="color: red">/</b>?key=value/</td>
+</tr>
+</tbody>
+</table></div>
+<p>LIFF v2.26.1에서는 다음 조건 중 하나라도 충족하면 보조 리디렉션 URL의 경로 끝에 슬래시(<code>/</code>)가 붙도록 수정했습니다. 그 결과 LIFF 앱이 올바른 보조 리디렉션 URL로 이동하게 되었습니다.</p>
+<ul>
+<li>엔드포인트 URL의 경로가 슬래시(<code>/</code>)로 끝나는 경우</li>
+<li><code>liff.state</code>의 경로가 슬래시(<code>/</code>)로 끝나는 경우</li>
+</ul>
+<p>LIFF URL에 접속할 때의 동작에 대한 자세한 내용은 LIFF 문서의 <a href="../opening-liff-app/#redirect-flow">LIFF URL에 접속하여 LIFF 앱을 열기까지의 동작</a>을 참조하세요.</p>
+<h3>자격 증명 정보를 제외할 때 <code>liff.init()</code> 메서드가 브라우저 세션 기록의 POST 요청을 GET 요청으로 바꾸던 버그를 수정했습니다</h3>
+<p>LIFF 앱에서 <a href="../../../reference/liff/#initialize-liff-app"><code>liff.init()</code></a> 메서드가 완료되면 액세스 토큰 같은 자격 증명 정보가 URL에서 제외됩니다. 이때 일부 환경에서 브라우저 세션 기록의 POST 요청이 GET 요청으로 바뀌는 버그가 있었습니다.</p>
+<p>LIFF v2.26.1에서는 올바른 기록이 유지되도록 버그를 수정했습니다.</p>
+<h4>브라우저 세션 기록의 POST 요청이 GET 요청으로 바뀌는 예시</h4>
+<p>예를 들어 다음 순서로 LIFF 앱을 사용한다고 가정하겠습니다.</p>
+<ol>
+<li>LIFF 앱을 엽니다.</li>
+<li>POST 요청으로 <code>/path1</code>로 이동합니다.</li>
+<li>GET 요청으로 <code>/path2</code>로 이동합니다.</li>
+<li>브라우저의 뒤로 가기 버튼을 클릭합니다.</li>
+</ol>
+<p>이 상황에서 LIFF 앱은 POST 요청으로 <code>/path1</code>로 이동해야 하지만, 일부 환경에서는 GET 요청으로 <code>/path1</code>로 이동했습니다.</p>
+<h3>LIFF v2.26.1로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.26.1로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.26.1</code> 또는 <code>yarn add @line/liff@2.26.1</code>을 실행하여 v2.26.1로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2025/4/22</p>
+<h2>LIFF v2.26.0 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.26.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.26.0을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.26.0을 출시했습니다.</p>
+<p>LIFF v2.26.0에서는 다음 버그를 수정했습니다.</p>
+<h3>로그인하지 않은 상태에서 외부 브라우저로 특정 메서드를 실행하면 잘못된 오류 메시지가 반환되던 버그를 수정했습니다</h3>
+<p>사용자가 로그인하지 않은 상태에서 <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">외부 브라우저</a>로 다음 메서드를 실행하면 잘못된 오류 메시지가 반환되는 버그가 있었습니다.</p>
+<ul>
+<li><a href="../../../reference/liff/#get-profile"><code>liff.getProfile()</code></a> 메서드</li>
+<li><a href="../../../reference/liff/#get-friendship"><code>liff.getFriendship()</code></a> 메서드</li>
+<li><a href="../../../reference/liff/#send-messages"><code>liff.sendMessages()</code></a> 메서드</li>
+</ul>
+<p>LIFF v2.26.0에서는 올바른 오류 메시지가 반환되도록 버그를 수정했습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>수정 전 오류 메시지</th>
+<th>수정 후 오류 메시지</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LiffId is not found.</code></td>
+<td><code>Need access_token for api call, Please login first</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3>LIFF v2.26.0으로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.26.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.26.0</code> 또는 <code>yarn add @line/liff@2.26.0</code>을 실행하여 v2.26.0으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2024/12/13</p>
+<h2>LIFF v2.25.1 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.25.1은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.25.1을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.25.1을 출시했습니다.</p>
+<p>LIFF v2.25.1에서는 LIFF SDK의 내부 동작을 변경했습니다. 기능의 변경은 없습니다.</p>
+<h3>LIFF v2.25.1로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.25.1로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.25.1</code> 또는 <code>yarn add @line/liff@2.25.1</code>을 실행하여 v2.25.1로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2024/11/12</p>
+<h2>LIFF v2.25.0 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.25.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.25.0을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.25.0을 출시했습니다.</p>
+<p>LIFF v2.25.0에서는 다음과 같이 변경했습니다.</p>
+<h3><code>liff.permanentLink.createUrlBy()</code> 메서드가 생성하는 URL을 변경했습니다</h3>
+<p><a href="https://developers.line.biz/en/news/2024/11/11/liff-server-update/" target="_blank" rel="noopener noreferrer">2024년 11월 11일</a>에 안내한 것처럼, URL 처리가 <a href="https://datatracker.ietf.org/doc/html/rfc3986" target="_blank" rel="noopener noreferrer">RFC 3986</a>을 준수하도록 LIFF 서버 측을 변경했습니다. 그 결과 <a href="../../../reference/liff/#permanent-link-create-url-by"><code>liff.permanentLink.createUrlBy()</code></a> 메서드가 생성하는 URL의 쿼리에 있는 문자와 코드의 처리 결과가 다음과 같이 바뀌었습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>문자와 코드</th>
+<th>변경 전</th>
+<th>변경 후(현재)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>+</code></td>
+<td><code>+</code></td>
+<td><code>%2B</code></td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td><code>*</code></td>
+<td><code>%2A</code></td>
+</tr>
+<tr>
+<td><code>%7E</code></td>
+<td><code>%7E</code></td>
+<td><code>~</code></td>
+</tr>
+<tr>
+<td><code>%20</code></td>
+<td><code>+</code></td>
+<td><code>%20</code></td>
+</tr>
+<tr>
+<td><code>;</code> *</td>
+<td>삭제됨</td>
+<td><code>%3B</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>* <code>;</code> 처리 결과는 <code>;</code>가 쿼리의 끝에 있는 경우에만 적용됩니다.</p>
+<p>자세한 내용은 <a href="https://developers.line.biz/en/news/2024/11/11/liff-server-update/" target="_blank" rel="noopener noreferrer">2024년 11월 11일 기준으로, 일부 LIFF 기능이 생성하는 URL의 결과가 특정 버전의 LINE 앱과 LIFF SDK에서 변경되었습니다</a>를 참조하세요.</p>
+<h3>LIFF v2.25.0으로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.25.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.25.0</code> 또는 <code>yarn add @line/liff@2.25.0</code>을 실행하여 v2.25.0으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2024/7/23</p>
+<h2>LIFF v2.24.0 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.24.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.24.0을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.24.0을 출시했습니다.</p>
+<p>LIFF v2.24.0에서는 다음 기능을 추가했습니다.</p>
+<h3>LIFF 앱을 실행하는 LINE 앱의 언어 설정을 가져오는 <code>liff.getAppLanguage()</code> 메서드를 추가했습니다</h3>
+<p>LIFF 앱을 실행하는 LINE 앱의 언어 설정을 가져오는 <a href="../../../reference/liff/#get-app-language"><code>liff.getAppLanguage()</code></a> 메서드를 추가했습니다.</p>
+<p>LIFF SDK에는 이와 비슷한 메서드인 <a href="../../../reference/liff/#get-language"><code>liff.getLanguage()</code></a>가 있습니다. <code>liff.getLanguage()</code> 메서드로 LIFF 앱을 실행하는 환경의 언어 설정을 가져올 수 있지만, 일부 iOS 환경에서는 LINE 앱의 언어 설정 대신 OS의 언어 설정이 반영되는 버그가 있습니다.</p>
+<p>따라서 <code>liff.getAppLanguage()</code> 메서드를 추가하면서 <code>liff.getLanguage()</code> 메서드는 지원이 종료되었습니다. 지금부터는 <code>liff.getAppLanguage()</code> 메서드를 사용하세요.</p>
+<p>LINE 앱의 언어 설정에 대한 자세한 내용은 고객센터의 <a href="https://help.line.me/line/?contentId=20007465&amp;lang=en" target="_blank" rel="noopener noreferrer">LINE 앱 언어 설정 변경하기</a>를 참조하세요.</p>
+<h3>LIFF v2.24.0으로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.24.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.24.0</code> 또는 <code>yarn add @line/liff@2.24.0</code>을 실행하여 v2.24.0으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2024/2/15</p>
+<h2>LIFF v2.23.2 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.23.2는 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.23.2를 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.23.2를 출시했습니다.</p>
+<p>LIFF v2.23.2에서는 다음 개선 사항과 버그 수정을 적용했습니다.</p>
+<h3>LIFF SDK 로드 실패 원인을 로그와 <code>LiffError</code>에서 확인할 수 있게 되었습니다</h3>
+<p>LIFF SDK 로드에 실패하면 콘솔 로그나 <a href="../../../reference/liff/#liff-errors"><code>LiffError</code></a> 객체의 <code>cause</code> 속성에서 원인을 확인할 수 있습니다.</p>
+<h3>LIFF 앱을 초기화할 때 URL 프래그먼트의 일부 파라미터가 의도치 않게 제거되던 버그를 수정했습니다</h3>
+<p>LIFF 앱에서는 보안상의 이유로 <a href="../../../reference/liff/#initialize-liff-app"><code>liff.init()</code></a> 메서드가 완료될 때 <a href="../opening-liff-app/#redirect-flow">기본 리디렉션 URL</a>의 URL 프래그먼트에서 다음 문자열을 키로 하는 파라미터가 제거됩니다.</p>
+<ul>
+<li><code>access_token</code></li>
+<li><code>client_id</code></li>
+<li><code>context_token</code></li>
+<li><code>feature_token</code></li>
+<li><code>id_token</code></li>
+</ul>
+<p>이 문자열로 끝나는 키(예: <code>prefix_access_token</code>)를 가진 파라미터도 URL 프래그먼트에서 의도치 않게 제거되는 버그가 있었습니다. v2.23.2에서는 위 문자열을 키로 하는 파라미터만 제거되도록 버그를 수정했습니다.</p>
+<h3>LIFF v2.23.2로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.23.2로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.23.2</code> 또는 <code>yarn add @line/liff@2.23.2</code>를 실행하여 v2.23.2로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2024/1/15</p>
+<h2>LIFF v2.23.1 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.23.1은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.23.1을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<!-- note start -->
+<p><strong>2024년 1월 23일에 업데이트됨</strong></p>
+<p>일부 기기에서 2D 코드의 인식 정확도가 떨어지는 버그로 인해 <a href="../../../reference/liff/#scan-code-v2"><code>liff.scanCodeV2()</code></a> 메서드를 이 출시 이전 상태로 되돌렸습니다. LIFF SDK를 업데이트하거나 LIFF 앱의 코드를 수정할 필요는 없습니다. 불편을 드려 죄송합니다.</p>
+<!-- note end -->
+<p>LIFF v2.23.1을 출시했습니다.</p>
+<p>LIFF v2.23.1에서는 다음 개선 사항을 적용했습니다. 또한 보안을 강화하기 위해 LIFF SDK의 내부 동작을 변경했습니다.</p>
+<h3><code>liff.scanCodeV2()</code> 메서드의 인식 정확도를 개선했습니다</h3>
+<p><a href="../../../reference/liff/#scan-code-v2"><code>liff.scanCodeV2()</code></a> 메서드에서 2D 코드의 인식 정확도를 개선했습니다. 인식 정확도는 기기의 카메라 성능에 따라 달라지므로, 사용자의 기기에 따라서는 체감되는 개선이 없을 수 있습니다.</p>
+<p>이 개선 사항은 모든 LIFF 앱에 자동으로 적용되므로 LIFF SDK를 업데이트하거나 LIFF 앱의 코드를 수정할 필요는 없습니다.</p>
+<h3>LIFF v2.23.1로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.23.1로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.23.1</code> 또는 <code>yarn add @line/liff@2.23.1</code>을 실행하여 v2.23.1로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2023/11/30</p>
+<h2>LIFF v2.23.0 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.23.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.23.0을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.23.0을 출시했습니다.</p>
+<p>LIFF v2.23.0에서는 LIFF SDK의 내부 동작을 변경했습니다. 기능의 변경은 없습니다.</p>
+<h3>LIFF v2.23.0으로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.23.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.23.0</code> 또는 <code>yarn add @line/liff@2.23.0</code>을 실행하여 v2.23.0으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2023/10/2</p>
+<h2>LIFF v2.22.4 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.22.4는 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.22.4를 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.22.4를 출시했습니다.</p>
+<p>LIFF v2.22.4에서는 LIFF SDK의 내부 동작을 변경했습니다. 또한 다음 변경과 수정을 적용했습니다.</p>
+<h3>그룹 내 조직 개편으로 LIFF SDK와 오픈 소스 프로젝트의 회사명과 저작권 표기를 변경했습니다</h3>
+<p><a href="https://developers.line.biz/en/news/2023/10/02/merger-announcement/" target="_blank" rel="noopener noreferrer">2023년 10월 2일</a>에 안내한 것처럼, 그룹 내 조직 개편에 따라 LINE Corporation이 LY Corporation이 되었습니다. 이에 따라 LIFF SDK와 다음 오픈 소스 프로젝트의 회사명과 저작권 표기를 변경했습니다.</p>
+<ul>
+<li><a href="https://github.com/line/line-liff-v2-starter" target="_blank" rel="noopener noreferrer">LIFF starter app</a></li>
+<li><a href="https://github.com/line/liff-playground" target="_blank" rel="noopener noreferrer">LIFF Playground</a></li>
+<li><a href="https://github.com/line/create-liff-app" target="_blank" rel="noopener noreferrer">Create LIFF App</a></li>
+<li><a href="https://github.com/line/liff-inspector" target="_blank" rel="noopener noreferrer">LIFF Inspector</a></li>
+<li><a href="https://github.com/line/liff-mock" target="_blank" rel="noopener noreferrer">LIFF Mock</a></li>
+</ul>
+<h3><code>liff.permission.requestAll()</code> 메서드 실행에 실패했을 때 오류가 올바르게 반환되지 않을 수 있던 버그를 수정했습니다</h3>
+<p><a href="../../../reference/liff/#permission-request-all"><code>liff.permission.requestAll()</code></a> 메서드 실행에 실패했을 때 오류가 올바르게 반환되지 않을 수 있는 버그가 있었습니다. 이 버그는 LIFF v2.22.4에서 수정되어 오류가 올바르게 반환됩니다.</p>
+<h3>LIFF v2.22.4로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.22.4로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.22.4</code> 또는 <code>yarn add @line/liff@2.22.4</code>를 실행하여 v2.22.4로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2023/8/24</p>
+<h2>LIFF v2.22.3 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.22.3은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.22.3을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.22.3을 출시했습니다.</p>
+<p>LIFF v2.22.3에서는 LIFF SDK의 내부 동작을 변경했습니다. 기능의 변경은 없습니다.</p>
+<h3>LIFF v2.22.3으로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.22.3으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.22.3</code> 또는 <code>yarn add @line/liff@2.22.3</code>을 실행하여 v2.22.3으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2023/6/27</p>
+<h2>LIFF v2.22.2 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.22.2는 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.22.2를 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.22.2를 출시했습니다.</p>
+<p>LIFF v2.22.2에서는 다음 개선 사항과 버그 수정을 적용했습니다.</p>
+<h3>Android의 외부 브라우저에서 자동 로그인 처리를 개선했습니다</h3>
+<p><a href="https://developers.line.biz/en/news/2022/07/06/release-liff-2-20-3/#android-external-browser-20220706" target="_blank" rel="noopener noreferrer">2022년 7월 6일</a>에 안내한 것처럼, Android의 <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">외부 브라우저</a>에서 <a href="../../line-login/integrate-line-login/#line-auto-login">자동 로그인</a>이 제대로 동작하지 않는 버그를 해결하기 위한 임시 조치로, LIFF v2.20.3부터 자동 로그인 후 알림이 표시되었습니다.</p>
+<p>LINE for Android 13.10.0 버전에서는 외부 브라우저에서의 자동 로그인 처리가 개선되어 이 임시 조치가 더 이상 필요하지 않습니다. 따라서 LIFF v2.22.2 이상에서는 자동 로그인 후 알림이 더 이상 표시되지 않습니다.</p>
+<p>LIFF 앱의 LIFF SDK 버전이 v2.22.2 이상이더라도 사용자의 LINE for Android 버전이 13.10.0 미만이면 알림이 계속 표시된다는 점에 유의하세요.</p>
+<div class="table-wrap"><table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>LIFF v2.20.3 - v2.22.1</th>
+      <th>LIFF v2.22.2 이상</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>LINE for Android 13.10.0 미만</th>
+      <td>알림 표시</td>
+      <td>알림 표시</td>
+    </tr>
+    <tr>
+      <th>LINE for Android 13.10.0 이상</th>
+      <td>알림 표시</td>
+      <td>알림 표시 안 함</td>
+    </tr>
+  </tbody>
+</table></div>
+<h3>LIFF SDK npm 패키지를 브라우저가 아닌 환경에서도 가져올 수 있게 되었습니다</h3>
+<p>LIFF SDK npm 패키지를 Node.js 같은 브라우저가 아닌 환경에서도 가져올 수 있게 되었습니다.</p>
+<h3>Android의 외부 브라우저에서 redirectUri 속성에 쿼리 파라미터가 없는 URL로 <code>liff.login()</code> 메서드를 실행하면 로그인 후 잘못된 URL이 열리던 버그를 수정했습니다</h3>
+<p>Android의 외부 브라우저에서 <a href="../../../reference/liff/#login"><code>liff.login()</code></a> 메서드를 실행할 때 <code>redirectUri</code> 속성에 쿼리 파라미터가 없는 URL을 지정하면 로그인 후 잘못된 URL이 열리는 문제가 있었습니다.</p>
+<p>이 버그는 LIFF v2.22.2에서 수정되어 로그인 후 올바른 URL이 열립니다.</p>
+<div class="table-wrap"><table>
+  <tbody>
+    <tr>
+      <th><code>redirectUri</code> 속성에 지정한 URL의 예시</th>
+      <td><code>https://example.com/path</code></td>
+    </tr>
+    <tr>
+      <th>로그인 후 열리던 잘못된 URL의 예시</th>
+      <td><code>https://example.com/path&liffIsEscapedFromApp=true</code></td>
+    </tr>
+    <tr>
+      <th>로그인 후 올바른 URL의 예시</th>
+      <td><code>https://example.com/path?liffIsEscapedFromApp=true</code></td>
+    </tr>
+  </tbody>
+</table></div>
+<h3>LIFF v2.22.2로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.22.2로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.22.2</code> 또는 <code>yarn add @line/liff@2.22.2</code>를 실행하여 v2.22.2로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2023/5/24</p>
+<h2>LIFF v2.22.1 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.22.1은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.22.1을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.22.1을 출시했습니다.</p>
+<p>LIFF v2.22.1에서는 LIFF SDK를 리팩터링했습니다. 또한 다음 수정 사항을 적용했습니다.</p>
+<h3>플러거블 SDK의 LIFF API 모듈에 대한 TypeScript 타입 정의를 수정했습니다</h3>
+<p><a href="../pluggable-sdk/">플러거블 SDK</a>의 LIFF API 모듈에 대한 TypeScript 타입 정의를 수정했습니다.</p>
+<p>TypeScript 타입 정의를 수정한 LIFF API 모듈과 세부 내용은 다음과 같습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>LIFF API 모듈</th>
+<th>세부 내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@line/liff/get-id-token</code></td>
+<td><code>getIdToken</code>을 <code>getIDToken</code>으로 수정했습니다.</td>
+</tr>
+<tr>
+<td><code>@line/liff/get-decoded-id-token</code></td>
+<td><code>getDecodedIdToken</code>을 <code>getDecodedIDToken</code>으로 수정했습니다.</td>
+</tr>
+</tbody>
+</table></div>
+<h3>LIFF v2.22.1로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.22.1로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.22.1</code> 또는 <code>yarn add @line/liff@2.22.1</code>을 실행하여 v2.22.1로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2023/3/29</p>
+<h2>LIFF v2.22.0 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.22.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.22.0을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.22.0을 출시했습니다.</p>
+<p>LIFF v2.22.0에서는 다음 기능을 추가했습니다.</p>
+<h3>LIFF SDK 파일 크기를 최대 약 34%까지 줄일 수 있는 플러거블 SDK 기능을 추가했습니다</h3>
+<p>LIFF SDK의 npm 패키지에 LIFF SDK에 포함할 LIFF API를 선택할 수 있는 플러거블 SDK 기능을 추가했습니다.</p>
+<p>LIFF 앱에서 사용하는 LIFF API만 포함하면 LIFF SDK 파일 크기를 최대 약 34%까지 줄일 수 있습니다. 그 결과 LIFF 앱의 표시 속도를 개선할 수 있습니다.</p>
+<h4>플러거블 SDK 사용 방법</h4>
+<p>먼저 <code>@line/liff/core</code>에서 <code>liff</code> 객체를 가져옵니다. <code>liff</code> 객체를 가져오는 기존 방식인 <code>@line/liff</code>와는 다르다는 점에 유의하세요.</p>
+<pre><code class="language-js"><span class="hljs-keyword">import</span> liff <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@line/liff/core&quot;</span>;
+</code></pre>
+<p>이 <code>liff</code> 객체는 기존 <code>liff</code> 객체와 달리 다음 속성과 메서드만 포함합니다.</p>
+<ul>
+<li><a href="../../../reference/liff/#id"><code>liff.id</code></a> 속성</li>
+<li><a href="../../../reference/liff/#ready"><code>liff.ready</code></a> 속성</li>
+<li><a href="../../../reference/liff/#initialize-liff-app"><code>liff.init()</code></a> 메서드</li>
+<li><a href="../../../reference/liff/#get-version"><code>liff.getVersion()</code></a> 메서드</li>
+<li><a href="../../../reference/liff/#use"><code>liff.use()</code></a> 메서드</li>
+</ul>
+<p>위에 나열된 것 이외의 LIFF API를 사용하려면 해당 모듈을 가져오세요. 다음 예시에서는 <a href="../../../reference/liff/#get-os"><code>liff.getOS()</code></a> 메서드와 <a href="../../../reference/liff/#get-language"><code>liff.getLanguage()</code></a> 메서드에 해당하는 모듈을 가져옵니다.</p>
+<pre><code class="language-js"><span class="hljs-keyword">import</span> liff <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@line/liff/core&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">GetOS</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@line/liff/get-os&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">GetLanguage</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@line/liff/get-language&quot;</span>;
+</code></pre>
+<p>다음으로 가져온 LIFF API 모듈을 <code>liff.use()</code> 메서드에 전달하여 LIFF API를 활성화합니다. LIFF API 모듈은 클래스로 정의되어 있으므로 인스턴스를 <code>liff.use()</code> 메서드에 전달해야 합니다.</p>
+<p>LIFF API가 활성화되면 해당 LIFF API를 사용할 수 있습니다.</p>
+<pre><code class="language-js"><span class="hljs-keyword">import</span> liff <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@line/liff/core&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">GetOS</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@line/liff/get-os&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">GetLanguage</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@line/liff/get-language&quot;</span>;
+
+liff.<span class="hljs-title function_">use</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">GetOS</span>());
+liff.<span class="hljs-title function_">use</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">GetLanguage</span>());
+
+liff.<span class="hljs-title function_">init</span>({
+  <span class="hljs-attr">liffId</span>: <span class="hljs-string">&quot;123456-abcedfg&quot;</span>,
+});
+
+liff.<span class="hljs-title function_">getOS</span>();
+liff.<span class="hljs-title function_">getLanguage</span>();
+</code></pre>
+<p>플러거블 SDK에 대한 자세한 내용은 LIFF 문서의 <a href="../pluggable-sdk/">플러거블 SDK</a>를 참조하세요.</p>
+<div class="tip">
+<p><strong>기존 LIFF SDK 사용하기</strong></p>
+<p>기존 LIFF SDK를 계속 사용할 수 있습니다. LIFF SDK의 사용 방법은 변경되지 않았습니다.</p>
+<pre><code class="language-js"><span class="hljs-comment">// 기존 liff 객체</span>
+<span class="hljs-keyword">import</span> liff <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@line/liff&quot;</span>;
+
+<span class="hljs-comment">// 플러거블 SDK의 liff 객체</span>
+<span class="hljs-keyword">import</span> liff <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@line/liff/core&quot;</span>;
+</code></pre>
+</div>
+<p>2022/12/13</p>
+<h2>LIFF v2.21.4 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.21.4는 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.21.4를 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.21.4를 출시했습니다.</p>
+<h3>LIFF SDK npm 패키지를 정식 출시했습니다</h3>
+<p><a href="https://developers.line.biz/en/news/2020/07/01/published-liff-npm-package/" target="_blank" rel="noopener noreferrer">2020년 7월</a>부터 시험적으로 제공해 온 LIFF SDK npm 패키지를 정식으로 출시했습니다.</p>
+<p>v2.21.4 이전의 LIFF SDK npm 패키지는 이전과 같이 계속 사용할 수 있습니다. 사용 방법은 변경되지 않았습니다.</p>
+<p>LIFF SDK npm 패키지에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#use-npm-package">npm 패키지 사용하기</a>를 참조하세요.</p>
+<h3>LIFF v2.21.4로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.21.4로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.21.4</code> 또는 <code>yarn add @line/liff@2.21.4</code>를 실행하여 v2.21.4로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2022/11/10</p>
+<h2>LIFF v2.21.3 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.21.3은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.21.3을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.21.3을 출시했습니다.</p>
+<p>LIFF v2.21.3에서는 다음 버그를 수정했습니다.</p>
+<h3>LIFF SDK의 npm 패키지를 ES 모듈로 가져올 때 오류가 발생하던 버그를 수정했습니다</h3>
+<p>LIFF SDK의 npm 패키지를 ES 모듈로 가져올 때 <code>Uncaught ReferenceError: require is not defined</code> 오류가 발생하는 버그가 있었습니다.</p>
+<p>이 버그는 LIFF v2.21.3에서 수정되어 위와 같은 경우에도 오류가 발생하지 않습니다.</p>
+<h3>LIFF v2.21.3으로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.21.3으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.21.3</code> 또는 <code>yarn add @line/liff@2.21.3</code>을 실행하여 v2.21.3으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2022/10/12</p>
+<h2>LIFF v2.21.2 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.21.2는 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.21.2를 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.21.2를 출시했습니다.</p>
+<p>LIFF v2.21.2에서는 LIFF SDK의 안정성을 높이기 위해 LIFF SDK를 리팩터링했습니다. 기능의 변경은 없습니다.</p>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.21.2로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.21.2</code> 또는 <code>yarn add @line/liff@2.21.2</code>를 실행하여 v2.21.2로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2022/9/5</p>
+<h2>LIFF v2.21.1 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.21.1은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.21.1을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.21.1을 출시했습니다.</p>
+<p>LIFF v2.21.1에서는 LIFF SDK를 리팩터링했습니다. 기능의 변경은 없습니다.</p>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.21.1로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.21.1</code> 또는 <code>yarn add @line/liff@2.21.1</code>을 실행하여 v2.21.1로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2022/8/4</p>
+<h2>LIFF v2.21.0 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.21.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.21.0을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.21.0을 출시했습니다.</p>
+<p>LIFF v2.21.0에서는 다음 기능을 추가하고 개선했습니다.</p>
+<ul>
+<li><a href="./#i18n-20220804">LIFF SDK가 표시하는 텍스트가 여러 언어를 지원합니다</a></li>
+<li><a href="./#liff-i18n-setLang-20220804">LIFF SDK가 표시하는 텍스트의 언어를 지정할 수 있습니다</a></li>
+<li><a href="./#liff-init-20220804">잘못된 LIFF ID로도 <code>liff.init()</code> 메서드가 성공하던 버그를 수정했습니다</a></li>
+<li><a href="./#liff-get-profile-20220804"><code>liff.getProfile()</code> 메서드가 가져오는 프로필 정보에 대한 TypeScript 타입 정의를 제공합니다</a></li>
+</ul>
+<h3>LIFF SDK가 표시하는 텍스트가 여러 언어를 지원합니다</h3>
+<p>LIFF SDK가 표시하는 텍스트가 여러 언어를 지원합니다. 즉, LIFF SDK가 표시하는 각 텍스트는 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language" target="_blank" rel="noopener noreferrer"><code>navigator.language</code></a>에서 가져온 사용자의 언어로 표시됩니다.</p>
+<p>다만 현재는 번역이 적용되지 않아 모든 텍스트가 영어로 표시됩니다. 번역은 점차 적용될 예정입니다.</p>
+<h3>LIFF SDK가 표시하는 텍스트의 언어를 지정할 수 있습니다</h3>
+<p>LIFF SDK가 표시하는 텍스트의 언어를 지정할 수 있는 <a href="../../../reference/liff/#i18n-set-lang"><code>liff.i18n.setLang()</code></a> 메서드를 추가했습니다. <code>liff.i18n.setLang()</code> 메서드를 사용하면 사용자의 언어와 관계없이 LIFF SDK의 텍스트를 지정한 언어로 표시할 수 있습니다.</p>
+<pre><code class="language-js">liff.<span class="hljs-property">i18n</span>.<span class="hljs-title function_">setLang</span>(<span class="hljs-string">&quot;en&quot;</span>);
+</code></pre>
+<p>번역이 없는 텍스트는 이 메서드의 영향을 받지 않습니다.</p>
+<p>자세한 내용은 LIFF API 레퍼런스의 <a href="../../../reference/liff/#i18n-set-lang">liff.i18n.setLang()</a>을 참조하세요.</p>
+<h3>잘못된 LIFF ID로도 <code>liff.init()</code> 메서드가 성공하던 버그를 수정했습니다</h3>
+<p>잘못된 LIFF ID로도 <a href="../../../reference/liff/#initialize-liff-app"><code>liff.init()</code></a>이 성공하는 버그가 있었습니다. LIFF v2.21.0에서는 이 버그를 수정하여 잘못된 LIFF ID를 사용하면 <code>liff.init()</code> 메서드가 실패하도록 변경되었습니다.</p>
+<h3><code>liff.getProfile()</code> 메서드가 가져오는 프로필 정보에 대한 TypeScript 타입 정의를 제공합니다</h3>
+<p>LIFF SDK의 npm 패키지에서 <code>liff.getProfile()</code> 메서드가 가져오는 <a href="https://developers.line.biz/en/glossary/#profile-information" target="_blank" rel="noopener noreferrer">프로필 정보</a>에 대한 TypeScript 타입 정의를 제공합니다. <code>@liff/get-profile</code> 패키지에서 <code>Profile</code> 타입을 가져올 수 있습니다.</p>
+<pre><code class="language-ts"><span class="hljs-keyword">import</span> { <span class="hljs-title class_">Profile</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@liff/get-profile&quot;</span>;
+</code></pre>
+<p>2022/7/6</p>
+<h2>LIFF v2.20.3 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.20.3은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.20.3을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.20.3을 출시했습니다.</p>
+<p>LIFF v2.20.3에서는 다음 버그를 수정했습니다.</p>
+<h3>Android의 외부 브라우저에서 자동 로그인이 제대로 동작하지 않는 버그를 해결하기 위한 임시 조치로 자동 로그인 후 알림을 표시합니다</h3>
+<p>Android의 <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">외부 브라우저</a>에서 자동 로그인이 제대로 동작하지 않는 경우가 있었습니다. 임시 조치로 Android의 외부 브라우저에서 자동 로그인 후 다음 알림이 표시됩니다.</p>
+<pre><code>Login successfully!
+</code></pre>
+<p>LIFF SDK의 향후 업데이트에서 알림 표시 방식을 개선할 예정입니다.</p>
+<h3>LIFF v2.20.3으로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.20.3으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.20.3</code> 또는 <code>yarn add @line/liff@2.20.3</code>을 실행하여 v2.20.3으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2022/6/8</p>
+<h2>LIFF v2.20.2 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.20.2는 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.20.2를 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<p>LIFF v2.20.2를 출시했습니다.</p>
+<p>LIFF v2.20.2에서는 내부를 개선했습니다.</p>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.20.2로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.20.2</code> 또는 <code>yarn add @line/liff@2.20.2</code>를 실행하여 v2.20.2로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2022/5/24</p>
+<h2>LIFF v2.20.1 출시</h2>
+<!-- warning start -->
+<p><strong>2026년 9월 30일에 추가됨</strong></p>
+<p>잠재적인 보안 영향이 있는 문제가 확인되어 LIFF v2.20.1은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.20.1을 사용 중이라면 LIFF v2.31.1 이상으로 업데이트하세요. 자세한 내용은 <a href="https://developers.line.biz/en/news/2026/09/30/release-liff-2-31-1/" target="_blank" rel="noopener noreferrer">LIFF v2.31.1 출시</a>를 참조하세요.</p>
+<!-- warning end -->
+<!-- note start -->
+<p><strong>2022년 5월 25일에 추가됨</strong></p>
+<p>npm 쪽 버그로 LIFF v2.20.1 npm 패키지를 설치할 수 없던 문제가 해결되었습니다.</p>
+<p>자세한 내용은 <a href="https://status.npmjs.org/incidents/4zkt80fxq1nb" target="_blank" rel="noopener noreferrer">npm 상태 페이지</a>를 참조하세요.</p>
+<!-- note end -->
+<p>LIFF v2.20.1을 출시했습니다.</p>
+<p>LIFF v2.20.1에서는 다음 개선 사항을 적용했습니다.</p>
+<h3>로그인하지 않은 상태에서 외부 브라우저로 <code>liff.scanCodeV2()</code> 메서드를 실행하면 이제 오류가 반환됩니다</h3>
+<p><a href="../../../reference/liff/#scan-code-v2"><code>liff.scanCodeV2()</code></a> 메서드를 실행하려면 사용자 로그인이 필요합니다.</p>
+<p>LIFF v2.19.1 이하에서는 로그인하지 않은 상태에서 <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">외부 브라우저</a>로 <code>liff.scanCodeV2()</code> 메서드를 실행하면 빈 페이지가 표시되는 하위 창이 열리고, <code>Promise</code>는 대기 상태로 남아 있었습니다.</p>
+<p>LIFF 2.20.1에서는 위와 같은 경우에 하위 창이 더 이상 열리지 않습니다. 또한 <code>Promise</code>는 거부(reject)되고 <a href="../../../reference/liff/#liff-errors"><code>LiffError</code></a>가 전달됩니다.</p>
+<p><code>liff.scanCodeV2()</code> 메서드에 대한 자세한 내용은 LIFF API 레퍼런스의 <a href="../../../reference/liff/#scan-code-v2">liff.scanCodeV2()</a>를 참조하세요.</p>
+<!-- note start -->
+<p><strong>LIFF v2.20.0은 지원이 종료되었습니다</strong></p>
+<p>Android의 외부 브라우저를 사용하는 일부 사용자가 로그인할 수 없는 버그로 인해 LIFF v2.20.0은 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. LIFF v2.20.0을 사용 중이라면 LIFF v2.20.1로 업데이트하세요.</p>
+<!-- note end -->
+<p>2022/4/18</p>
+<h2>LIFF v2.19.1 출시</h2>
+<!-- note start -->
+<p><strong>2022년 4월 25일에 추가됨</strong></p>
+<p>앞서 안내한 대로 오늘 LIFF Inspector와 LIFF Mock을 출시했습니다. 자세한 내용은 2022년 4월 25일 뉴스 <a href="https://developers.line.biz/en/news/2022/04/25/liff-plugin/" target="_blank" rel="noopener noreferrer">LIFF Inspector 및 LIFF Mock 출시</a>를 참조하세요.</p>
+<!-- note end -->
+<p>LIFF v2.19.1을 출시했습니다.</p>
+<p>LIFF v2.19.1에서는 다음 기능을 추가했습니다.</p>
+<h3>LIFF SDK를 확장할 수 있는 LIFF 플러그인 기능을 추가했습니다</h3>
+<p>지난 11월에 열린 LINE DEVELOPER DAY 2021의 세션 &quot;<a href="https://linedevday.linecorp.com/2021/en/sessions/142/" target="_blank" rel="noopener noreferrer">For Improvement of Developer Experience of All LIFF App Developers</a>&quot;에서 소개한 LIFF 플러그인 기능을 추가했습니다.</p>
+<p>LIFF 플러그인은 LIFF SDK를 확장하는 기능입니다. LIFF 플러그인을 사용하면 자체 API를 LIFF SDK에 추가하거나 LIFF API의 동작을 변경할 수 있습니다.</p>
+<p>또한 앞서 안내한 대로 다음 LIFF 플러그인을 사용할 수 있게 되었습니다.</p>
+<ul>
+<li><a href="./#liff-inspector-20220418">LIFF Inspector</a></li>
+<li><a href="./#liff-mock-20220418">LIFF Mock</a></li>
+</ul>
+<h4>LIFF Inspector</h4>
+<p>LIFF Inspector는 LIFF 앱을 디버깅하기 위한 LIFF 플러그인입니다. LIFF Inspector를 사용하면 LIFF 앱을 실행하는 기기와 다른 PC에서 <a href="https://developer.chrome.com/docs/devtools/" target="_blank" rel="noopener noreferrer">Chrome DevTools</a>로 LIFF 앱을 디버깅할 수 있습니다.</p>
+<h4>LIFF Mock</h4>
+<p>LIFF Mock은 LIFF 앱의 테스트를 쉽게 할 수 있도록 하는 LIFF 플러그인입니다. LIFF Mock을 사용하면 LIFF SDK에 모의(mock) 모드를 추가할 수 있습니다. 모의 모드에서는 LIFF 앱이 LIFF 서버와 독립적으로 동작하며 LIFF API는 모의 데이터를 반환합니다. 따라서 단위 테스트나 부하 테스트를 더 쉽게 수행할 수 있습니다.</p>
+<p>LIFF 플러그인에 대한 자세한 내용은 LIFF 문서의 <a href="../liff-plugin/">LIFF 플러그인</a>을 참조하세요.</p>
+<p>2022/3/22</p>
+<h2>LIFF v2.19.0 출시</h2>
+<p>LIFF v2.19.0을 출시했습니다.</p>
+<p>LIFF v2.19.0에서는 내부를 개선했습니다.</p>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.19.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.19.0</code> 또는 <code>yarn add @line/liff@2.19.0</code>을 실행하여 v2.19.0으로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2022/2/14</p>
+<h2>LIFF v2.18.2 출시</h2>
+<p>LIFF v2.18.2를 출시했습니다.</p>
+<p>LIFF v2.18.2에서는 다음 개선 사항을 적용했습니다.</p>
+<ul>
+<li><a href="./#liff-send-messages-2022-02-14">iOS 또는 iPadOS 12.0.0의 LINE에서 사용자에게 LINE 업데이트를 권장하는 알림이 표시됩니다</a></li>
+<li><a href="./#scan-code-v2-2022-02-14"><code>liff.scanCodeV2()</code> 메서드로 UTF-8로 인코딩된 2D 코드를 스캔할 때 문자가 깨지던 버그를 수정했습니다</a></li>
+<li><a href="./#permanent-link-create-url-by-2022-02-14"><code>liff.permanentLink.createUrlBy()</code> 메서드에 퍼센트 인코딩된 경로가 포함된 URL을 전달할 때 올바른 영구 링크를 가져올 수 없던 버그를 수정했습니다</a></li>
+</ul>
+<h3>iOS 또는 iPadOS 12.0.0의 LINE에서 사용자에게 LINE 업데이트를 권장하는 알림이 표시됩니다</h3>
+<p><a href="https://developers.line.biz/en/news/2022/01/14/liff-outage/" target="_blank" rel="noopener noreferrer">2022년 1월 14일</a>에 안내한 것처럼, 특정 조건에서 <a href="../../../reference/liff/#send-messages"><code>liff.sendMessages()</code></a>가 제대로 동작하지 않고 상태 코드 <code>403</code> 오류를 반환하는 버그가 있었습니다. 사용자의 LINE 버전을 12.0.1 이상으로 업데이트하면 이 버그가 해결됩니다.</p>
+<p>수정된 버전의 LINE으로 업데이트하도록 사용자에게 권장하기 위해, iOS 또는 iPadOS 12.0.0의 LINE에서 <code>liff.sendMessages()</code> 메서드를 실행할 때 상태 코드 <code>403</code> 오류가 발생하면 알림이 표시됩니다.</p>
+<p>표시되는 알림은 다음과 같습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/news/2022/liff-send-messages-v2-18-2.png" alt="LINEアプリをLINE 12.0.1以降にアップデートしてください。Please update your LINE app to LINE 12.0.1 or later." loading="lazy"><figcaption>LINEアプリをLINE 12.0.1以降にアップデートしてください。Please update your LINE app to LINE 12.0.1 or later.</figcaption></figure></p>
+<h3><code>liff.scanCodeV2()</code> 메서드로 UTF-8로 인코딩된 2D 코드를 스캔할 때 문자가 깨지던 버그를 수정했습니다</h3>
+<p><a href="../../../reference/liff/#scan-code-v2"><code>liff.scanCodeV2()</code></a> 메서드로 UTF-8로 인코딩된 2D 코드를 스캔할 때 문자가 깨지는 버그를 수정했습니다.</p>
+<p>이 버그 수정은 모든 LIFF 앱에 자동으로 적용되므로 LIFF SDK를 업데이트하거나 LIFF 앱의 코드를 수정할 필요는 없습니다.</p>
+<h3><code>liff.permanentLink.createUrlBy()</code> 메서드에 퍼센트 인코딩된 경로가 포함된 URL을 전달할 때 올바른 영구 링크를 가져올 수 없던 버그를 수정했습니다</h3>
+<p><a href="../../../reference/liff/#permanent-link-create-url-by"><code>liff.permanentLink.createUrlBy()</code></a> 메서드에 <a href="https://en.wikipedia.org/wiki/Percent-encoding" target="_blank" rel="noopener noreferrer">퍼센트 인코딩</a>된 경로가 포함된 URL을 전달하면 잘못된 영구 링크가 반환되거나 상태 코드 <code>500</code> 오류가 발생하는 버그를 수정했습니다.</p>
+<p>이 버그 수정은 모든 LIFF 앱에 자동으로 적용되므로 LIFF SDK를 업데이트하거나 LIFF 앱의 코드를 수정할 필요는 없습니다.</p>
+<h3>LIFF v2.18.2로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.18.2로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.18.2</code> 또는 <code>yarn add @line/liff@2.18.2</code>를 실행하여 v2.18.2로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2021/12/21</p>
+<h2>LIFF v2.18.1 출시</h2>
+<p>LIFF v2.18.1을 출시했습니다.</p>
+<p>LIFF v2.18.1에서는 다음 버그를 수정했습니다.</p>
+<h3>빌드 시 오류를 일으키던 TypeScript 버그를 수정했습니다</h3>
+<p>LIFF v2.18.0에서 <a href="../../../reference/messaging-api/#message-objects">메시지 객체</a>에 <a href="../../messaging-api/actions/#uri-action">URI 액션</a>이 포함된 코드를 TypeScript로 빌드하면 오류가 발생하는 버그를 수정했습니다.</p>
+<h4>대상 메서드</h4>
+<ul>
+<li><a href="../../../reference/liff/#send-messages"><code>liff.sendMessages()</code></a></li>
+<li><a href="../../../reference/liff/#share-target-picker"><code>liff.shareTargetPicker()</code></a></li>
+</ul>
+<h3>LIFF v2.18.1로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 자동으로 v2.18.1로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.18.1</code> 또는 <code>yarn add @line/liff@2.18.1</code>을 실행하여 v2.18.1로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2021/12/9</p>
+<h2>LIFF v2.18.0 출시</h2>
+<p>LIFF v2.18.0을 출시했습니다.</p>
+<p>LIFF v2.18.0에서는 다음 기능을 추가했습니다.</p>
+<h3>이제 LIFF 앱의 임의의 페이지에 대한 영구 링크를 가져올 수 있습니다</h3>
+<p>LIFF 앱의 임의의 페이지에 대한 영구 링크를 가져올 수 있는 <a href="../../../reference/liff/#permanent-link-create-url-by"><code>liff.permanentLink.createUrlBy()</code></a> 메서드를 추가했습니다.</p>
+<p><a href="../../../reference/liff/#permanent-link-create-url"><code>liff.permanentLink.createUrl()</code></a> 메서드는 현재 페이지의 영구 링크만 가져올 수 있습니다. 하지만 <code>liff.permanentLink.createUrlBy()</code> 메서드를 사용하면 현재 페이지뿐만 아니라 LIFF 앱의 임의의 페이지에 대한 영구 링크를 가져올 수 있습니다.</p>
+<p>또한 <code>liff.permanentLink.createUrl()</code> 메서드로 쿼리 파라미터가 추가된 영구 링크를 가져오려면 미리 <a href="../../../reference/liff/#permanent-linke-set-extra-query-param"><code>liff.permanentLink.setExtraQueryParam()</code></a> 메서드를 실행해야 합니다. 반면 <code>liff.permanentLink.createUrlBy()</code> 메서드는 메서드를 실행할 때 추가할 쿼리 파라미터를 함께 지정할 수 있습니다. 또한 <code>liff.permanentLink.createUrlBy()</code> 메서드는 <code>liff.permanentLink.setExtraQueryParam()</code> 메서드의 영향을 받지 않습니다.</p>
+<h4><code>liff.permanentLink.createUrl()</code> 메서드와 <code>liff.permanentLink.createUrlBy()</code> 메서드의 차이</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th><code>liff.permanentLink.createUrl()</code></th>
+<th><code>liff.permanentLink.createUrlBy()</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>영구 링크를 가져올 수 있는 LIFF 앱 페이지</td>
+<td>현재 페이지</td>
+<td>임의의 페이지</td>
+</tr>
+<tr>
+<td>영구 링크에 임의의 쿼리 파라미터를 추가하는 방법</td>
+<td>미리 <code>liff.permanentLink.setExtraQueryParam()</code> 메서드를 실행</td>
+<td><code>liff.permanentLink.createUrlBy()</code> 메서드를 실행할 때 지정</td>
+</tr>
+<tr>
+<td>반환값</td>
+<td>문자열</td>
+<td><code>Promise</code> 객체</td>
+</tr>
+</tbody>
+</table></div>
+<h4><code>liff.permanentLink.createUrlBy()</code> 메서드의 예제 코드</h4>
+<pre><code class="language-javascript"><span class="hljs-comment">// 예: LIFF 앱의 엔드포인트 URL이 https://example.com/path1?q1=v1이고</span>
+<span class="hljs-comment">// LIFF ID가 1234567890-AbcdEfgh인 경우</span>
+liff.<span class="hljs-property">permanentLink</span>
+  .<span class="hljs-title function_">createUrlBy</span>(<span class="hljs-string">&#x27;https://example.com/path1?q1=v1&#x27;</span>)
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">permanentLink</span>) =&gt;</span> {
+    <span class="hljs-comment">// https://liff.line.me/1234567890-AbcdEfgh</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(permanentLink);
+  });
+
+liff.<span class="hljs-property">permanentLink</span>
+  .<span class="hljs-title function_">createUrlBy</span>(<span class="hljs-string">&#x27;https://example.com/path1/path2?q1=v1&amp;q2=v2&#x27;</span>)
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">permanentLink</span>) =&gt;</span> {
+    <span class="hljs-comment">// https://liff.line.me/1234567890-AbcdEfgh/path2?q=2=v2</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(permanentLink);
+  });
+</code></pre>
+<!-- note start -->
+<p><strong>liff.permanentLink.createUrl() 메서드는 다음 메이저 버전 업데이트에서 지원이 종료될 수 있습니다</strong></p>
+<p>기술적인 문제로 인해 <code>liff.permanentLink.createUrl()</code> 메서드는 다음 메이저 버전 업데이트에서 지원이 종료될 수 있습니다. 현재 페이지의 영구 링크를 가져오려면 <code>liff.permanentLink.createUrlBy()</code> 메서드를 사용하는 것을 권장합니다.</p>
+<!-- note end -->
+<p>자세한 내용은 LIFF API 레퍼런스의 <a href="../../../reference/liff/#permanent-link-create-url-by">liff.permanentLink.createUrlBy()</a>를 참조하세요.</p>
+<p>2021/11/11</p>
+<h2>LIFF v2.17.0 출시</h2>
+<p>LIFF v2.17.0을 출시했습니다.</p>
+<p>LIFF v2.17.0에서는 다음 버그를 수정했습니다.</p>
+<h3>LINE for iOS에서 <code>liff.openWindow()</code> 메서드를 실행하면 URL 프래그먼트 끝에 의도하지 않은 쿼리 파라미터가 추가된 URL이 열리던 버그를 수정했습니다</h3>
+<p><code>url</code> 속성에 쿼리 파라미터는 없고 URL 프래그먼트만 있는 경우, LINE for iOS에서 <a href="../../../reference/liff/#open-window"><code>liff.openWindow()</code></a> 메서드를 실행하면 URL 프래그먼트 끝에 의도하지 않은 쿼리 파라미터가 추가된 URL이 열렸습니다.</p>
+<p>이 버그는 LIFF v2.17.0에서 수정되어 위와 같은 경우에도 올바른 URL이 열립니다.</p>
+<h4><code>liff.openWindow()</code> 메서드를 실행할 때 열리는 URL의 예시</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>LIFF SDK 버전</th>
+<th><code>url</code> 속성</th>
+<th>열리는 URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v2.16.1</td>
+<td><code>https://example.com#URL-fragment</code></td>
+<td><code>https://example.com#URL-fragment?is_liff_external_open_window=false</code></td>
+</tr>
+<tr>
+<td>v2.17.0</td>
+<td><code>https://example.com#URL-fragment</code></td>
+<td><code>https://example.com#URL-fragment</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>liff.openWindow()</code> 메서드에 대한 자세한 내용은 LIFF API 레퍼런스의 <a href="../../../reference/liff/#open-window">liff.openWindow()</a>를 참조하세요.</p>
+<p>2021/10/26</p>
+<h2>LIFF v2.16.1 출시</h2>
+<p>LIFF v2.16.1을 출시했습니다.</p>
+<p>LIFF v2.16.1에서는 다음 버그를 수정했습니다.</p>
+<h3>LIFF v2.14.0 이상의 CDN 버전에서 파일 크기가 커지던 버그를 수정했습니다</h3>
+<p><a href="./#liff-v2-14-0">LIFF v2.14.0</a>에서 내부 소스 코드를 변경한 영향으로 LIFF v2.14.0 이상의 CDN 버전에서 파일 크기가 커지는 버그가 있었습니다. 이 버그는 LIFF v2.16.1에서 수정되어 파일 크기가 커지지 않습니다.</p>
+<h3>webpack v5를 사용한 프로젝트를 빌드할 때 오류가 발생하던 버그를 수정했습니다</h3>
+<p><a href="https://webpack.js.org/blog/2020-10-10-webpack-5-release/#automatic-nodejs-polyfills-removed" target="_blank" rel="noopener noreferrer">webpack v5에서는 Node.js 폴리필이 제거되었습니다</a>. 따라서 webpack v5를 사용하는 프로젝트에서 LIFF v2.16.0 이하의 npm 버전을 사용하면 빌드 중에 오류가 발생하고 다음 메시지가 표시됩니다.</p>
+<pre><code>Module not found: Error: Can't resolve 'crypto' in 'node_modules/js-crypto-env/dist'
+
+BREAKING CHANGE: webpack &lt; 5 used to include polyfills for node.js core modules by default.
+This is no longer the case. Verify if you need this module and configure a polyfill for it.
+
+If you want to include a polyfill, you need to:
+- add a fallback 'resolve.fallback: { &quot;crypto&quot;: require.resolve(&quot;crypto-browserify&quot;) }'
+- install 'crypto-browserify'
+If you don't want to include a polyfill, you can use an empty module like this:
+resolve.fallback: { &quot;crypto&quot;: false }
+</code></pre>
+<p>이는 LIFF v2.16.0 이하의 구현이 LIFF SDK 내부에서 Node.js 폴리필에 의존했기 때문입니다. LIFF v2.16.1에서는 구현이 Node.js 폴리필에 의존하지 않으므로 위 오류가 더 이상 발생하지 않습니다.</p>
+<h4>webpack v5를 사용하는 프로젝트에서 LIFF v2.16.0 이하의 npm 버전 사용하기</h4>
+<p>같은 LIFF SDK 버전을 유지하면서 버그를 해결하려면 Node.js 폴리필을 설치하고 <code>webpack.config.js</code>를 설정해야 합니다.</p>
+<p>먼저 Node.js 폴리필인 <code>crypto-browserify</code>와 <code>stream-browserify</code>를 설치합니다.</p>
+<pre><code class="language-bash"><span class="hljs-comment"># npm의 경우</span>
+$ npm install crypto-browserify stream-browserify
+
+<span class="hljs-comment"># Yarn의 경우</span>
+$ yarn add crypto-browserify stream-browserify
+</code></pre>
+<p>다음으로 아래와 같이 <code>webpack.config.js</code>의 <code>resolve.fallback</code>을 설정합니다.</p>
+<pre><code class="language-js"><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = {
+  <span class="hljs-attr">resolve</span>: {
+    <span class="hljs-attr">fallback</span>: {
+      <span class="hljs-attr">crypto</span>: <span class="hljs-built_in">require</span>.<span class="hljs-title function_">resolve</span>(<span class="hljs-string">&#x27;crypto-browserify&#x27;</span>),
+      <span class="hljs-attr">stream</span>: <span class="hljs-built_in">require</span>.<span class="hljs-title function_">resolve</span>(<span class="hljs-string">&#x27;stream-browserify&#x27;</span>),
+    },
+  },
+};
+</code></pre>
+<br>
+<h3>LIFF v2.16.1로 업데이트하는 방법</h3>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 자동으로 v2.16.1로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.16.1</code> 또는 <code>yarn add @line/liff@2.16.1</code>을 실행하여 v2.16.1로 업데이트할 수 있습니다.</p>
+<p>LIFF SDK 통합에 대한 자세한 내용은 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2021/10/12</p>
+<h2>LIFF v2.16.0 출시</h2>
+<p>LIFF v2.16.0을 출시했습니다.</p>
+<p>LIFF v2.16.0에서는 다음 기능을 추가했습니다.</p>
+<h3>공유 대상 선택기에서 여러 명 또는 한 명에게만 보낼지 제어할 수 있는 옵션이 추가되었습니다</h3>
+<p><code>liff.shareTargetPicker()</code> 메서드에 <code>isMultiple</code> 속성을 추가했습니다. <code>isMultiple</code> 속성을 설정하여 사용자가 대상 선택기에서 여러 명의 메시지 수신자를 선택할 수 있을지 여부를 제어할 수 있습니다.</p>
+<p><code>isMultiple</code> 속성을 <code>true</code>로 설정하면 사용자는 대상 선택기에서 여러 명의 메시지 수신자를 선택할 수 있습니다. <code>false</code>로 설정하면 사용자는 친구 한 명만 메시지 수신자로 선택할 수 있습니다. 기본값은 <code>true</code>입니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th><code>isMultiple</code> 값</th>
+<th>선택 가능한 대상 수신자</th>
+<th>선택 가능한 수</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>true</code></td>
+<td>그룹, 친구, 채팅</td>
+<td>여러 명 선택 가능</td>
+</tr>
+<tr>
+<td><code>false</code></td>
+<td>친구</td>
+<td>한 명만 선택 가능</td>
+</tr>
+</tbody>
+</table></div>
+<!-- note start -->
+<p><strong>isMultiple을 false로 설정해도 한 명의 친구에게만 메시지가 보내진다고 보장할 수 없습니다</strong></p>
+<p><code>isMultiple</code> 속성을 <code>false</code>로 설정하더라도 공유 대상 선택기를 여러 번 호출하거나 같은 메시지를 다른 수신자에게 다시 공유하면 여러 사용자에게 메시지를 보낼 수 있습니다. 사용자가 한 명의 친구에게 한 번만 메시지를 보내도록 엄격하게 제한하려면 LIFF 앱을 구현할 때 제한을 추가하세요.</p>
+<p>URL이 포함된 메시지를 보내고 해당 URL에 대한 접근을 제한하는 예시는 다음과 같습니다.</p>
+<ol>
+<li>URL에 고유한 토큰을 부여하고 메시지를 보냅니다.</li>
+<li>메시지의 URL에 접근하면 서버 측에서 토큰을 확인하고 여러 사용자의 접근을 제한합니다.</li>
+</ol>
+<!-- note end -->
+<!-- note start -->
+<p><strong>사용자가 share target picker로 메시지를 보낸 사람 수는 가져오지 않습니다</strong></p>
+<p>사용자의 개인정보를 보호하기 위해 사용자가 share target picker를 통해 몇 명에게 메시지를 받았는지에 대한 정보는 수집하거나 제공하지 않습니다.</p>
+<!-- note end -->
+<p><strong><code>liff.shareTargetPicker()</code> 메서드에 <code>isMultiple</code> 속성을 추가한 예제 코드:</strong></p>
+<pre><code class="language-js"><span class="hljs-keyword">if</span> (liff.<span class="hljs-title function_">isApiAvailable</span>(<span class="hljs-string">&#x27;shareTargetPicker&#x27;</span>)) {
+  liff.<span class="hljs-title function_">shareTargetPicker</span>(
+      [
+        {
+          <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;text&quot;</span>,
+          <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;Hello, World!&quot;</span>,
+        },
+      ],
+      {
+        <span class="hljs-attr">isMultiple</span>: <span class="hljs-literal">true</span>,
+      }
+    )
+    .<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">res</span>) {
+      <span class="hljs-keyword">if</span> (res) {
+        <span class="hljs-comment">// TargetPicker를 통해 메시지 전송에 성공했습니다</span>
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`[<span class="hljs-subst">${res.status}</span>] Message sent!`</span>)
+      } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">const</span> [majorVer, minorVer] = (liff.<span class="hljs-title function_">getLineVersion</span>() || <span class="hljs-string">&quot;&quot;</span>).<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27;.&#x27;</span>);
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">parseInt</span>(majorVer) == <span class="hljs-number">10</span> &amp;&amp; <span class="hljs-built_in">parseInt</span>(minorVer) &lt; <span class="hljs-number">11</span>) {
+          <span class="hljs-comment">// LINE 10.3.0 - 10.10.0</span>
+          <span class="hljs-comment">// 이전 버전의 LINE은 사용자의 동작과 관계없이 여기로 들어옵니다</span>
+          <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;TargetPicker was opened at least. Whether succeeded to send message is unclear&#x27;</span>)
+        } <span class="hljs-keyword">else</span> {
+          <span class="hljs-comment">// LINE 10.11.0 이상</span>
+          <span class="hljs-comment">// 메시지 전송이 취소되었습니다</span>
+          <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;TargetPicker was closed!&#x27;</span>)
+        }
+      }
+    }).<span class="hljs-title function_">catch</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">error</span>) {
+      <span class="hljs-comment">// 메시지를 보내기 전에 문제가 발생했습니다</span>
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;something wrong happen&#x27;</span>)
+    })
+}
+</code></pre>
+<p>자세한 내용은 LIFF API 레퍼런스의 <a href="../../../reference/liff/#share-target-picker">liff.shareTargetPicker()</a>를 참조하세요.</p>
+<p>2021/10/01</p>
+<h2>LIFF v1은 2021년 10월 1일에 서비스가 종료되었습니다</h2>
+<p><a href="https://developers.line.biz/en/news/2021/09/17/liff-v1-discontinue/" target="_blank" rel="noopener noreferrer">2021년 9월 17일</a>에 안내한 것처럼, 2021년 10월 1일부로 LIFF v1의 <a href="https://developers.line.biz/en/glossary/#end-of-life" target="_blank" rel="noopener noreferrer">수명 종료(end-of-life)</a>가 되었습니다.</p>
+<p>다만 <a href="../../../reference/liff-server/">Server API</a>는 LIFF v1과 다른 일정으로 관리되므로 이번 서비스 종료의 영향을 받지 않습니다.</p>
+<h3>대상 버전</h3>
+<p>LIFF v1</p>
+<!-- warning start -->
+<p><strong>LIFF v1을 사용 중이라면 LIFF v2로 마이그레이션하세요</strong></p>
+<p>LIFF v2로 마이그레이션하는 방법은 <a href="https://developers.line.biz/en/news/2021/04/05/liff-v1-deprecated/" target="_blank" rel="noopener noreferrer">2021년 4월 5일</a>의 뉴스 중 <a href="https://developers.line.biz/en/news/2021/04/05/liff-v1-deprecated/#migrate-to-v2" target="_blank" rel="noopener noreferrer">LIFF v2로 마이그레이션</a>을 참조하세요.</p>
+<!-- warning end -->
+<h3>서비스 종료 예정일</h3>
+<p>2021년 10월 1일</p>
+<h3>영향</h3>
+<p>점차 LIFF SDK URL(<code>https://d.line-scdn.net/liff/1.0/sdk.js</code>)을 참조하거나 <a href="https://developers.line.biz/en/reference/liff-v1/" target="_blank" rel="noopener noreferrer">LIFF v1 API</a>를 사용할 수 없게 됩니다.</p>
+<p>LINE은 고객에게 더 나은 서비스 품질을 제공하기 위해 계속 노력하겠습니다. 양해해 주셔서 감사합니다.</p>
+<p>2021/09/30</p>
+<h2>LIFF v2.15.0 출시</h2>
+<p>LIFF v2.15.0을 출시했습니다.</p>
+<p>LIFF v2.15.0에서는 다음 기능을 추가했습니다.</p>
+<ul>
+<li><a href="./#liff-scan-code-v2-2021-09-30">2D 코드 리더 기능이 추가되었습니다</a></li>
+<li><a href="./#liff-init-auto-login-2021-09-30">외부 브라우저에서 LIFF 앱을 초기화할 때 <code>liff.login()</code> 메서드를 자동으로 실행하는 옵션이 추가되었습니다</a></li>
+</ul>
+<h3>2D 코드 리더 기능이 추가되었습니다</h3>
+<p>LIFF 앱 안에서 2D 코드 리더를 실행할 수 있는 <a href="../../../reference/liff/#scan-code-v2"><code>liff.scanCodeV2()</code></a> 메서드를 추가했습니다.</p>
+<p>기술적인 문제로 인해 <a href="../../../reference/liff/#scan-code"><code>liff.scanCode()</code></a>는 LINE for iOS 9.19.0 이상 및 외부 브라우저에서 사용할 수 없었습니다. 하지만 <a href="../../../reference/liff/#scan-code-v2"><code>liff.scanCodeV2()</code></a>를 사용하면 최신 버전의 LINE for iOS와 외부 브라우저에서도 2D 코드 리더를 실행할 수 있습니다.</p>
+<!-- note start -->
+<p><strong>liff.scanCodeV2()의 동작 사양</strong></p>
+<p><code>liff.scanCodeV2()</code>는 내부적으로 <a href="https://github.com/cozmo/jsQR" target="_blank" rel="noopener noreferrer">jsQR</a>이라는 외부 라이브러리를 사용합니다.
+따라서 <code>liff.scanCodeV2()</code> 메서드를 실행할 때 실행되는 2D 코드 리더는 <a href="https://github.com/cozmo/jsQR" target="_blank" rel="noopener noreferrer">jsQR</a>의 동작 사양에 따릅니다. 사용되는 라이브러리는 사전 고지 없이 업데이트되거나 변경될 수 있습니다.</p>
+<!-- note end -->
+<!-- note start -->
+<p><strong>liff.scanCode() 메서드는 지원이 종료되었습니다</strong></p>
+<p>기존의 <code>liff.scanCode()</code> 메서드는 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원이 종료</a>되었습니다. 2D 코드 리더를 구현할 때는 <code>liff.scanCodeV2()</code> 메서드를 사용하는 것을 권장합니다.</p>
+<!-- note end -->
+<h4><code>liff.scanCodeV2()</code>로 2D 코드 리더 구현하기</h4>
+<p><code>liff.scanCodeV2()</code>를 사용하여 2D 코드 리더를 구현하는 방법은 <code>liff.scanCode()</code>와 같습니다. <code>liff.scanCodeV2()</code>를 구현하기 전에 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>의 LIFF 탭에서 <strong>Scan QR</strong>을 켜세요.</p>
+<br>
+<h6><code>liff.scanCodeV2()</code> 예제 코드:</h6>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">scanCodeV2</span>().<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
+  <span class="hljs-comment">// result = { value: &#x27;&#x27; }</span>
+});
+</code></pre>
+<!-- note start -->
+<p><strong>LINE MINI App에서의 2D 코드 리더 지원은 2021년 10월 7일에 예정되어 있습니다</strong></p>
+<p><code>liff.scanCodeV2()</code>로 2D 코드 리더를 실행하려면 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에서 LINE 로그인 채널의 LIFF 탭에 있는 <strong>Scan QR</strong>을 켜야 합니다. LINE MINI App 채널에도 <strong>Scan QR</strong> 설정이 2021년 10월 7일에 추가될 예정입니다. 2021년 9월 30일 현재 <code>liff.scanCodeV2()</code>는 LINE MINI App 채널에서 사용할 수 없습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/liff/console-scanqr-en.png" alt="Scan QR" loading="lazy"><figcaption>Scan QR</figcaption></figure></p>
+<!-- note end -->
+<h4><code>liff.scanCodeV2()</code> 메서드의 동작 환경</h4>
+<p>다음은 <code>liff.scanCodeV2()</code> 메서드와 표시되는 2D 코드 리더의 동작 환경입니다.</p>
+<ul>
+<li><a href="./#operating-environments-of-scan-code-v2">동작 환경</a></li>
+<li><a href="./#two-dimensional-code-reader">2D 코드 리더</a></li>
+</ul>
+<h5>동작 환경</h5>
+<p>기술적인 문제로 인해 기존 <a href="../../../reference/liff/#scan-code"><code>liff.scanCode()</code></a> 메서드는 LINE for iOS 9.19.0 이상 및 외부 브라우저에서 사용할 수 없습니다. 반면 새로 추가된 <a href="../../../reference/liff/#scan-code-v2"><code>liff.scanCodeV2()</code></a> 메서드는 최신 버전의 LINE for iOS와 외부 브라우저 모두에서 사용할 수 있습니다.</p>
+<div class="table-wrap"><table>
+  <thead>
+    <tr>
+      <th rowspan="2">OS</th>
+      <th rowspan="2">버전</th>
+      <th colspan="3">LINE 앱 버전</th>
+      <th rowspan="2">외부 브라우저</th>
+    </tr>
+    <tr>
+      <th>9.18.0 이하</th>
+      <th>9.19.0 - 11.6.x</th>
+      <th>11.7.0 이상</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">iOS</td>
+      <td>11 - 14.2</td>
+      <td>✅</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>✅ *1</td>
+    </tr>
+    <tr>
+      <td>14.3 이상</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>✅ *2</td>
+      <td>✅ *1</td>
+    </tr>
+    <tr>
+      <td>Android</td>
+      <td>모든 버전</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>✅ *2</td>
+      <td>✅ *1</td>
+    </tr>
+    <tr>
+      <td>PC</td>
+      <td>모든 버전</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>❌</td>
+      <td>✅ *1</td>
+    </tr>
+  </tbody>
+</table></div>
+<p>*1 <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API" target="_blank" rel="noopener noreferrer">WebRTC API</a>를 지원하는 웹 브라우저에서만 사용할 수 있습니다.</p>
+<p>*2 LIFF 브라우저의 화면 크기가 <code>Full</code>인 경우에만 사용할 수 있습니다. 자세한 내용은 LIFF 문서의 <a href="../overview/#screen-size">LIFF 브라우저의 크기</a>를 참조하세요.</p>
+<h5>2D 코드 리더</h5>
+<p><code>liff.scanCode()</code> 메서드는 Android와 iOS에서 각각 다른 2D 코드 리더 화면이 표시되었지만, <code>liff.scanCodeV2()</code> 메서드는 OS와 관계없이 다음과 같은 같은 화면이 표시됩니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/liff/two_dimensional_code_reader_en.webp" alt="2D code reader screen" loading="lazy"><figcaption>2D code reader screen</figcaption></figure></p>
+<p>2D 코드 리더를 실행하면 <code>Full</code> 크기의 LIFF 앱 화면 하단에 <code>Tall</code> 크기의 하위 창이 표시됩니다. 또한 화면 오른쪽 하단에 있는 <figure class="doc-figure"><img src="https://developers.line.biz/media/liff/two-dimensional-code-file-selection.png" alt="2D code selection" loading="lazy"><figcaption>2D code selection</figcaption></figure> 아이콘을 클릭하면 사진에서 읽을 2D 코드를 선택할 수 있습니다.</p>
+<br>
+<p><code>liff.scanCodeV2()</code>를 사용하여 2D 코드 리더를 구현하는 방법에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#opening-two-dimensional-code-reader">2D 코드 리더 열기</a>를 참조하세요.</p>
+<h3>외부 브라우저에서 LIFF 앱을 초기화할 때 <code>liff.login()</code> 메서드를 자동으로 실행하는 옵션이 추가되었습니다</h3>
+<p><code>liff.init()</code> 메서드에 <code>withLoginOnExternalBrowser</code> 속성을 추가했습니다. 보통 <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">외부 브라우저</a>에서 LIFF 앱에 접속하면 <code>liff.login()</code> 메서드로 로그인 과정을 명시적으로 거쳐야 합니다. 새로 추가된 <code>withLoginOnExternalBrowser</code> 속성에 <code>true</code>를 지정하면 LIFF 앱을 초기화할 때 <code>liff.login()</code> 메서드를 자동으로 실행할 수 있습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/liff/liff_autologin_en.png" alt="Login" loading="lazy"><figcaption>Login</figcaption></figure></p>
+<p><strong><code>liff.init()</code> 메서드에 <code>withLoginOnExternalBrowser</code> 속성을 추가한 예제 코드:</strong></p>
+<pre><code class="language-js">liff.<span class="hljs-title function_">init</span>({
+  <span class="hljs-attr">liffId</span>: <span class="hljs-string">&quot;123456-abcdef&quot;</span>,
+  <span class="hljs-attr">withLoginOnExternalBrowser</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// 자동 로그인 과정을 활성화합니다</span>
+}).<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span>
+  <span class="hljs-comment">// liff의 API 사용을 시작합니다</span>
+});
+</code></pre>
+<p>자세한 내용은 LIFF API 레퍼런스의 <a href="../../../reference/liff/#initialize-liff-app">liff.init()</a>을 참조하세요.</p>
+<p>2021/09/17</p>
+<h2>LIFF v1 서비스 종료</h2>
+<p><a href="https://developers.line.biz/en/news/2021/04/05/liff-v1-deprecated/" target="_blank" rel="noopener noreferrer">2021년 4월 5일</a>에 안내한 것처럼, LIFF v1은 2021년 10월 1일에 <a href="https://developers.line.biz/en/glossary/#end-of-life" target="_blank" rel="noopener noreferrer">수명 종료(end-of-life)</a>가 되며, 이로써 <a href="https://developers.line.biz/en/glossary/#deprecated" target="_blank" rel="noopener noreferrer">지원 종료(deprecated)</a> 기간이 끝납니다.</p>
+<h3>대상 버전</h3>
+<p>LIFF v1</p>
+<!-- warning start -->
+<p><strong>LIFF v1을 사용 중이라면 LIFF v2로 마이그레이션하세요</strong></p>
+<p>LIFF v2로 마이그레이션하는 방법은 <a href="https://developers.line.biz/en/news/2021/04/05/liff-v1-deprecated/" target="_blank" rel="noopener noreferrer">2021년 4월 5일</a>의 뉴스 중 <a href="https://developers.line.biz/en/news/2021/04/05/liff-v1-deprecated/#migrate-to-v2" target="_blank" rel="noopener noreferrer">LIFF v2로 마이그레이션</a>을 참조하세요.</p>
+<!-- warning end -->
+<h3>서비스 종료 예정일</h3>
+<p>2021년 10월 1일</p>
+<h3>영향</h3>
+<p>2021년 10월 1일에 LIFF v1이 서비스 종료된 후 점차 LIFF SDK URL(<code>https://d.line-scdn.net/liff/1.0/sdk.js</code>)을 참조하거나 <a href="https://developers.line.biz/en/reference/liff-v1/" target="_blank" rel="noopener noreferrer">LIFF v1 API</a>를 사용할 수 없게 됩니다.</p>
+<p>LINE은 고객에게 더 나은 서비스 품질을 제공하기 위해 계속 노력하겠습니다. 양해해 주셔서 감사합니다.</p>
+<p>2021/09/14</p>
+<h2>LIFF v2.14.0 출시</h2>
+<p>LIFF v2.14.0을 출시했습니다.</p>
+<p>이번 업데이트에는 SDK의 리팩터링만 포함되어 있습니다. 기능의 변경은 없습니다.</p>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 자동으로 v2.14.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.14.0</code> 또는 <code>yarn add @line/liff@2.14.0</code>을 실행하여 v2.14.0으로 업그레이드할 수 있습니다.</p>
+<p>LIFF SDK 통합 방법에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2021/08/12</p>
+<h2>LIFF v2.13.0 출시</h2>
+<p>LIFF v2.13.0을 출시했습니다.</p>
+<p>LIFF v2.13.0에서는 다음 기능을 추가하고 버그를 수정했습니다.</p>
+<ul>
+<li><a href="./#channel-consent-simplification-2021-8-12">LINE MINI App의 동의 화면을 건너뛸 수 있는 “Channel consent simplification” 기능이 추가되었습니다</a></li>
+<li><a href="./#npm-bug-fix-2021-8-12">LIFF SDK의 npm 패키지 버전 버그를 수정했습니다</a></li>
+</ul>
+<h3>LINE MINI App의 동의 화면을 건너뛸 수 있도록 “Channel consent simplification” 기능이 추가되었습니다</h3>
+<p><a href="https://developers.line.biz/en/news/2021/08/12/channel-consent-simplification/" target="_blank" rel="noopener noreferrer">오늘(2021년 8월 12일) 출시된</a> “Channel consent simplification” 기능을 사용하려면 LINE MINI App의 LIFF SDK를 v2.13.0으로 업그레이드해야 합니다.</p>
+<p>“Channel consent simplification” 기능을 활성화하면 사용자가 LINE MINI App에 처음 접속할 때 표시되는 &quot;동의 화면&quot;을 건너뛸 수 있습니다.</p>
+<p>LIFF SDK 버전 이외의 사용 조건(동작, 설정 등)에 대한 자세한 내용은 LINE MINI App 문서의 <a href="../../line-mini-app/develop/channel-consent-simplification/">동의 화면 건너뛰기</a>를 참조하세요.</p>
+<h3>LIFF SDK의 npm 패키지 버전 버그를 수정했습니다</h3>
+<p>npm 패키지 버전 내부의 일부 버그를 수정했습니다.</p>
+<p>npm 패키지 버전을 사용하는 경우 <code>npm install @line/liff@2.13.0</code> 또는 <code>yarn add @line/liff@2.13.0</code>을 실행하여 v2.13.0으로 업그레이드하는 것을 권장합니다.</p>
+<p>LIFF SDK 통합 방법에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2021/07/12</p>
+<h2>LIFF v2.12.0 출시</h2>
+<p>LIFF v2.12.0을 출시했습니다.</p>
+<p>이번 업데이트에서는 SDK의 내부 동작만 변경되었습니다. 기능의 변경은 없습니다.</p>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 자동으로 v2.12.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.12.0</code> 또는 <code>yarn add @line/liff@2.12.0</code>을 실행하여 v2.12.0으로 업그레이드할 수 있습니다.</p>
+<p>LIFF SDK 통합 방법에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2021/06/24</p>
+<h2>LIFF v2.11.1 출시</h2>
+<p>LIFF v2.11.1을 출시했습니다.</p>
+<p>LIFF v2.11.1에서는 다음 버그를 수정했습니다.</p>
+<h3>LIFF 앱을 초기화한 후 URL 프래그먼트가 URL 인코딩되던 버그를 수정했습니다</h3>
+<p><a href="./#liff-v2-11-0">LIFF v2.11.0</a>에서 URL 프래그먼트(예: <code>#url-fragment</code>)가 포함된 LIFF URL에 접속하면, LIFF 앱을 초기화한 후(<a href="../../../reference/liff/#initialize-liff-app"><code>liff.init()</code></a>을 실행한 후) URL 프래그먼트가 URL 인코딩되는 버그가 있었습니다.</p>
+<p>이 버그는 LIFF v2.11.1에서 수정되어 <code>liff.init()</code> 이후에도 URL 프래그먼트가 URL 인코딩되지 않습니다.</p>
+<h4>liff.init() 이후 URL 프래그먼트의 예시</h4>
+<p>아래 LIFF v2.11.0 예시에서는 URL 프래그먼트(<code>#url/fragment</code>)의 슬래시(<code>/</code>)가 URL 인코딩(<code>%2F</code>)되어 있습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>LIFF 버전</th>
+<th>LIFF URL</th>
+<th><code>liff.init()</code> 이후 URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v2.11.0</td>
+<td><a href="https://liff.line.me/%7BliffId%7D" target="_blank" rel="noopener noreferrer">https://liff.line.me/{liffId}</a><b style="color:blue">#url</b><b style="color:red">/</b><b style="color:blue">fragment</b></td>
+<td><a href="https://liff.line.me/%7BliffId%7D" target="_blank" rel="noopener noreferrer">https://liff.line.me/{liffId}</a><b style="color:blue">#url</b><b style="color:red">%2F</b><b style="color:blue">fragment</b></td>
+</tr>
+<tr>
+<td>v2.11.1</td>
+<td><a href="https://liff.line.me/%7BliffId%7D" target="_blank" rel="noopener noreferrer">https://liff.line.me/{liffId}</a><b style="color:blue">#url</b><b style="color:red">/</b><b style="color:blue">fragment</b></td>
+<td><a href="https://liff.line.me/%7BliffId%7D" target="_blank" rel="noopener noreferrer">https://liff.line.me/{liffId}</a><b style="color:blue">#url</b><b style="color:red">/</b><b style="color:blue">fragment</b></td>
+</tr>
+</tbody>
+</table></div>
+<!-- note start -->
+<p><strong>LIFF v2.11.1로 업데이트하는 것을 권장합니다</strong></p>
+<p>LIFF 앱의 LIFF v2.11.0에서는 브라우저 종류(<a href="https://developers.line.biz/en/glossary/#liff-browser" target="_blank" rel="noopener noreferrer">LIFF 브라우저</a>, <a href="https://developers.line.biz/en/glossary/#line-iab" target="_blank" rel="noopener noreferrer">LINE 인앱 브라우저</a>, <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">외부 브라우저</a>)와 관계없이 이 버그가 발생합니다. LIFF URL(예: <code>https://liff.line.me/{liffId}/#url/fragment</code>)뿐만 아니라 엔드포인트 URL(예: <code>https://example.com/#url/fragment</code>)에 직접 접속하는 경우에도 같은 버그가 발생합니다.</p>
+<p>LIFF v2.11.0을 사용 중이라면 의도하지 않은 동작을 피하기 위해 v2.11.1로 업데이트하는 것을 권장합니다.</p>
+<!-- note end -->
+<p>LIFF SDK 통합 방법에 대한 자세한 내용은 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2021/06/14</p>
+<h2>LIFF v2.11.0 출시</h2>
+<p>LIFF v2.11.0을 출시했습니다.</p>
+<p>LIFF v2.11.0에서는 다음 보안 개선을 적용했습니다.</p>
+<h3><code>liff.init()</code> 이후 기본 리디렉션 URL에서 자격 증명 정보가 제외됩니다</h3>
+<p>보안상의 이유로, <code>liff.init()</code>이 완료되면 액세스 토큰 같은 자격 증명 정보가 포함된 URL 프래그먼트가 기본 리디렉션 URL에서 제외됩니다. 따라서 자격 증명 정보가 없는 기본 리디렉션 URL은 메서드 체인의 <code>then()</code> 메서드에서 현재 URL로 처리됩니다.</p>
+<h4>리디렉션 예시</h4>
+<p>LIFF URL이 <code>https://liff.line.me/{liffId}/path</code>이고 엔드포인트 URL이 <code>https://example.com</code>이면 다음과 같이 리디렉션됩니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/news/2021/remove_credential_information-en.png" alt="When confidential information is excluded" loading="lazy"><figcaption>When confidential information is excluded</figcaption></figure></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>번호</th>
+<th>항목</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(1)</td>
+<td>LIFF URL</td>
+<td><a href="https://liff.line.me/%7BliffId%7D" target="_blank" rel="noopener noreferrer">https://liff.line.me/{liffId}</a><span style="color:blue">/path</span></td>
+</tr>
+<tr>
+<td>(2)</td>
+<td>기본 리디렉션 URL</td>
+<td><a href="https://example.com/" target="_blank" rel="noopener noreferrer">https://example.com/</a><span style="color:blue">?liff.state=path</span><br/><b style="color:red">#access_token=xxx&amp;context_token=xxx&amp;<br/>feature_token=xxx&amp;id_token=xxx&amp;client_id=xxx</b></td>
+</tr>
+<tr>
+<td>(3)</td>
+<td><code>liff.init()</code> 이후 URL</td>
+<td><a href="https://example.com/" target="_blank" rel="noopener noreferrer">https://example.com/</a><span style="color:blue">?liff.state=path</span></td>
+</tr>
+<tr>
+<td>(4)</td>
+<td>보조 리디렉션 URL</td>
+<td><a href="https://example.com" target="_blank" rel="noopener noreferrer">https://example.com</a><span style="color:blue">/path</span></td>
+</tr>
+</tbody>
+</table></div>
+<h4>liff.init() 예제 코드</h4>
+<p>자격 증명 정보는 <code>liff.init().then()</code> 메서드 안에서 제외됩니다.</p>
+<pre><code class="language-js"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">location</span>.<span class="hljs-property">href</span>);
+<span class="hljs-comment">// https://example.com/?liff.state=path#access_token=xxx&amp;context_token=xxx&amp;feature_token=xxx&amp;id_token=xxx&amp;client_id=xxx</span>
+
+liff.<span class="hljs-title function_">init</span>({<span class="hljs-attr">liffId</span>: myLiffId}).<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">location</span>.<span class="hljs-property">href</span>);
+  <span class="hljs-comment">// https://example.com/?liff.state=path</span>
+});
+</code></pre>
+<!-- note start -->
+<p><strong>Google Analytics 같은 외부 로깅 도구를 사용하는 경우</strong></p>
+<p>Google Analytics 같은 외부 로깅 도구를 사용하려면 LIFF 앱에 접속하는 사용자의 자격 증명 정보를 더 안전하게 보호하기 위해 LIFF v2.11.0으로 업데이트하는 것을 권장합니다. <code>liff.init()</code>을 실행한 후에 자격 증명 정보가 없는 URL을 외부 로깅 도구로 보내세요.</p>
+<pre><code class="language-js">liff.<span class="hljs-title function_">init</span>({<span class="hljs-attr">liffId</span>: myLiffId}).<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-title function_">ga</span>(<span class="hljs-string">&#x27;send&#x27;</span>, <span class="hljs-string">&#x27;pageview&#x27;</span>);
+})
+</code></pre>
+<!-- note end -->
+<p>LIFF SDK 통합 방법에 대한 자세한 내용은 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2021/05/17</p>
+<h2>LIFF v2.10.0 출시</h2>
+<p>LIFF v2.10.0을 출시했습니다.</p>
+<p>LIFF v2.10.0에서는 다음 버그를 수정했습니다.</p>
+<h3>외부 브라우저에서 LIFF 앱을 초기화할 때 이전 컨텍스트 토큰을 참조하던 버그를 수정했습니다</h3>
+<p>LIFF v2.9.1 이하 버전의 LIFF 앱에 사용자가 <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">외부 브라우저</a>에서 로그인하면, 이전 세션에서 LIFF 앱을 초기화할 때(<code>liff.init()</code> 메서드를 실행할 때) localStorage에 저장된 이전 컨텍스트 토큰을 참조하여 의도하지 않은 동작이 발생했습니다. 이 버그를 수정했습니다.</p>
+<div class="tip">
+<p><strong>컨텍스트 토큰이란 무엇인가요?</strong></p>
+<p>컨텍스트 토큰은 LIFF 앱이 실행된 환경에 대한 정보(예: 화면 크기, 사용자 ID)를 담고 있으며, <a href="../../../reference/liff/#get-context"><code>liff.getContext()</code></a> 메서드로 가져올 수 있습니다. LIFF 앱을 초기화하면(<a href="../../../reference/liff/#initialize-liff-app"><code>liff.init()</code></a> 메서드를 실행하면) 브라우저의 localStorage에 <code>context</code> 키로 저장됩니다.</p>
+</div>
+<h4>액세스 토큰 만료 확인 시점 업데이트</h4>
+<p>LIFF 앱을 초기화할 때(<code>liff.init()</code>을 실행할 때) 이전 세션에서 생성된 액세스 토큰의 만료 여부를 확인하고, 만료되었다면 컨텍스트 토큰을 폐기합니다. 하지만 LIFF v2.9.1 이하에서는 이 만료 확인이 LIFF 앱 초기화의 마지막 부분에서 이루어졌기 때문에, 폐기되지 않은 이전 토큰이 초기화 중에 참조되어 의도하지 않은 동작이 발생했습니다.</p>
+<p>LIFF v2.10.0에서는 액세스 토큰 만료 확인이 LIFF 앱 초기화의 맨 처음에 이루어지므로, 이전 컨텍스트 토큰이 폐기된 후에 초기화가 진행됩니다.</p>
+<!-- note start -->
+<p><strong>liff.getContext() 메서드로 가져온 정보가 최신이라고 보장할 수 없습니다</strong></p>
+<p>컨텍스트 토큰은 액세스 토큰이 만료되면 폐기됩니다. LIFF v2.10.0에서도 액세스 토큰이 만료되지 않은 동안에는 <a href="../../../reference/liff/#get-context"><code>liff.getContext()</code></a> 메서드로 가져올 수 있는 컨텍스트 정보가 변경되지 않습니다. 따라서 <code>liff.getContext()</code> 메서드로 가져온 정보가 항상 최신이라고 보장할 수 없습니다.</p>
+<!-- note end -->
+<h4>버전별 컨텍스트 토큰을 폐기하는 시점</h4>
+<p>LIFF v2.9.1 이하와 LIFF v2.10.0에서 액세스 토큰 만료를 확인하고 컨텍스트 토큰을 폐기하는 시점을 비교하면 다음과 같습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>LIFF <br> 버전</th>
+<th>localStorage에 컨텍스트 토큰을 저장하는 흐름</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v2.9.1 이하</td>
+<td><figure class="doc-figure"><img src="https://developers.line.biz/media/news/2021/context_token_v2-9-1-en.png" alt="Previous timing of when context tokens were discarded" loading="lazy"><figcaption>Previous timing of when context tokens were discarded</figcaption></figure></td>
+</tr>
+<tr>
+<td>v2.10.0</td>
+<td><figure class="doc-figure"><img src="https://developers.line.biz/media/news/2021/context_token_v2-10-0-en.png" alt="Timing of when context tokens are discarded in v2.10.0 or later" loading="lazy"><figcaption>Timing of when context tokens are discarded in v2.10.0 or later</figcaption></figure></td>
+</tr>
+</tbody>
+</table></div>
+<!-- note start -->
+<p><strong>LIFF 브라우저와 LINE 인앱 브라우저의 경우</strong></p>
+<p><a href="https://developers.line.biz/en/glossary/#liff-browser" target="_blank" rel="noopener noreferrer">LIFF 브라우저</a>와 <a href="https://developers.line.biz/en/glossary/#line-iab" target="_blank" rel="noopener noreferrer">LINE 인앱 브라우저</a>는 이번 버전 업데이트의 영향을 받지 않습니다.</p>
+<!-- note end -->
+<p>컨텍스트 토큰에 저장되는 정보에 대한 자세한 내용은 LIFF API 레퍼런스의 <a href="../../../reference/liff/#get-context">liff.getContext()</a>를 참조하세요.</p>
+<p>2021/04/27</p>
+<h2>LIFF v2.9.1 출시</h2>
+<p>LIFF v2.9.1에서는 다음 버그를 수정했습니다. 기능은 변경되지 않았습니다.</p>
+<h3>LIFF SDK의 npm 패키지를 사용할 때 발생하던 버그를 수정했습니다</h3>
+<p>TypeScript에서 LIFF SDK의 npm 패키지를 사용하려고 하면 컴파일 중에 오류가 발생했지만, 이 버그가 수정되었습니다. LIFF v2.9.1에서는 TypeScript를 사용해도 컴파일에 문제가 없습니다.</p>
+<p>이 수정은 LIFF SDK의 npm 버전과 CDN 버전 모두에 적용됩니다.</p>
+<p>LIFF SDK의 npm 패키지에 대한 자세한 내용은 <a href="../developing-liff-apps/#use-npm-package">npm 패키지 사용하기</a>를 참조하세요.</p>
+<div class="tip">
+<p><strong>컴파일 오류를 처리하는 방법</strong></p>
+<p>TypeScript 컴파일 오류의 임시 해결책으로 LIFF v2.9.1로 업그레이드하는 것을 권장합니다. 업그레이드할 수 없다면 다음 방법으로 컴파일 오류를 해결할 수 있습니다.</p>
+<p><code>tsconfig.json</code> 같은 TypeScript 설정 파일에서 <a href="https://www.typescriptlang.org/ja/tsconfig#skipLibCheck" target="_blank" rel="noopener noreferrer"><code>skipLibCheck</code></a> 옵션을 활성화하면 컴파일 오류가 발생하지 않습니다.</p>
+</div>
+<br>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 LIFF가 자동으로 v2.9.1로 업그레이드됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.9.1</code> 또는 <code>yarn add @line/liff@2.9.1</code>을 실행하면 LIFF가 v2.9.1로 업그레이드됩니다.</p>
+<p>LIFF SDK 통합 방법에 대한 자세한 내용은 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2021/04/13</p>
+<h2>LIFF v2.9.0 출시</h2>
+<p>LIFF v2.9.0을 출시했습니다.</p>
+<p>이번 업데이트에서는 SDK의 내부 동작만 변경되었습니다. 기능의 변경은 없습니다.</p>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 자동으로 v2.9.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.9.0</code> 또는 <code>yarn add @line/liff@2.9.0</code>을 실행하여 v2.9.0으로 업그레이드할 수 있습니다.</p>
+<p>LIFF SDK 통합 방법에 대한 자세한 내용은 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2021/03/16</p>
+<h2>LIFF v2.8.1 출시</h2>
+<p>LIFF v2.8.1을 출시했습니다.</p>
+<p>이번 업데이트에는 SDK의 리팩터링만 포함되어 있습니다. 기능의 변경은 없습니다.</p>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 자동으로 v2.8.1로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.8.1</code> 또는 <code>yarn add @line/liff@2.8.1</code>을 실행하여 v2.8.1로 업그레이드할 수 있습니다.</p>
+<p>LIFF SDK 통합 방법에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2021/02/15</p>
+<h2>LIFF v2.8.0 출시</h2>
+<p>LIFF v2.8.0을 출시했습니다.</p>
+<p>LIFF v2.8.0에서 다음 버그를 수정했습니다.</p>
+<ul>
+<li><a href="./#liff-resolve-fix">보조 리디렉션 URL로 리디렉션되기 전에 <code>liff.init()</code>이 완료되던 버그를 수정했습니다</a></li>
+<li><a href="./#liff-decode-fix">URL 인코딩된 쿼리 파라미터가 의도치 않게 디코딩되던 버그를 수정했습니다</a></li>
+</ul>
+<p>기능의 변경이나 추가는 없습니다.</p>
+<h3>보조 리디렉션 URL로 리디렉션되기 전에 <code>liff.init()</code>이 완료되던 버그를 수정했습니다</h3>
+<p>LIFF v2.7.1 이전 버전에서는 <code>liff.init()</code>이 보조 리디렉션 URL로 리디렉션되기 전에 완료되는 버그가 있었습니다. 이 버그 때문에 보조 리디렉션 URL로 리디렉션되기 전과 후에 각각 한 번씩 <code>then()</code> 메서드의 처리가 중복으로 실행되었습니다.</p>
+<p>아래 코드 예시에서는 <code>liff.init()</code>이 보조 리디렉션 URL로 리디렉션되기 전과 후에 각각 완료되기 때문에 <code>liff.init() is resolved.</code> 알림이 두 번 표시됩니다.</p>
+<p><strong>liff.init()이 완료되었을 때 알림을 표시하는 코드 예시:</strong></p>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">init</span>(myLiffId).<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-comment">// 이 처리는 liff.init()이 완료된 후에 실행됩니다.</span>
+  <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">alert</span>(<span class="hljs-string">&quot;liff.init() is resolved.&quot;</span>);
+});
+</code></pre>
+<p>LIFF v2.8.0에서는 <code>liff.init()</code>이 보조 리디렉션 URL로 리디렉션된 후에 처음으로 완료되므로 <code>then()</code> 메서드의 중복 처리가 수정되었습니다. 위 코드 예시에서는 알림이 한 번만 표시됩니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>LIFF 버전</th>
+<th><code>liff.init()</code>이 완료되는 시점</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v2.7.1 이전</td>
+<td><figure class="doc-figure"><img src="https://developers.line.biz/media/news/2021/resolve_timing_v2-7-0_en.png" alt="resolve-timing-v2-7-0" loading="lazy"><figcaption>resolve-timing-v2-7-0</figcaption></figure></td>
+</tr>
+<tr>
+<td>v2.8.0</td>
+<td><figure class="doc-figure"><img src="https://developers.line.biz/media/news/2021/resolve_timing_v2-8-0_en.png" alt="resolve-timing-v2-8-0" loading="lazy"><figcaption>resolve-timing-v2-8-0</figcaption></figure></td>
+</tr>
+</tbody>
+</table></div>
+<h3>URL 인코딩된 쿼리 파라미터가 의도치 않게 디코딩되던 버그를 수정했습니다</h3>
+<p>LIFF v2.7.1 이전 버전에서는 개발자가 LIFF URL에 URL 인코딩된 쿼리 파라미터(예: <code>?t=http%3A%2F%2Fexample.com</code>)를 지정하면, 리디렉션될 때 쿼리 파라미터가 디코딩되었습니다(예: <code>?t=http://example.com</code>). 그 결과 개발자가 의도하지 않은 보조 리디렉션 URL이 만들어졌습니다.</p>
+<p>LIFF v2.8.0에서는 쿼리 파라미터를 디코딩하지 않고 URL 인코딩된 상태 그대로 리디렉션합니다.</p>
+<p><strong>LIFF URL <code>https://liff.line.me/{liffId}?t=http%3A%2F%2Fexample.com</code>을 열 때의 리디렉션 흐름:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>LIFF 버전</th>
+<th>기본 리디렉션 URL</th>
+<th>보조 리디렉션 URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v2.7.1 이전</td>
+<td><a href="https://endpoint.example.jp/?liff.state=" target="_blank" rel="noopener noreferrer">https://endpoint.example.jp/?liff.state=</a><br /><b style="color:blue">?t=http%3A%2F%<a href="http://2Fexample.com" target="_blank" rel="noopener noreferrer">2Fexample.com</a></b></td>
+<td><a href="https://endpoint.example.jp/" target="_blank" rel="noopener noreferrer">https://endpoint.example.jp/</a><br /><b style="color:red">?t=http:</b><b style="color:red"><a href="//example.com">//example.com</a></b></td>
+</tr>
+<tr>
+<td>v2.8.0</td>
+<td><a href="https://endpoint.example.jp/?liff.state=" target="_blank" rel="noopener noreferrer">https://endpoint.example.jp/?liff.state=</a><br /><b style="color:blue">%3Ft%3Dhttp%253A%252F%<a href="http://252Fexample.com" target="_blank" rel="noopener noreferrer">252Fexample.com</a></b></td>
+<td><a href="https://endpoint.example.jp/" target="_blank" rel="noopener noreferrer">https://endpoint.example.jp/</a><br /><b style="color:blue">?t=http%3A%2F%<a href="http://2Fexample.com" target="_blank" rel="noopener noreferrer">2Fexample.com</a></b></td>
+</tr>
+</tbody>
+</table></div>
+<div class="tip">
+<p><strong>쿼리 파라미터가 포함된 LIFF URL</strong></p>
+<p>URL 인코딩된 쿼리 파라미터가 포함된 LIFF URL을 사용하는 경우 의도하지 않은 URL로 리디렉션되는 것을 피하려면 v2.8.0으로 업그레이드하세요.</p>
+</div>
+<p>LIFF 앱의 리디렉션에 대한 자세한 내용은 LIFF 문서의 <a href="../opening-liff-app/#redirect-flow">LIFF URL에 접속하여 LIFF 앱을 열기까지의 동작</a>을 참조하세요.</p>
+<p>2021/01/20</p>
+<h2>LIFF v2.7.1 출시</h2>
+<p>LIFF v2.7.1을 출시했습니다.</p>
+<p>LIFF v2.7.1에서 다음 버그를 수정했습니다.</p>
+<h3>LIFF v2.7.0을 사용하는 LIFF 앱이 외부 브라우저에서 실행되지 않을 수 있던 버그를 수정했습니다</h3>
+<p><a href="./#liff-v2-7-0">LIFF v2.7.0</a>을 사용하는 LIFF 앱이 <a href="https://developers.line.biz/en/glossary/#external-browser" target="_blank" rel="noopener noreferrer">외부 브라우저</a>에서 열릴 때 실행되지 않는 버그를 수정했습니다. LIFF v2.7.1에서는 LIFF 앱이 외부 브라우저에서 올바르게 실행됩니다.</p>
+<!-- note start -->
+<p><strong>이미 LIFF v2.7.0을 사용하고 있는 경우</strong></p>
+<p>이미 LIFF v2.7.0을 사용하고 있다면 LIFF 앱을 LIFF v2.7.1로 업데이트하는 것을 권장합니다.</p>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 자동으로 v2.7.1로 업데이트됩니다. CDN 고정 경로나 LIFF SDK의 npm 패키지 버전을 사용하는 경우에는 수동으로 LIFF v2.7.1로 업데이트하세요.</p>
+<!-- note end -->
+<p>LIFF SDK를 포함하는 다양한 방법에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2021/01/14</p>
+<h2>LIFF v2.7.0 출시</h2>
+<p>LIFF v2.7.0을 출시했습니다.</p>
+<p>이번 업데이트의 변경 사항은 다음과 같습니다.</p>
+<ul>
+<li><a href="./#require-js">LIFF SDK의 npm 패키지 버전을 RequireJS에서 참조할 수 있게 되었습니다</a></li>
+<li><a href="./#get-decoded-id-token"><code>liff.getDecodedIDToken()</code> 메서드로 가져온 ID 토큰의 name 속성을 읽을 수 없던 버그를 수정했습니다</a></li>
+</ul>
+<h3>LIFF SDK의 npm 패키지 버전을 RequireJS에서 참조할 수 있게 되었습니다</h3>
+<p>LIFF SDK의 npm 패키지 버전을 <a href="https://requirejs.org/" target="_blank" rel="noopener noreferrer">RequireJS</a>에서 참조할 수 있게 되었습니다.</p>
+<p>LIFF SDK의 npm 패키지 버전을 통합하는 방법은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<h3><code>liff.getDecodedIDToken()</code> 메서드로 가져온 ID 토큰의 name 속성을 읽을 수 없던 버그를 수정했습니다</h3>
+<p>LIFF v2.6.0 이하에서는 <code>liff.getDecodedIDToken()</code> 메서드로 디코딩된 ID 토큰을 가져올 때, 사용자 이름에 일본어 같은 ASCII가 아닌 유니코드 문자가 포함되어 있으면 <code>name</code> 속성의 값을 읽을 수 없었습니다.</p>
+<p>LIFF v2.7.0에서는 이 버그를 수정하여 일본어 같은 유니코드 문자로 된 사용자 이름을 올바르게 가져올 수 있습니다.</p>
+<p><strong>사용자 이름이 <code>コニー</code>인 ID 토큰을 가져오는 경우</strong></p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/news/2021/conny_en.png" alt="user profile of conny" loading="lazy"><figcaption>user profile of conny</figcaption></figure></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th style="text-align:center">LIFF v2.6.0 이하</th>
+<th style="text-align:center">LIFF v2.7.0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><pre class="language-json"><code><span class="token punctuation">{</span><br/><span class="token property">“iss”</span><span class="token operator">:</span> <span class="token string">“<a href="https://access.line.me" target="_blank" rel="noopener noreferrer">https://access.line.me</a>”</span><span class="token punctuation">,</span><br/><span class="token property">“sub”</span><span class="token operator">:</span> <span class="token string">“U272cada9c6f4c0c933b0713bc2f90f68”</span><span class="token punctuation">,</span><br/><span class="token property">“aud”</span><span class="token operator">:</span> <span class="token string">“1234567890”</span><span class="token punctuation">,</span><br/><span class="token property">“exp”</span><span class="token operator">:</span> <span class="token number">1513142487</span><span class="token punctuation">,</span><br/><span class="token property">“iat”</span><span class="token operator">:</span> <span class="token number">1513138887</span><span class="token punctuation">,</span><br/><span class="token property">“name”</span><span class="token operator">:</span> <span class="token string">“<b style="color:white">ã³ãã¼</b>”</span><span class="token punctuation">,</span><span class="token comment"> //읽을 수 없음</span><br/><span class="token property">“picture”</span><span class="token operator">:</span> <span class="token string">“<a href="https://profile.line-scdn.net/" target="_blank" rel="noopener noreferrer">https://profile.line-scdn.net/</a>…”</span><br/><span class="token punctuation">}</span></code></pre></td>
+<td style="text-align:center"><pre class="language-json"><code><span class="token punctuation">{</span><br/><span class="token property">“iss”</span><span class="token operator">:</span> <span class="token string">“<a href="https://access.line.me" target="_blank" rel="noopener noreferrer">https://access.line.me</a>”</span><span class="token punctuation">,</span><br/><span class="token property">“sub”</span><span class="token operator">:</span> <span class="token string">“U272cada9c6f4c0c933b0713bc2f90f68”</span><span class="token punctuation">,</span><br/><span class="token property">“aud”</span><span class="token operator">:</span> <span class="token string">“1234567890”</span><span class="token punctuation">,</span><br/><span class="token property">“exp”</span><span class="token operator">:</span> <span class="token number">1513142487</span><span class="token punctuation">,</span><br/><span class="token property">“iat”</span><span class="token operator">:</span> <span class="token number">1513138887</span><span class="token punctuation">,</span><br/><span class="token property">“name”</span><span class="token operator">:</span> <span class="token string">“<b style="color:white">コニー</b>”</span><span class="token punctuation">,</span><span class="token comment"> //정상적으로 수신됨</span><br/><span class="token property">“picture”</span><span class="token operator">:</span> <span class="token string">“<a href="https://profile.line-scdn.net/" target="_blank" rel="noopener noreferrer">https://profile.line-scdn.net/</a>…”</span><br/><span class="token punctuation">}</span></code></pre></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>liff.getDecodedIDToken()</code>에 대한 자세한 내용은 LIFF API 레퍼런스의 <a href="../../../reference/liff/#get-decoded-id-token"><code>liff.getDecodedIDToken()</code></a>을 참조하세요.</p>
+<p>2020/12/01</p>
+<h2>LIFF v2.6.0 출시</h2>
+<p>LIFF v2.6.0을 출시했습니다.</p>
+<p>이번 업데이트에서는 SDK의 내부 동작만 변경되었습니다. 기능의 변경은 없습니다.</p>
+<p>CDN 에지 경로(<code>https://static.line-scdn.net/liff/edge/2/sdk.js</code>)를 사용하는 경우 자동으로 v2.6.0으로 업데이트됩니다.</p>
+<p>npm 패키지를 사용하는 경우 <code>npm install @line/liff@2.6.0</code> 또는 <code>yarn add @line/liff@2.6.0</code>을 실행하여 v2.6.0으로 업그레이드할 수 있습니다.</p>
+<p>LIFF SDK 통합 방법에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#integrating-sdk">LIFF 앱에 LIFF SDK 통합하기</a>를 참조하세요.</p>
+<p>2020/10/29</p>
+<h2>LIFF v2.5.0 출시</h2>
+<p>LIFF v2.5.0을 출시했습니다.</p>
+<p>LIFF v2.5.0의 변경 사항은 다음과 같습니다.</p>
+<ul>
+<li><a href="./#improve-liff-init-performance"><code>liff.init()</code> 성능을 개선했습니다</a></li>
+<li><a href="./#security-enhancement">보안을 강화했습니다</a></li>
+</ul>
+<p>이번 업데이트에서는 LIFF 기능의 변경이 없습니다.</p>
+<h3><code>liff.init()</code> 성능을 개선했습니다</h3>
+<p><code>liff.init()</code>을 실행한 시점부터 LIFF 앱 초기화가 완료될 때까지의 속도를 개선하여, LIFF 앱을 열 때 대기 시간을 줄이고 더 쾌적한 사용자 경험을 제공합니다.</p>
+<p><code>liff.init()</code>에 대한 자세한 내용은 LIFF API 레퍼런스의 <a href="../../../reference/liff/#initialize-liff-app"><code>liff.init()</code></a>을 참조하세요.</p>
+<h3>보안을 강화했습니다</h3>
+<p>알려지지 않은 공격에 대비한 예방 조치로 보안을 강화했습니다.</p>
+<div class="tip">
+<p><strong>LIFF 앱 업데이트에 대하여</strong></p>
+<p>이번 보안 강화는 경미한 변경이므로 업데이트가 필요하지 않습니다.</p>
+</div>
+<p>2020/09/28</p>
+<h2>LIFF v2.3.3 출시</h2>
+<p>LIFF v2.3.3을 출시했습니다.
+LIFF v2.3.3에서 다음 버그를 수정했습니다.</p>
+<ul>
+<li><a href="./#liff-url-including-path-bug-fix">엔드포인트 URL이 <code>/</code>로 끝나는 경우 사용자를 의도하지 않은 URL로 리디렉션하던 버그를 수정했습니다</a></li>
+</ul>
+<p>이번 출시에는 기능 업데이트가 없습니다.</p>
+<h3>엔드포인트 URL이 <code>/</code>로 끝나는 경우 사용자를 의도하지 않은 URL로 리디렉션하던 버그를 수정했습니다</h3>
+<p>다음 조건에서는 LIFF URL에 접속하면 경로 구분자가 두 번(<code>//</code>) 들어간 의도하지 않은 URL로 리디렉션됩니다.</p>
+<ul>
+<li><strong>Endpoint URL</strong>에 경로가 포함되어 있고 <code>/</code>로 끝나는 경우. 예: <code>https://example.com/campaign/</code></li>
+<li>LIFF URL의 추가 정보를 변환하는 방법(<strong>Methods for converting additional information in the LIFF URL</strong>)이 <strong>Concatenate</strong>로 설정된 경우</li>
+<li>LIFF URL에 경로(<code>/path</code>)가 포함된 경우. 예: <code>https://liff.line.me/{liffId}/path</code></li>
+</ul>
+<p>LIFF v2.3.3에서는 위 조건에서도 사용자가 올바른 URL로 리디렉션되도록 버그를 수정했습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>LIFF URL</th>
+<th>기본 리디렉션 URL</th>
+<th>보조 리디렉션 URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>사양 변경 전</td>
+<td><a href="https://liff.line.me/%7BliffId%7D/path" target="_blank" rel="noopener noreferrer">https://liff.line.me/{liffId}/path</a></td>
+<td><a href="https://example.com/campaign" target="_blank" rel="noopener noreferrer">https://example.com/campaign</a><b style="color:red">/</b>?liff.state={urlEncode(/path)}</td>
+<td><a href="https://example.com/campaign" target="_blank" rel="noopener noreferrer">https://example.com/campaign</a><b style="color:red">//</b>path</td>
+</tr>
+<tr>
+<td>사양 변경 후</td>
+<td><a href="https://liff.line.me/%7BliffId%7D/path" target="_blank" rel="noopener noreferrer">https://liff.line.me/{liffId}/path</a></td>
+<td><a href="https://example.com/campaign?liff.state=%7BurlEncode(path)%7D" target="_blank" rel="noopener noreferrer">https://example.com/campaign?liff.state={urlEncode(path)}</a></td>
+<td><a href="https://example.com/campaign" target="_blank" rel="noopener noreferrer">https://example.com/campaign</a><b style="color:red">/</b>path</td>
+</tr>
+</tbody>
+</table></div>
+<!-- note start -->
+<p><strong>다른 버전에 대한 영향</strong></p>
+<ul>
+<li>LIFF v2.3.x를 사용하고 있다면 이 패치 버전으로 업데이트하는 것을 권장합니다.</li>
+<li>이 버그는 LIFF v2.4.1에서 이미 수정되었습니다.</li>
+</ul>
+<!-- note end -->
+<p>LIFF URL에 접속했을 때 어떤 일이 일어나는지에 대한 자세한 내용은 LIFF 문서의 <a href="../opening-liff-app/#redirect-flow">LIFF URL에 접속하여 LIFF 앱을 열기까지의 동작</a>을 참조하세요.</p>
+<p>2020/09/24</p>
+<h2>LIFF v2.4.1 출시</h2>
+<p>LIFF v2.4.1을 출시했습니다.
+LIFF v2.4.1의 변경 사항은 다음과 같습니다.</p>
+<ul>
+<li><a href="./#liff-transition-bug-fix">LIFF 앱을 닫지 않고 다른 LIFF 앱을 여는 기능의 문제를 수정했습니다</a></li>
+<li><a href="./#liff-transition-state"><code>liff.isApiAvailable()</code>로 LIFF 앱 간 전환이 가능한지 확인할 수 있는 기능을 추가했습니다</a></li>
+<li><a href="./#call-init-twice-fix"><code>liff.init()</code>을 두 번 호출했을 때의 동작을 수정했습니다</a></li>
+</ul>
+<h3>LIFF 앱을 닫지 않고 다른 LIFF 앱을 여는 기능의 문제를 수정했습니다</h3>
+<p><a href="https://developers.line.biz/en/news/2020/08/31/release-liff-2-4-0/#liff-transition" target="_blank" rel="noopener noreferrer">2020년 8월 31일</a>에 안내한, LIFF 앱을 닫지 않고 다른 LIFF 앱을 여는 기능에 버그가 있어, 동작 조건을 충족하더라도 올바르게 동작하지 않는다는 것을 확인했습니다.</p>
+<p>LIFF v2.4.1에서는 동작 조건을 다음과 같이 변경하고 버그를 수정했습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>변경 전</th>
+<th>변경 후</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LIFF SDK</td>
+<td>2.4.0</td>
+<td>2.4.1</td>
+</tr>
+<tr>
+<td>LINE</td>
+<td>10.16.0</td>
+<td>10.18.0</td>
+</tr>
+</tbody>
+</table></div>
+<!-- note start -->
+<p><strong>LIFF v2.4.0의 사용은 더 이상 권장하지 않습니다</strong></p>
+<p>위 버그 때문에 LIFF v2.4.0의 사용은 더 이상 권장하지 않습니다.
+LIFF v2.4.0을 사용 중이라면 v2.4.1로 업데이트하는 것을 권장합니다.</p>
+<!-- note end -->
+<p>자세한 내용은 LIFF 문서의 <a href="../opening-liff-app/#move-liff-to-liff">다른 LIFF 앱에서 LIFF 앱 열기</a>를 참조하세요.</p>
+<h3>LIFF 앱 간 전환이 가능한지 확인할 수 있도록 <code>liff.isApiAvailable()</code>에 기능을 추가했습니다</h3>
+<p>API가 사용 가능한지 확인하는 메서드인 <a href="../../../reference/liff/#is-api-available"><code>liff.isApiAvailable()</code></a>로 이제 LIFF 앱 간 전환이 가능한지 확인할 수 있습니다.</p>
+<p>다른 LIFF 앱을 열기 전에 <code>liff.isApiAvailable('multipleLiffTransition')</code>을 실행하여 LIFF 앱 간 전환이 가능한지 확인할 수 있습니다.
+이 기능을 사용하면 다른 앱을 열 때 발생하는 오류를 방지할 수 있습니다.</p>
+<pre><code class="language-js"><span class="hljs-keyword">if</span> (liff.<span class="hljs-title function_">isApiAvailable</span>(<span class="hljs-string">&#x27;multipleLiffTransition&#x27;</span>)) {
+  <span class="hljs-variable language_">window</span>.<span class="hljs-property">location</span>.<span class="hljs-property">href</span> = <span class="hljs-string">&quot;https://line.me/{liffId}&quot;</span>, <span class="hljs-comment">// 다른 LIFF 앱의 URL</span>
+}
+</code></pre>
+<div class="tip">
+<p><strong><code>liff.getContext()</code>로 LIFF 앱 간 전환에 대한 정보 가져오기</strong></p>
+<p>이제 LIFF 앱에 대한 정보를 가져오는 메서드인 <a href="../../../reference/liff/#get-context"><code>liff.getContext()</code></a>로도 LIFF 앱 간 전환이 가능한지, 실행 가능한 LINE 버전이 어떤지 등의 정보를 가져올 수 있습니다.</p>
+<ul>
+<li><code>availability.multipleLiffTransition.permission</code>: LIFF 앱 간 전환이 가능한지를 나타냅니다.</li>
+<li><code>availability.multipleLiffTransition.minVer</code>: LIFF 앱 간 전환을 지원하는 최소 LINE 버전을 나타냅니다.</li>
+</ul>
+<p>다음은 <code>liff.getContext()</code>의 반환값 예시입니다.</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;utou&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;utouId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;UU29e6eb36812f484fd275d41b5af4e760926c516d8c9faa35…b1e8de8fbb6ecb263ee8724e48118565e3368d39778fe648d&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;userId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;U70e153189a29f1188b045366285346bc&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;viewType&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;full&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;accessTokenHash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ArIXhlwQMAZyW7SDHm7L2g&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;availability&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;shareTargetPicker&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;10.3.0&quot;</span>
+        <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;multipleLiffTransition&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">&quot;minVer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;10.18.0&quot;</span>
+        <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</div>
+<p>자세한 내용은 LIFF API 레퍼런스의 <a href="../../../reference/liff/#is-api-available">liff.isApiAvailable()</a> 또는 <a href="../../../reference/liff/#get-context">liff.getContext()</a>를 참조하세요.</p>
+<h3><code>liff.init()</code>을 두 번 호출했을 때의 동작을 수정했습니다</h3>
+<p>LIFF 앱이 성공적으로 초기화된 상태에서 <a href="../../../reference/liff/#initialize-liff-app"><code>liff.init()</code></a>을 두 번 이상 실행하면 오류 메시지와 함께 거부된(rejected) <code>Promise</code> 객체가 반환되었습니다.</p>
+<p>LIFF v2.4.1에서는 <code>liff.init()</code>이 성공한 상태에서 두 번 이상 실행하면 완료된(resolved) <code>Promise</code> 객체가 반환되고 경고 메시지가 표시되도록 오류를 수정했습니다.</p>
+<p>LIFF 앱 초기화에 대한 자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#initializing-liff-app">LIFF 앱 초기화하기</a>를 참조하세요.</p>
+<p>2020/09/14</p>
+<h2>LIFF v2.1.14, v2.2.1, v2.3.2 출시</h2>
+<p>LIFF v2.1.14, v2.2.1, v2.3.2를 출시했습니다. 변경 사항은 다음과 같습니다.</p>
+<ul>
+<li><a href="./#liff-create-url-error-fix-endpoint-v-2-3-2">LIFF 엔드포인트 URL에 입력한 URL 프래그먼트를 <code>liff.permanentLink.createUrl()</code>이 올바르게 처리하지 못하던 오류를 수정했습니다(v2.3.2)</a></li>
+<li><a href="./#liff-create-url-error-fix-query-parameter-v-2-3-2">LIFF 엔드포인트 URL에 입력한 쿼리 파라미터를 <code>liff.permanentLink.createUrl()</code>이 올바르게 처리하지 못하던 오류를 수정했습니다(v2.3.2)</a></li>
+<li><a href="./#liff-create-url-redirect-url-fix-2-3-2">LIFF 엔드포인트 URL에 입력한 경로를 <code>liff.permanentLink.createUrl()</code>이 올바르게 처리하지 못하던 오류를 수정했습니다(v2.3.2)</a></li>
+<li><a href="./#liff-url-fragment-error-fix-v-2-3-2">보조 리디렉션 URL에 프래그먼트가 포함되지 않던 오류를 수정했습니다(v2.3.2)</a></li>
+<li><a href="./#bug-fix-redirect-2-3-2">LIFF URL이 의도하지 않은 URL로 리디렉션되던 버그를 수정했습니다(v2.1.14, v2.2.1, v2.3.2)</a></li>
+</ul>
+<h3>LIFF 엔드포인트 URL에 입력한 URL 프래그먼트를 <code>liff.permanentLink.createUrl()</code>이 올바르게 처리하지 못하던 오류를 수정했습니다</h3>
+<br />
+<p><strong>영향을 받는 버전</strong></p>
+<ul>
+<li>LIFF v2.3.2</li>
+</ul>
+<p><strong>변경 사항</strong></p>
+<p>LIFF 엔드포인트 URL에 URL 프래그먼트(<code>#URL-fragment</code>)가 포함된 경우, LIFF 추가 정보를 변환하는 방법(<strong>Methods for converting additional information in the LIFF URL</strong>)이 **Replace (Backward compatibility mode)**로 설정되어 있음에도 불구하고, <a href="../../../reference/liff/#permanent-link-create-url"><code>liff.permanentLink.createUrl()</code></a>을 실행하여 반환된 영구 링크에 URL 프래그먼트가 포함되었습니다.</p>
+<div class="tip">
+<p><strong>이 문제가 발생하는 조건</strong></p>
+<ul>
+<li>LIFF 엔드포인트 URL에 URL 프래그먼트가 포함되어 있는 경우</li>
+<li>LIFF URL의 추가 정보를 변환하는 방법(<strong>Methods for converting additional information in the LIFF URL</strong>)이 **Replace (Backward compatibility mode)**로 설정되어 있는 경우</li>
+</ul>
+</div>
+<p>예를 들어 <strong>Endpoint URL</strong>이 <code>https://example.com/path#section</code>으로 설정되어 있고 <code>liff.permanentLink.createUrl()</code>을 실행하면, 영구 링크로 <code>https://liff.line.me/{liffId}/path?liff.state=#section</code>이 반환되었습니다. LIFF v2.3.2에서는 <code>https://liff.line.me/{liffId}</code>가 올바르게 반환되도록 버그를 수정했습니다.</p>
+<h3>LIFF 엔드포인트 URL에 입력한 쿼리 파라미터를 <code>liff.permanentLink.createUrl()</code>이 올바르게 처리하지 못하던 오류를 수정했습니다</h3>
+<br />
+<p><strong>영향을 받는 버전</strong></p>
+<ul>
+<li>LIFF v2.3.2</li>
+</ul>
+<p><strong>변경 사항</strong></p>
+<p>LIFF 엔드포인트 URL에 쿼리 파라미터(<code>?key=value</code>)가 포함된 경우, <code>liff.permanentLink.createUrl()</code>을 실행하여 반환된 영구 링크에서 쿼리 파라미터가 무한히 늘어났습니다.</p>
+<div class="tip">
+<p><strong>이 문제가 발생하는 조건</strong></p>
+<ul>
+<li><code>liff.permanentLink.createUrl()</code>을 실행할 때 LIFF 엔드포인트 URL의 쿼리 파라미터가 LIFF URL의 쿼리 파라미터와 일치하는 경우</li>
+<li>LIFF URL의 추가 정보를 변환하는 방법(<strong>Methods for converting additional information in the LIFF URL</strong>)이 <strong>Concatenate</strong>로 설정되어 있는 경우</li>
+</ul>
+</div>
+<p>예를 들어 <strong>Endpoint URL</strong>이 <code>https://example.com/path1/?q1=v1&amp;q2=v2</code>로 설정되어 있고 <code>https://liff.line.me/{liffid}/?q1=v1&amp;q2=v2</code>에서 <code>liff.permanentLink.createUrl()</code>을 실행하면, <code>https://liff.line.me/{liffid}/?q1=v1&amp;q1=v1&amp;q2=v2&amp;q2=v2</code>처럼 쿼리 파라미터가 무한히 늘어난 영구 링크가 반환되었습니다.</p>
+<p>LIFF v2.3.2에서는 <code>https://liff.line.me/{liffid}/?q1=v1&amp;q2=v2</code>가 올바르게 반환되도록 버그를 수정했습니다.</p>
+<h3>LIFF 엔드포인트 URL에 입력한 경로를 <code>liff.permanentLink.createUrl()</code>이 올바르게 처리하지 못하던 오류를 수정했습니다</h3>
+<br />
+<p><strong>영향을 받는 버전</strong></p>
+<ul>
+<li>LIFF v2.3.2</li>
+</ul>
+<p><strong>변경 사항</strong></p>
+<p>LIFF 엔드포인트 URL에 경로가 포함되어 있고 경로 끝에 슬래시(<code>/</code>)가 사용된 경우, <code>liff.permanentLink.createUrl()</code>을 실행하여 얻은 영구 링크에 접속하면 아래와 같이 끝의 슬래시가 없는 URL로 리디렉션되었습니다.</p>
+<div class="tip">
+<p><strong>이 문제가 발생하는 조건</strong></p>
+<ul>
+<li>LIFF 엔드포인트 URL에 경로(<code>/path/</code>)가 포함되어 있고 경로 끝에 슬래시(<code>/</code>)가 사용된 경우</li>
+<li>LIFF 엔드포인트 URL에 쿼리 파라미터(<code>?key=value</code>) 또는 URL 프래그먼트(<code>#URL-fragment</code>)가 포함된 경우</li>
+<li>LIFF URL의 추가 정보를 변환하는 방법(<strong>Methods for converting additional information in the LIFF URL</strong>)이 <strong>Concatenate</strong>로 설정되어 있는 경우</li>
+</ul>
+</div>
+<p>예를 들어 <strong>Endpoint URL</strong>이 <code>https://example.com/path/?id=xxxxxxx</code>로 설정되어 있으면, <code>liff.permanentLink.createUrl()</code>을 실행하여 얻은 영구 링크에 접속했을 때 <code>https://example.com/path?id=xxxxxxx</code>처럼 끝의 슬래시가 없는 URL로 리디렉션되었습니다.</p>
+<p>LIFF v2.3.2에서는 <code>https://example.com/path/?id=xxxxxxx</code>로 올바르게 리디렉션되도록 오류를 수정했습니다.</p>
+<!-- note start -->
+<p><strong>LIFF v2.4.0에서는 이미 수정되었습니다</strong></p>
+<p><a href="https://developers.line.biz/en/news/2020/08/31/release-liff-2-4-0/#liff-create-url-error-fix" target="_blank" rel="noopener noreferrer">2020년 8월 31일</a>에 안내한 것처럼, 이 버그 수정은 이미 LIFF v2.4.0에 반영되었습니다.</p>
+<!-- note end -->
+<h3>보조 리디렉션 URL에 프래그먼트가 포함되지 않던 오류를 수정했습니다</h3>
+<br />
+<p><strong>영향을 받는 버전</strong></p>
+<ul>
+<li>LIFF v2.3.2</li>
+</ul>
+<p><strong>변경 사항</strong></p>
+<p>LIFF 엔드포인트 URL이나 LIFF URL에 프래그먼트가 포함된 경우, LIFF 추가 정보를 변환하는 방법(<strong>Methods for converting additional information in the LIFF URL</strong>)의 설정과 관계없이 보조 리디렉션 URL에 프래그먼트가 포함되지 않았습니다. 이 오류는 수정되었습니다.</p>
+<p>보조 리디렉션 URL과 LIFF 추가 정보를 변환하는 방법의 설정에 따른 영향에 대한 자세한 내용은 LIFF 문서의 <a href="../opening-liff-app/#redirect-flow">LIFF URL에 접속하여 LIFF 앱을 열기까지의 동작</a>을 참조하세요.</p>
+<h3>LIFF URL이 의도하지 않은 URL로 리디렉션되던 버그를 수정했습니다</h3>
+<br />
+<p><strong>영향을 받는 버전</strong></p>
+<ul>
+<li>LIFF v2.1.14</li>
+<li>LIFF v2.2.1</li>
+<li>LIFF v2.3.2</li>
+</ul>
+<p><strong>변경 사항</strong></p>
+<p>기본 리디렉션 대상 URL에는 LIFF URL에 지정된 추가 정보(예: <code>path/?key=value</code>)가 <code>liff.state</code> 쿼리 파라미터에 포함됩니다. <code>liff.state</code> 쿼리 파라미터에 추가 정보가 포함되면, 아래와 같이 의도하지 않은 URL로 리디렉션되는 버그가 있었습니다.</p>
+<div class="tip">
+<p><strong>이 문제가 발생하는 조건</strong></p>
+<ul>
+<li><code>liff.state</code> 쿼리 파라미터의 앞에 <code>/</code>가 없는 경우</li>
+<li>LIFF URL의 추가 정보를 변환하는 방법(<strong>Methods for converting additional information in the LIFF URL</strong>)이 **Replace (Backward compatibility mode)**로 설정되어 있는 경우</li>
+</ul>
+</div>
+<p>예를 들어 <strong>Endpoint URL</strong>이 <code>https://example.com</code>으로 설정되어 있고 <code>liff.state</code> 쿼리 파라미터가 <code>path</code>였다면, 도메인 이름과 경로가 <code>/</code>로 구분되지 않아 <code>https://example.compath</code>로 리디렉션되었습니다.
+LIFF v2.1.14, v2.2.1, v2.3.2에서는 <code>https://example.com/path</code>로 올바르게 리디렉션되도록 버그를 수정했습니다.</p>
+<!-- note start -->
+<p><strong>의도하지 않은 리디렉션으로 인한 취약점에 대하여</strong></p>
+<p>이 버그 때문에 사용자가 악성 웹사이트로 리디렉션될 가능성이 있습니다. LIFF SDK v2.4.0 이전 버전을 사용하고 있다면 업데이트하는 것을 권장합니다.</p>
+<!-- note end -->
+<p>LIFF URL에 접속했을 때 어떤 일이 일어나는지에 대한 자세한 내용은 LIFF 문서의 <a href="../opening-liff-app/#redirect-flow">LIFF URL에 접속하여 LIFF 앱을 열기까지의 동작</a>을 참조하세요.</p>
+<p>2020/08/31</p>
+<h2>LIFF v2.4.0 출시</h2>
+<!-- note start -->
+<p><strong>2020년 9월 24일에 추가됨</strong></p>
+<p>현재 LIFF 앱을 닫지 않고 <a href="./#liff-transition">다른 LIFF 앱으로 전환</a>하는 기능에 버그가 있어 LIFF v2.4.0은 더 이상 권장되지 않습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>변경 전</th>
+<th>변경 후</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LIFF SDK</td>
+<td>2.4.0</td>
+<td>2.4.1</td>
+</tr>
+<tr>
+<td>LINE</td>
+<td>10.16.0</td>
+<td>10.18.0</td>
+</tr>
+</tbody>
+</table></div>
+<p>LIFF v2.4.0을 사용 중이라면 v2.4.1로 업데이트하는 것을 권장합니다.</p>
+<!-- note end -->
+<p>LIFF v2.4.0을 출시했습니다. LIFF v2.4.0의 변경 사항은 다음과 같습니다.</p>
+<ul>
+<li><a href="./#liff-close-window">LIFF 앱을 초기화하기 전에도 <code>liff.closeWindow()</code>를 사용할 수 있게 되었습니다</a></li>
+<li><a href="./#liff-transition">현재 LIFF 앱을 닫지 않고 다른 LIFF 앱으로 전환할 수 있게 되었습니다</a></li>
+<li><a href="./#bug-fix-redirect">LIFF URL이 예기치 않은 URL로 리디렉션되던 오류를 수정했습니다</a></li>
+<li><a href="./#liff-create-url-error-fix"><code>liff.permanentLink.createUrl()</code> 오류를 수정했습니다</a></li>
+<li><a href="./#liff-url-fragment-error-fix">보조 리디렉션 URL에 프래그먼트가 포함되지 않던 오류를 수정했습니다</a></li>
+</ul>
+<h3>LIFF 앱을 초기화하기 전에도 <code>liff.closeWindow()</code>를 사용할 수 있게 되었습니다</h3>
+<p>이제 <code>liff.init()</code>에 의한 LIFF 앱 초기화가 끝나기 전에도 LIFF 앱 초기화 전에 <code>liff.closeWindow()</code> 메서드를 사용할 수 있습니다.</p>
+<!-- note start -->
+<p><strong>LIFF 앱을 초기화하기 전에 liff.closeWindow() 메서드를 실행하는 조건</strong></p>
+<p><code>liff.init()</code>에 의한 LIFF 앱 초기화가 끝나기 전에 <code>liff.closeWindow()</code> 메서드를 사용하려면 LIFF SDK 버전이 v2.4.0 이상이고 사용자의 LINE 버전이 10.15.0 이상이어야 합니다.</p>
+<!-- note end -->
+<p>네트워크 오류나 사용자의 LINE 버전 등으로 LIFF 앱 초기화에 실패한 경우, 아래와 같이 <code>liff.closeWindow()</code> 메서드로 LIFF 앱을 닫을 수 있습니다.</p>
+<pre><code class="language-js">liff
+  .<span class="hljs-title function_">init</span>({
+    <span class="hljs-attr">liffId</span>: <span class="hljs-string">&quot;123456-abcedfg&quot;</span> <span class="hljs-comment">// 자신의 liffId를 사용하세요</span>
+  })
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-comment">// liff의 API 사용을 시작합니다</span>
+  })
+  .<span class="hljs-title function_">catch</span>(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-comment">// 초기화 중에 오류가 발생했습니다</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(err.<span class="hljs-property">code</span>, err.<span class="hljs-property">message</span>);
+    liff.<span class="hljs-title function_">closeWindow</span>();
+  });
+</code></pre>
+<p>자세한 내용은 LIFF API 레퍼런스의 <a href="../../../reference/liff/#close-window">liff.closeWindow()</a>를 참조하세요.</p>
+<h3>현재 LIFF 앱을 닫지 않고 다른 LIFF 앱으로 전환할 수 있게 되었습니다</h3>
+<p>화면이 <code>Full</code>로 표시되는 LIFF 앱 안에서 다른 LIFF 앱으로 연결되는 링크를 클릭하면, LIFF 브라우저를 연 상태로 다른 앱을 표시할 수 있습니다.
+LIFF 브라우저가 닫히지 않으므로 LIFF 브라우저의 되돌아가기 버튼으로 원래 LIFF 앱으로 돌아갈 수 있습니다.</p>
+<!-- note start -->
+<p><strong>현재 LIFF 앱을 닫지 않고 다른 LIFF 앱으로 이동하는 조건(2020년 9월 24일에 추가됨)</strong></p>
+<p>LIFF v2.4.0에서는 이 기능이 제대로 동작하지 않는 버그가 있었습니다. 이 기능의 동작 조건은 다음과 같이 변경되었습니다.</p>
+<ul>
+<li>LIFF SDK v2.4.1 이상 및 LINE 10.18.0 이상</li>
+<li>원래 LIFF 앱 화면이 <code>Full</code>로 표시되도록 설정되어 있을 것</li>
+<li>이동하려는 LIFF 앱이 <code>liff.init()</code>으로 올바르게 초기화되어 있을 것</li>
+</ul>
+<!-- note end -->
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/liff/liff_transition.png" alt="LIFF-apps-transition" loading="lazy"><figcaption>LIFF-apps-transition</figcaption></figure></p>
+<p>자세한 내용은 LIFF 문서의 <a href="../opening-liff-app/#move-liff-to-liff">다른 LIFF 앱에서 LIFF 앱 열기</a>를 참조하세요.</p>
+<h3>LIFF URL이 예기치 않은 URL로 리디렉션되던 오류를 수정했습니다</h3>
+<p>LIFF URL에 지정된 추가 정보(<code>path/?key=value</code>)가 기본 리디렉션 URL의 <code>liff.state</code> 쿼리 파라미터에 포함됩니다. <code>liff.state</code> 쿼리 파라미터에 추가 정보가 포함되면 아래와 같이 예기치 않은 보조 리디렉션 URL로 리디렉션될 수 있었습니다.</p>
+<div class="tip">
+<p><strong>이 오류가 발생하는 조건</strong></p>
+<ul>
+<li><code>liff.state</code> 쿼리 파라미터가 <code>/</code>로 시작하지 않는 경우</li>
+<li>LIFF URL의 추가 정보를 변환하는 방법(<strong>Methods for converting additional information in the LIFF URL</strong>)을 **Replace (Backward compatibility mode)**로 설정한 경우</li>
+</ul>
+</div>
+<p>예를 들어 <strong>Endpoint URL</strong>이 <code>https://example.com</code>으로 설정되어 있고 <code>liff.state</code> 쿼리 파라미터가 <code>path</code>로 할당되어 있었다면, 도메인 이름과 경로가 <code>/</code>로 구분되지 않아 <code>https://example.compath</code>로 리디렉션되었습니다.
+LIFF v2.4.0에서는 위 URL이 <code>https://example.com/path</code>로 올바르게 리디렉션되도록 이 오류를 수정했습니다.</p>
+<p>LIFF URL에 접속했을 때의 동작에 대한 자세한 내용은 LIFF 문서의 <a href="../opening-liff-app/#redirect-flow">LIFF URL에 접속하여 LIFF 앱을 열기까지의 동작</a>을 참조하세요.</p>
+<h3><code>liff.permanentLink.createUrl()</code> 오류를 수정했습니다</h3>
+<p>LIFF 엔드포인트 URL에 쿼리 파라미터(<code>?key=value</code>)나 URL 프래그먼트(<code>#URL-fragment</code>) 같은 정보가 포함되어 있을 때, <a href="../../../reference/liff/#permanent-link-create-url"><code>liff.permanentLink.createUrl()</code></a>을 실행하면 추가 정보 부분이 영구 링크에 정확히 반영되지 않는 경우가 있었습니다. 이 오류는 수정되었습니다.</p>
+<h3>보조 리디렉션 URL에 프래그먼트가 포함되지 않던 오류를 수정했습니다</h3>
+<p>LIFF 엔드포인트 URL이나 LIFF URL에 프래그먼트가 포함된 경우, LIFF 추가 정보를 변환하는 방법(<strong>Methods for converting additional information in the LIFF URL</strong>)의 설정과 관계없이 보조 리디렉션 URL에 프래그먼트가 포함되지 않았습니다. 이 오류는 수정되었습니다.</p>
+<p>보조 리디렉션 URL과 LIFF 추가 정보를 변환하는 방법의 설정에 따른 영향에 대한 자세한 내용은 LIFF 문서의 <a href="../opening-liff-app/#redirect-flow">LIFF URL에 접속하여 LIFF 앱을 열기까지의 동작</a>을 참조하세요.</p>
+<p>2020/07/16</p>
+<h2>LIFF v2.3.1 출시</h2>
+<p>LIFF v2.3.1을 출시했습니다.
+LIFF v2.3.1의 변경 사항은 다음과 같습니다.</p>
+<ul>
+<li><a href="./#liff-npm-docs-fix">LIFF SDK npm 패키지 문서의 문제를 수정했습니다</a></li>
+<li><a href="./#liff-npm-docs-move">LIFF SDK npm 패키지의 설치 및 사용 방법을 npm 공식 웹사이트에서 LINE Developers 사이트로 옮겼습니다</a></li>
+</ul>
+<p>이번 출시에는 기능 업데이트가 없습니다.</p>
+<h3>LIFF SDK npm 패키지 문서의 문제를 수정했습니다</h3>
+<p>시험적으로 공개되었던 LIFF SDK npm 패키지의 <a href="https://www.npmjs.com/package/@line/liff" target="_blank" rel="noopener noreferrer">npm 공식 사이트 문서</a>에 있던 문제를 수정했습니다.</p>
+<h3>LIFF SDK npm 패키지의 설치 및 사용 방법을 옮겼습니다</h3>
+<p>LIFF SDK npm 패키지의 설치 및 사용 방법을 <a href="https://www.npmjs.com/package/@line/liff" target="_blank" rel="noopener noreferrer">npm 공식 웹사이트</a>에서 LINE Developers 사이트로 옮겼습니다.
+자세한 내용은 <a href="../developing-liff-apps/#use-npm-package">npm 패키지 사용하기</a>를 참조하세요.</p>
+<p>2020/07/15</p>
+<h2>LIFF 헤더에 새로운 기능이 추가되었습니다</h2>
+<p><a href="https://developers.line.biz/en/news/2020/07/06/liff-header-design-improvement/" target="_blank" rel="noopener noreferrer">2020년 7월 6일</a>에 안내한 것처럼, LIFF 헤더에 새로운 기능이 추가되었습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/news/2020/liff-header-design-improvement.png" alt="LIFF header design to be improved" loading="lazy"><figcaption>LIFF header design to be improved</figcaption></figure></p>
+<ul>
+<li><a href="./#remove-liff-app-icon-07-15">LIFF 앱 아이콘이 더 이상 표시되지 않습니다</a></li>
+<li><a href="./#liff-share-button-07-15">공유 버튼이 추가되었습니다</a></li>
+</ul>
+<h3>LIFF 앱 아이콘이 더 이상 표시되지 않습니다</h3>
+<p>LIFF 앱의 왼쪽 상단 모서리에 있던 아이콘이 더 이상 표시되지 않습니다.</p>
+<h3>공유 버튼이 추가되었습니다</h3>
+<p><a href="../overview/#screen-size">LIFF 앱 뷰의 크기</a>가 <code>Full</code>로 설정된 LIFF 앱의 헤더에는 공유 버튼이 포함됩니다.
+사용자가 공유 버튼을 탭하면 다음 옵션이 나타납니다.</p>
+<ParameterTable>
+<p><strong>Share</strong>:
+description: |
+현재 페이지의 URL을 LINE 메시지로 공유합니다.
+<strong>Refresh</strong>:
+description: |
+현재 페이지를 다시 로드합니다.</p>
+</ParameterTable>
+<p>공유 버튼을 숨기려면 LINE Developers Console에서 LIFF 앱의 <strong>Module mode</strong>를 활성화하세요.
+자세한 내용은 <a href="../registering-liff-apps/">채널에 LIFF 앱 추가하기</a>를 참조하세요.</p>
+<!-- note start -->
+<p><strong>동작 환경</strong></p>
+<p>공유 버튼은 iOS와 Android의 LINE 10.12.0 이상 버전에서 사용할 수 있습니다.</p>
+<!-- note end -->
+<p>LIFF 개발자에게 제공하는 서비스의 품질을 계속 개선하겠습니다. 양해해 주셔서 감사합니다.</p>
+<p>2020/07/01</p>
+<h2>LIFF SDK가 npm 패키지로 출시되었습니다</h2>
+<p>지금까지는 LIFF 앱에 LIFF SDK를 포함하려면 <a href="../developing-liff-apps/#integrating-sdk">CDN 경로를 지정</a>해야 했습니다.</p>
+<p>오늘부터 LIFF SDK npm 패키지를 시험적으로 출시했습니다. 이제 npm과 Yarn으로 LIFF SDK를 설치할 수 있습니다.</p>
+<p>LIFF SDK npm 패키지에 대한 자세한 내용은 <a href="https://www.npmjs.com/package/@line/liff" target="_blank" rel="noopener noreferrer">https://www.npmjs.com/package/@line/liff</a>을 참조하세요.</p>
+<p>LIFF SDK npm 패키지로 사용할 수 있는 버전은 v2.3.0 이상입니다. 향후 LIFF SDK 버전의 기능은 LIFF 문서의 <a href="./">릴리스 노트</a>에서 안내할 예정입니다.</p>
+<!-- note start -->
+<p><strong>npm 패키지 시험 제공</strong></p>
+<p>npm 패키지는 시험적으로 제공됩니다. 향후 사전 고지 없이 변경되거나 삭제될 수 있습니다.</p>
+<!-- note end -->
+<p>2020/06/29</p>
+<h2>LIFF v2.3.0 출시</h2>
+<p>LIFF v2.3.0을 출시했습니다.
+LIFF v2.3.0의 변경 사항은 다음과 같습니다.</p>
+<ul>
+<li><a href="./#endpoint-url">LIFF 엔드포인트 URL에 경로와 쿼리 파라미터를 사용할 수 있게 되었습니다</a></li>
+<li><a href="./#permanentLink"><code>liff.permanentLink.createUrl()</code> 메서드가 예외를 발생시키는 조건을 추가했습니다</a></li>
+<li><a href="./#shareTargetPicker"><code>liff.shareTargetPicker()</code>의 전송 결과를 가져올 수 있게 되었습니다</a></li>
+<li><a href="./#sendMessage"><code>liff.sendMessages()</code>가 반환하는 오류 코드를 추가했습니다</a></li>
+</ul>
+<h3>LIFF 엔드포인트 URL에 경로와 쿼리 파라미터를 사용할 수 있게 되었습니다</h3>
+<p><a href="https://developers.line.biz/en/news/2020/05/20/liff-endpoint-url-improvement/" target="_blank" rel="noopener noreferrer">이전에 안내한 대로</a>, 이제 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>의 LIFF 탭에서 LIFF 엔드포인트 URL에 경로(<code>/path</code>)와 쿼리 파라미터(<code>?key=value</code>)를 추가하여 사용할 수 있습니다.</p>
+<!-- note start -->
+<p><strong>설정을 변경하기 전까지 기존 LIFF 앱은 영향을 받지 않습니다</strong></p>
+<p>기존 LIFF 앱에서 새 사양을 사용하려면 LINE Developers Console에서 설정을 변경해야 합니다. 설정을 변경하기 전까지 기존 LIFF 앱은 새 사양의 영향을 받지 않습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/liff/preserve-full-endpoint-url-en.png" alt="Methods for converting additional information in the LIFF URL" loading="lazy"><figcaption>Methods for converting additional information in the LIFF URL</figcaption></figure></p>
+<p>새 사양을 사용하려면 <strong>Methods for converting additional information in the LIFF URL</strong>을 <strong>Concatenate</strong>로 설정하세요.
+기존 LIFF 앱이 새 사양을 지원하지 않는다면 설정을 변경하지 마세요. **Replace (Backward compatibility mode)**로 설정하면 LIFF 앱은 새 사양의 영향을 받지 않습니다.</p>
+<!-- note end -->
+<p>자세한 내용은 LIFF 문서의 <a href="../opening-liff-app/">LIFF 앱 열기</a>를 참조하세요.</p>
+<h3><code>liff.permanentLink.createUrl()</code> 메서드가 예외를 발생시키는 조건을 추가했습니다</h3>
+<p><code>liff.permanentLink.createUrl()</code> 메서드를 실행할 때 현재 페이지 URL이 <strong>Endpoint URL</strong>에 지정된 URL로 시작하지 않으면 예외가 발생합니다.</p>
+<pre><code class="language-javascript"><span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">const</span> myLink = liff.<span class="hljs-property">permanentLink</span>.<span class="hljs-title function_">createUrl</span>()
+}
+<span class="hljs-keyword">catch</span> (err) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(err.<span class="hljs-property">code</span> + <span class="hljs-string">&#x27;:&#x27;</span> + err.<span class="hljs-property">message</span>);
+}
+</code></pre>
+<p>특히 <strong>Methods for converting additional information in the LIFF URL</strong>을 **Replace (Backward compatibility mode)**로 설정하면, <strong>Endpoint URL</strong>에 지정된 경로와 쿼리 파라미터(<code>/2020campaign/?key=value</code>)가 보조 리디렉션 URL에 포함되지 않을 수 있습니다.
+이 경우 <code>liff.permanentLink.createUrl()</code> 메서드가 위 조건에 해당하므로 영구 링크를 가져올 수 없습니다.</p>
+<p>자세한 내용은 LIFF v2 API 레퍼런스의 <a href="../../../reference/liff/#permanent-link-create-url"><code>liff.permanentLink.createUrl()</code></a>을 참조하세요.</p>
+<h3><code>liff.shareTargetPicker()</code>의 전송 결과를 가져올 수 있게 되었습니다</h3>
+<p><a href="https://developers.line.biz/en/news/2020/04/21/notice-return-value-of-sharetargetpicker/" target="_blank" rel="noopener noreferrer">2020년 4월 21일</a>에 안내한 것처럼, 이제 <code>liff.shareTargetPicker()</code>의 전송 결과를 가져올 수 있습니다.</p>
+<p>사양 변경 전에는 LIFF 앱이 대상 선택기가 표시되었는지만 확인할 수 있었고, 그 이후에 메시지가 전송되었는지는 확인할 수 없었습니다.</p>
+<p>변경 후에는 LIFF 앱이 메시지 전송 여부를 확인할 수 있으므로, 사용자의 상황에 따라 LIFF 앱의 동작을 바꿀 수 있습니다.</p>
+<!-- note start -->
+<p><strong>참고</strong></p>
+<ul>
+<li>이 사양 변경으로 <code>liff.shareTargetPicker()</code>의 반환값이 변경되었습니다.</li>
+<li>이 사양 변경은 LINE 10.3.0 - 10.10.0을 사용하는 사용자에게는 영향을 주지 않습니다.</li>
+</ul>
+<!-- note end -->
+<h4>이 사양 변경에 대한 예제 코드</h4>
+<p>아래와 같이 사용자가 사용하는 LINE 버전에 따라 반환값을 처리하는 것을 권장합니다.</p>
+<pre><code class="language-javascript"><span class="hljs-keyword">if</span> (liff.<span class="hljs-title function_">isApiAvailable</span>(<span class="hljs-string">&#x27;shareTargetPicker&#x27;</span>)) {
+  liff.<span class="hljs-title function_">shareTargetPicker</span>([
+    {
+      <span class="hljs-string">&#x27;type&#x27;</span>: <span class="hljs-string">&#x27;text&#x27;</span>,
+      <span class="hljs-string">&#x27;text&#x27;</span>: <span class="hljs-string">&#x27;Hello, World!&#x27;</span>
+    }
+  ])
+    .<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">res</span>) {
+      <span class="hljs-keyword">if</span> (res) {
+        <span class="hljs-comment">// TargetPicker를 통해 메시지 전송에 성공했습니다</span>
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`[<span class="hljs-subst">${res.status}</span>] Message sent!`</span>)
+      } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">const</span> [majorVer, minorVer] = (liff.<span class="hljs-title function_">getLineVersion</span>() || <span class="hljs-string">&quot;&quot;</span>).<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27;.&#x27;</span>);
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">parseInt</span>(majorVer) == <span class="hljs-number">10</span> &amp;&amp; <span class="hljs-built_in">parseInt</span>(minorVer) &lt; <span class="hljs-number">11</span>) {
+          <span class="hljs-comment">// LINE 10.3.0 - 10.10.0</span>
+          <span class="hljs-comment">// 이전 버전의 LINE은 사용자의 동작과 관계없이 여기로 들어옵니다</span>
+          <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;TargetPicker was opened at least. Whether succeeded to send message is unclear&#x27;</span>)
+        } <span class="hljs-keyword">else</span> {
+          <span class="hljs-comment">// LINE 10.11.0 이상</span>
+          <span class="hljs-comment">// 메시지 전송이 취소되었습니다</span>
+          <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;TargetPicker was closed!&#x27;</span>)
+        }
+      }
+    }).<span class="hljs-title function_">catch</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params">error</span>) {
+      <span class="hljs-comment">// 메시지를 보내기 전에 문제가 발생했습니다</span>
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;something wrong happen&#x27;</span>)
+    })
+}
+</code></pre>
+<p>자세한 내용은 LIFF v2 API 레퍼런스의 <a href="../../../reference/liff/#share-target-picker"><code>liff.shareTargetPicker()</code></a>를 참조하세요.</p>
+<h3>liff.sendMessages()가 반환하는 오류 코드를 추가했습니다</h3>
+<p>이전에는 <code>liff.sendMessages()</code>에 잘못된 파라미터를 전달하면 <code>LiffError</code>의 오류 코드로 <code>400</code>이 반환되었습니다. 사양 변경 후에는 대신 <code>INVALID_ARGUMENT</code>가 반환됩니다.</p>
+<p>오류 코드에 따라 처리를 나누지 않는다면 이 사양 변경은 LIFF 앱에 영향을 주지 않습니다.</p>
+<p>사양 변경 전:</p>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">sendMessages</span>([
+  {
+    <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;text&#x27;</span>,
+    <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;Hello, World!&#x27;</span>
+  }
+])
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;message sent&#x27;</span>);
+  })
+  .<span class="hljs-title function_">catch</span>(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-comment">// 잘못된 인자를 전달하면 &quot;400&quot;을 반환합니다</span>
+    <span class="hljs-keyword">if</span> (err.<span class="hljs-property">code</span> === <span class="hljs-string">&quot;400&quot;</span>) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;message format error!&quot;</span>);
+    }
+  });
+</code></pre>
+<p>사양 변경 후:</p>
+<pre><code class="language-javascript">liff.<span class="hljs-title function_">sendMessages</span>([
+  {
+    <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;text&#x27;</span>,
+    <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;Hello, World!&#x27;</span>
+  }
+])
+  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;message sent&#x27;</span>);
+  })
+  .<span class="hljs-title function_">catch</span>(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-comment">// 잘못된 인자를 전달하면 &quot;INVALID_ARGUMENT&quot;를 반환합니다</span>
+    <span class="hljs-keyword">if</span> (err.<span class="hljs-property">code</span> === <span class="hljs-string">&quot;INVALID_ARGUMENT&quot;</span>) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;message format error!&quot;</span>);
+    }
+  });
+</code></pre>
+<p>자세한 내용은 LIFF v2 API 레퍼런스의 <a href="../../../reference/liff/#error-details">오류 상세</a>를 참조하세요.</p>
+<p>2020/06/15</p>
+<h2>LIFF v2.2.0: LIFF 오류 코드 추가</h2>
+<p>다음 메서드에서 <code>Promise</code>가 거부(reject)될 때 전달되는 <code>LiffError</code> 코드가 더 상세해져서 문제의 원인을 더 쉽게 파악할 수 있습니다.</p>
+<p>자세한 내용은 다음 메서드의 <strong>Error Response</strong> 설명을 참조하세요.</p>
+<ul>
+<li><a href="../../../reference/liff/#initialize-liff-app">liff.init()</a></li>
+<li><a href="../../../reference/liff/#get-profile">liff.getProfile()</a></li>
+<li><a href="../../../reference/liff/#get-friendship">liff.getFriendship()</a></li>
+</ul>
+<p>2020/04/30</p>
+<h2>LIFF v2.1.13: LIFF v2에 liff.getLineVersion()과 <a href="http://liff.id" target="_blank" rel="noopener noreferrer">liff.id</a> 추가</h2>
+<p>LIFF v2에 <code>liff.getLineVersion()</code> 메서드와 <code>liff.id</code> 속성을 추가했습니다.</p>
+<p><code>liff.getLineVersion()</code>으로 사용자의 LINE 버전을 가져올 수 있습니다.</p>
+<p>사용자가 LIFF 브라우저를 사용하여 LIFF 앱을 열면 사용자의 LINE 버전이 문자열로 반환됩니다. 사용자가 외부 브라우저를 사용하여 LIFF 앱을 열면 <code>null</code>이 반환됩니다.</p>
+<p><code>liff.id</code>는 <code>liff.init()</code>에 전달된 LIFF 앱 ID(문자열 타입)를 저장하는 속성입니다.</p>
+<p><a href="../../../reference/liff/#get-line-version"><code>liff.getLineVersion()</code></a>과 <a href="../../../reference/liff/#id"><code>liff.id</code></a>에 대한 자세한 내용은 LIFF v2 API 레퍼런스를 참조하세요.</p>
+<p>2020/04/03</p>
+<h2>LIFF v2에 liff.isApiAvailable() 추가</h2>
+<p>LIFF v2에 <code>liff.isApiAvailable()</code> 메서드를 추가했습니다. 이 메서드는 LIFF 앱이 실행된 환경에서 지정한 API를 사용할 수 있는지 확인합니다.</p>
+<!-- note start -->
+<p><strong>참고</strong></p>
+<p>지정할 수 있는 API의 수는 제한되어 있습니다. 현재는 <code>liff.shareTargetPicker()</code>만 지정할 수 있습니다. 앞으로 <code>liff.isApiAvailable()</code>로 확인할 수 있는 API가 늘어나면 알려 드리겠습니다.</p>
+<!-- note end -->
+<h3>공유 대상 선택기 사용 가능 여부 확인하기</h3>
+<p><code>liff.shareTargetPicker()</code>를 실행하기 전에 <code>liff.isApiAvailable()</code>을 실행하면, 사용자의 기기 환경에서 공유 대상 선택기를 사용할 수 없는 경우 사용자 화면에 오류 메시지가 표시되는 것을 막을 수 있습니다.</p>
+<pre><code class="language-javascript"><span class="hljs-keyword">if</span> (liff.<span class="hljs-title function_">isApiAvailable</span>(<span class="hljs-string">&#x27;shareTargetPicker&#x27;</span>)) {
+  liff.<span class="hljs-title function_">shareTargetPicker</span>([
+    {
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;text&quot;</span>,
+      <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;Hello, World!&quot;</span>
+    }
+  ])
+    .<span class="hljs-title function_">then</span>(
+      <span class="hljs-title function_">alert</span>(<span class="hljs-string">&quot;ShareTargetPicker was launched&quot;</span>)
+    ).<span class="hljs-title function_">catch</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">res</span>) {
+      <span class="hljs-title function_">alert</span>(<span class="hljs-string">&quot;Failed to launch ShareTargetPicker&quot;</span>)
+    })
+}
+</code></pre>
+<p>자세한 내용은 LIFF v2 API 레퍼런스의 <a href="../../../reference/liff/#is-api-available">liff.isApiAvailable()</a>을 참조하세요.</p>
+<p>2020/03/03</p>
+<h2>LIFF v2에 liff.shareTargetPicker()와 liff.ready 추가</h2>
+<p>LIFF v2에 <code>liff.shareTargetPicker()</code>와 <code>liff.ready</code>를 추가했습니다.</p>
+<h3>liff.shareTargetPicker()</h3>
+<p><code>liff.shareTargetPicker()</code> 메서드를 실행하면 대상 선택기(그룹 또는 친구를 선택하는 화면)가 표시되고, 개발자가 만든 메시지를 선택한 대상에게 보낼 수 있습니다. 이 메시지는 마치 사용자가 보낸 것처럼 그룹이나 친구에게 표시됩니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/news/2020/share-target-picker.png" alt="target picker" loading="lazy"><figcaption>target picker</figcaption></figure></p>
+<p>자세한 내용은 LIFF 문서의 <a href="../developing-liff-apps/#share-target-picker">사용자의 친구에게 메시지 보내기(share target picker)</a>를 참조하세요.</p>
+<!-- note start -->
+<p><strong>대상 선택기 동작 환경</strong></p>
+<p>대상 선택기는 iOS와 Android의 LINE 10.3.0 이상에서 지원됩니다.</p>
+<!-- note end -->
+<h3>liff.ready</h3>
+<p><code>liff.ready</code>를 사용하면 LIFF 앱을 시작한 후 <a href="../../../reference/liff/#initialize-liff-app"><code>liff.init()</code></a>을 처음 실행할 때 완료되는 <code>Promise</code> 객체를 가져올 수 있습니다. <code>liff.ready</code>를 사용하면 <code>liff.init()</code>이 완료된 후 원하는 처리를 실행할 수 있습니다.</p>
+<p>자세한 내용은 LIFF v2 API 레퍼런스의 <a href="../../../reference/liff/#ready">liff.ready</a>를 참조하세요.</p>
+<p>2020/02/07</p>
+<h2>LIFF v1 API 및 서비스 종료 일정 변경에 대한 안내</h2>
+<p><a href="https://developers.line.biz/en/news/2020/01/21/liff-server-api-deprecation/" target="_blank" rel="noopener noreferrer">LINE Front-end Framework(LIFF) 서버 API의 수명 종료일을 2020년 3월 31일로 예정했다고 안내한 바 있습니다</a>. 접수된 의견을 반영하여 해당 API는 계속 제공합니다.</p>
+<p>LIFF v1의 서비스 종료일은 결정되는 대로 안내하겠습니다. 그때까지는 가능한 한 빨리 v1에서 v2로 마이그레이션하는 것을 권장합니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>기능</th>
+<th>이번 업데이트 이전 일정</th>
+<th>이번 업데이트 이후 일정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://developers.line.biz/en/reference/liff-v1/#client-api" target="_blank" rel="noopener noreferrer">LIFF v1 Client API</a></td>
+<td>서비스 종료 예정</td>
+<td>서비스 종료 예정(변경 없음)</td>
+</tr>
+<tr>
+<td><a href="https://developers.line.biz/en/reference/liff-v1/#server-api" target="_blank" rel="noopener noreferrer">LIFF v1 Server API</a></td>
+<td>2020년 3월 31일 서비스 종료 예정</td>
+<td><strong>지원 계속</strong></td>
+</tr>
+</tbody>
+</table></div>
+<!-- note start -->
+<p><strong>LIFF v1은 여전히 서비스가 종료됩니다</strong></p>
+<p><a href="https://developers.line.biz/en/news/2019/10/16/liff-v2-released/" target="_blank" rel="noopener noreferrer">2019년 10월 16일</a>에 안내한 것처럼 LIFF v1은 서비스가 종료됩니다. 최신 버전의 LIFF를 사용하세요.</p>
+<!-- note end -->
+<p>2020/02/05</p>
+<h2>사용자가 Messaging API 채널에 LIFF 앱을 더 이상 추가할 수 없습니다</h2>
+<p><a href="https://developers.line.biz/en/news/2019/11/11/liff-cannot-be-used-with-messaging-api-channels/" target="_blank" rel="noopener noreferrer">2019년 11월 11일</a>에 안내한 것처럼, LIFF v2의 기능 개선에 따라 사용자는 더 이상 Messaging API 채널에 LIFF 앱을 추가할 수 없습니다.</p>
+<p>Messaging API 채널에 이미 추가된 LIFF 앱의 제한 사항과 LINE Login 채널로 전환하는 방법은 위 뉴스 기사를 참조하세요.</p>
+<p>2020/01/21</p>
+<h2>LIFF v1 Server API 2020년 3월 31일 수명 종료</h2>
+<p>2020년 3월 31일은 <strong>LINE Front-end Framework(LIFF) v1 Server API</strong>의 수명 종료일입니다. 이날부로 다음 기능이 제거됩니다.</p>
+<ul>
+<li><a href="../../../reference/liff-server/">Server API</a>
+<ul>
+<li><a href="../../../reference/liff-server/#add-liff-app">채널에 LIFF 앱 추가</a></li>
+<li><a href="../../../reference/liff-server/#update-liff-app">LIFF 앱 설정 업데이트</a></li>
+<li><a href="../../../reference/liff-server/#get-all-liff-apps">모든 LIFF 앱 가져오기</a></li>
+<li><a href="../../../reference/liff-server/#delete-liff-app">채널에서 LIFF 앱 삭제</a></li>
+</ul>
+</li>
+</ul>
+<!-- note start -->
+<p><strong>최신 버전의 LIFF를 사용하세요</strong></p>
+<p><a href="https://developers.line.biz/en/news/2019/10/16/liff-v2-released/" target="_blank" rel="noopener noreferrer">2019년 10월 16일</a>에 안내한 것처럼 LIFF v1은 서비스가 종료됩니다.</p>
+<!-- note end -->
+<h3>LIFF v2 사용하기</h3>
+<p>서비스가 종료되는 Server API의 모든 기능은 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에서 사용할 수 있습니다. 채널에 LIFF 앱을 추가하는 방법은 다음을 참조하세요.</p>
+<ul>
+<li><a href="../registering-liff-apps/">채널에 LIFF 앱 추가하기</a></li>
+</ul>
+<p>같은 절차로 다른 기능도 사용할 수 있습니다.</p>
+<p>LINE은 서비스 품질을 계속 개선하겠습니다. 양해해 주셔서 감사합니다.</p>
+<p>2020/01/14</p>
+<h2>지원이 중단된 LIFF SDK API를 사용하는 코드를 업데이트하세요</h2>
+<p><a href="https://developers.line.biz/en/news/2019/11/29/liff-functions-suspended/" target="_blank" rel="noopener noreferrer">2019년 11월 29일</a>에 안내한 것처럼, 기술적인 문제로 인해 iOS의 LINE v9.19.0 이상에서 다음 API가 일시적으로 중단되었습니다.</p>
+<ul>
+<li>liff.scanCode()</li>
+<li>liff.bluetooth.*</li>
+</ul>
+<p>오늘부터 <strong>iOS의 LINE v9.19.0 이상</strong>에서 LIFF 앱을 사용하는 최종 사용자의 경우 각 API는 다음과 같이 동작합니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>API</th>
+<th>동작</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>liff.scanCode()</td>
+<td>API가 <code>undefined</code>입니다</td>
+</tr>
+<tr>
+<td>liff.bluetooth.*</td>
+<td><code>liff.initPlugins(['bluetooth'])</code>를 호출할 때 Bluetooth 플러그인 초기화에 실패하면 <code>FORBIDDEN</code> 오류가 반환됩니다.</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>liff.scanCode()</code>를 사용하는 경우 위 경우도 고려하고 함수가 존재하는지 확인하는 것을 권장합니다.</p>
+<p>수정 전:</p>
+<pre><code>liff.scanCode().then(result =&gt; {
+  // result = { value: '' }
+});
+</code></pre>
+<p>수정 후:</p>
+<pre><code>if (liff.scanCode) {
+  liff.scanCode().then(result =&gt; {
+    // result = { value: '' }
+  });
+}
+</code></pre>
+<p>자세한 내용은 <a href="../../../reference/liff/">LIFF v2 API 레퍼런스</a>를 참조하세요.</p>
+<p>LINE은 서비스 품질을 계속 개선하겠습니다. 양해해 주셔서 감사합니다.</p>
+<p>2019/11/29</p>
+<h2>일부 LIFF 기능이 중단되었습니다</h2>
+<p>기술적인 문제로 인해 다음 LIFF 기능을 일시적으로 중단했습니다. 상황이 바뀌면 바로 알려 드리겠습니다.</p>
+<ul>
+<li><code>liff.scanCode()</code></li>
+<li><code>liff.bluetooth.*</code></li>
+</ul>
+<h3>영향을 받는 환경</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>환경</th>
+<th>버전</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LINE for iOS</td>
+<td>9.19.0 이상 버전에서 위 기능을 일시적으로 사용할 수 없습니다.</td>
+</tr>
+<tr>
+<td>LINE for Android</td>
+<td>현재는 영향이 없지만, 곧 추가 소식을 전하겠습니다.</td>
+</tr>
+</tbody>
+</table></div>
+<p>불편을 드려 죄송하며, 문제를 해결하기 위해 노력하고 있습니다.</p>
+<p>2019/11/11</p>
+<h2>사용자가 Messaging API 채널에 LIFF 앱을 더 이상 추가할 수 없게 됩니다</h2>
+<p>LIFF v2는 LINE Login을 핵심 채널로 하여 업데이트될 예정입니다. 또한 곧 있을 변경으로 사용자는 Messaging API 채널에 LIFF 앱을 전혀 추가할 수 없게 됩니다. 사용자에게는 LIFF 앱을 LINE Login 채널에 추가할 것을 강력히 권장합니다.</p>
+<h3>변경 예정일</h3>
+<p>2020년 2월 초</p>
+<h3>영향</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>채널 유형</th>
+<th>영향</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LINE Login 채널</td>
+<td>영향 없음</td>
+</tr>
+<tr>
+<td>Messaging API 채널</td>
+<td>사양 변경 후에는 Messaging API 채널에 LIFF 앱을 <strong>추가할 수 없습니다</strong>. 사양 변경 시점에 Messaging API 채널에 추가된 LIFF 앱은 계속 사용할 수 있습니다.</td>
+</tr>
+</tbody>
+</table></div>
+<!-- note start -->
+<p><strong>Messaging API 채널에 LIFF 앱을 추가하지 마세요</strong></p>
+<p>현재는 사용자가 Messaging API 채널에 LIFF 앱을 추가할 수 있습니다. 그러나 다음 제한 사항 때문에 추가하지 않는 것을 강력히 권장합니다.</p>
+<ul>
+<li>봇 링크 기능을 사용할 수 없습니다.</li>
+<li>LIFF 기능 확장을 지원하지 않을 수 있습니다.</li>
+<li>향후 LIFF 앱을 사용하지 못하게 될 수 있습니다.</li>
+</ul>
+<p>LINE Login 채널에 추가된 LIFF 앱에는 제한이 없으며 LIFF v2의 모든 기능을 사용할 수 있습니다.</p>
+<!-- note end -->
+<h3>LINE Login 채널로 전환하기</h3>
+<p>Messaging API 채널에 추가된 LIFF 앱을 계속 사용하려면 LIFF 앱을 LINE Login 채널에 다시 추가하세요. 다시 추가하면 LINE Developers Console에서 새 LIFF 앱 ID가 발급됩니다. 따라서 다음 사항에 유의하세요.</p>
+<ul>
+<li>LIFF v2를 사용하는 경우 <code>liff.init()</code>에 지정한 LIFF 앱 ID를 변경하세요.</li>
+<li>LIFF를 실행할 때 사용하는 LIFF URL(예: line://app/1234567890-AbcdEfgh)이 변경됩니다.</li>
+</ul>
+<!-- note start -->
+<p><strong>Messaging API 채널에 추가한 LIFF 앱 삭제하기</strong></p>
+<p>혼동을 피하려면 LINE Login 채널에 추가한 후 Messaging API 채널에 추가했던 LIFF 앱을 삭제하세요.</p>
+<!-- note end -->
+<p>2019/10/16</p>
+<h2>LIFF v2 출시</h2>
+<p>LINE Front-end Framework(LIFF) v2는 LINE이 제공하는 웹 앱 플랫폼입니다.</p>
+<!-- note start -->
+<p><strong>최신 버전의 LIFF를 사용하세요</strong></p>
+<p>LIFF v1은 지원이 중단될 예정입니다.</p>
+<!-- note end -->
+<h3>이제 LIFF 앱을 외부 브라우저에서도 실행할 수 있습니다</h3>
+<p>LIFF v1에서는 LIFF 앱을 LIFF 브라우저에서만 실행할 수 있었습니다. LIFF v2에서는 LIFF 앱을 외부 브라우저에서도 실행할 수 있습니다. 따라서 일반 웹 애플리케이션과 같은 개발 환경에서 LIFF 앱을 개발할 수 있습니다.</p>
+<h3>사용자 프로필과 이메일 가져오기</h3>
+<p>LINE Login v2.1과의 호환성이 개선되어, LINE Platform에서 사용자의 ID와 이메일 주소를 가져올 수 있습니다. LIFF 앱은 이 데이터를 사용하여 사용자 정보와 이메일 발송과 관련된 기능을 제공할 수 있습니다.</p>
+<p>또한 LIFF 앱이 외부 브라우저에서 실행 중일 때도 LINE 로그인(웹 로그인 흐름)을 사용할 수 있습니다. 따라서 LIFF 앱이 외부 브라우저에서 실행되는 경우에도 같은 정보를 사용할 수 있습니다.</p>
+<h3>QR 코드 읽기</h3>
+<p>LINE의 QR 코드 리더를 실행하고 사용자가 읽은 문자열을 가져올 수 있습니다.</p>
+<h3>LIFF 앱 실행 환경 정보 가져오기</h3>
+<p>LIFF 앱이 실행되는 환경에 대해 다음 정보를 가져올 수 있습니다.</p>
+<ul>
+<li>LIFF 앱이 실행되는 운영체제(iOS, Android, 외부 브라우저)</li>
+<li>LIFF 앱이 LIFF 브라우저에서 실행 중인지 여부(true, false)</li>
+<li>언어 설정</li>
+</ul>
+<p>자세한 내용은 <a href="../overview/">LINE Front-end Framework</a>를 참조하세요.</p>
+<p>2019/04/23</p>
+<h2>LINE Front-end Framework의 동의 화면 개선</h2>
+<p>LINE Front-end Framework(LIFF)에 포함된 동의 화면을 개선했습니다. 이 개선 사항은 모든 LIFF 앱에 자동으로 적용되므로 별도의 개발 작업은 필요하지 않습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/news/2019/liff-consent-screen-changed-01.webp" alt="New consent screen" loading="lazy"><figcaption>New consent screen</figcaption></figure></p>
+<p>이번 업데이트 이전과 마찬가지로 사용자는 LIFF 앱이 채팅에 메시지를 보내는 것을 허용하지 않도록 선택할 수 있습니다. 다만 이전과 달리, 사용자가 이렇게 선택하면 다음에 LIFF 앱을 실행할 때 동의 화면이 다시 표시됩니다.</p>
+<p>2019/02/07</p>
+<h2>LIFF SDK로 액세스 토큰을 가져올 수 있습니다</h2>
+<p>LIFF SDK에 <code>liff.getAccessToken()</code> 메서드를 추가했습니다.</p>
+<p>액세스 토큰을 사용하여 <a href="https://developers.line.biz/en/docs/social-api/overview/" target="_blank" rel="noopener noreferrer">Social API</a>와 상호작용하면 LINE Platform에서 사용자 프로필 데이터에 접근할 수 있습니다.</p>
+<p>자세한 내용은 <a href="../developing-liff-apps/#getting-tokens">사용자의 액세스 토큰 가져오기</a>를 참조하세요.</p>
+<p>2018/11/16</p>
+<h2>새롭게 개편된 LIFF 서버 API</h2>
+<p>이제 LIFF 앱에 다음 속성을 설정할 수 있습니다.</p>
+<ul>
+<li><code>description</code> 속성</li>
+<li><code>features.ble</code> 속성</li>
+</ul>
+<p>LIFF 앱을 업데이트하는 API 엔드포인트에 보내는 HTTP 요청이 <code>PUT</code>에서 <code>PATCH</code>로 변경되었습니다. 이제 LIFF 앱의 속성을 일부만 업데이트할 수 있습니다.</p>
+<p>자세한 내용은 다음 섹션을 참조하세요.</p>
+<ul>
+<li><a href="../../../reference/liff-server/#add-liff-app">LIFF 앱 추가</a></li>
+<li><a href="../../../reference/liff-server/#update-liff-app">LIFF 앱 업데이트</a></li>
+</ul>
+<p>2018/10/30</p>
+<h2>이제 LINE Developers Console에서 LIFF 앱을 추가할 수 있습니다</h2>
+<p>이제 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에서 LIFF 앱을 추가할 수 있습니다. 이전과 마찬가지로 LIFF 서버 API로도 LIFF 앱을 추가할 수 있습니다.</p>
+<p>자세한 내용은 <a href="../registering-liff-apps/">LIFF 앱 추가하기</a>를 참조하세요.</p>
+<p>2018/07/19</p>
+<h2>LIFF 앱의 최대 개수가 늘어났습니다</h2>
+<p>이제 하나의 채널에 최대 30개의 LIFF 앱을 추가할 수 있습니다. 이전 최대 개수는 10개였습니다.</p>
+<p>자세한 내용은 LIFF API 레퍼런스 문서의 <a href="../../../reference/liff-server/#add-liff-app">LIFF 앱 추가</a>를 참조하세요.</p>
+<p>2018/06/06</p>
+<h2>LINE Front-end Framework 출시</h2>
+<p>LINE Front-end Framework(LIFF)는 LINE 안에서 실행되는 웹 앱 플랫폼입니다.</p>
+<p>LINE에서 LIFF에 등록된 웹 앱(LIFF 앱)을 실행하면, LIFF 앱은 LINE 사용자 ID 같은 데이터를 LINE Platform에서 가져올 수 있습니다. LIFF 앱은 이러한 데이터를 사용하여 사용자 정보를 활용하는 기능을 제공하고 사용자를 대신하여 메시지를 보낼 수 있습니다.</p>
+<p>자세한 내용은 <a href="../overview/">LINE Front-end Framework</a>를 참조하세요.</p>
+</article></main>
+</div>
+<script>
+(function(){
+  var a=document.querySelector('.sidebar a.active');
+  if(a)a.scrollIntoView({block:'center'});
+  var input=document.getElementById('nav-search');
+  if(!input)return;
+  var items=[].slice.call(document.querySelectorAll('.sidebar li'));
+  input.addEventListener('input',function(){
+    var q=input.value.trim().toLowerCase();
+    items.forEach(function(li){
+      if(!q){li.classList.remove('hidden');return;}
+      var own=(li.querySelector(':scope > a, :scope > details > summary')||li).textContent.toLowerCase();
+      var hit=own.indexOf(q)!==-1||li.textContent.toLowerCase().indexOf(q)!==-1;
+      li.classList.toggle('hidden',!hit);
+      if(hit){var d=li.querySelector(':scope > details');if(d)d.open=true;}
+    });
+  });
+})();
+</script>
+</body>
+</html>

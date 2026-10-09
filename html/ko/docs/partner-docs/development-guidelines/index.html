@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>법인 고객을 위한 개발 가이드라인 | LINE Developers</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#fff;--fg:#1a1a1a;--fg2:#595959;--border:#e5e5e5;--bg2:#f5f5f7;--accent:#0066ff;--code-bg:#f3f4f6;--hover:rgba(0,102,255,.07);--header-h:57px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Neo','Noto Sans KR',Roboto,sans-serif;line-height:1.6;margin:0}
+header{position:sticky;top:0;z-index:20;height:var(--header-h);background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;padding:0 1.25rem}
+.logo{font-weight:700;font-size:1.2rem;color:var(--fg);text-decoration:none;white-space:nowrap}
+.search{flex:1;max-width:320px;margin-left:auto}
+.search input{width:100%;padding:.45rem .75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--fg);font-size:.875rem}
+.search input:focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--bg)}
+.nav-btn{display:none;cursor:pointer;font-size:1.3rem;line-height:1;padding:.25rem .4rem;border:1px solid var(--border);border-radius:6px}
+#nav-toggle{position:absolute;opacity:0;pointer-events:none}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr)}
+.sidebar{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto;border-right:1px solid var(--border);background:var(--bg2);padding:.75rem 0 2rem;font-size:.875rem}
+.sidebar ul{list-style:none;margin:0;padding:0}
+.sidebar ul ul{padding-left:.9rem;border-left:1px solid var(--border);margin-left:1.1rem}
+.nav-title{padding:.9rem 1.25rem .35rem;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg2)}
+.sidebar a,.sidebar summary>span{display:inline-block;padding:.28rem .5rem;color:var(--fg2);text-decoration:none;border-radius:4px}
+.sidebar li>a{display:block;margin:0 .5rem 0 1rem}
+.sidebar a:hover{color:var(--accent);background:var(--hover)}
+.sidebar a.active{color:var(--accent);background:var(--hover);font-weight:600}
+.sidebar summary{cursor:pointer;padding:.1rem .75rem .1rem 1rem;list-style-position:inside}
+.sidebar summary>span{font-weight:600;color:var(--fg)}
+.sidebar summary a{padding-left:.2rem}
+.sidebar li.hidden{display:none}
+.content{min-width:0;padding:2rem 2.5rem 4rem}
+article{max-width:880px;margin:0 auto}
+h1,h2,h3,h4{line-height:1.3;color:var(--fg);text-wrap:balance}
+h1{font-size:2.1rem;margin:0 0 1rem}
+h2{font-size:1.5rem;margin:2.2rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.2rem;margin:1.6rem 0 .6rem}
+p,li{color:var(--fg2);line-height:1.75}
+a{color:var(--accent)}
+code{background:var(--code-bg);padding:.15em .4em;border-radius:3px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;line-height:1.5}
+pre code{background:none;padding:0;color:var(--fg)}
+blockquote{border-left:4px solid var(--accent);padding:.6rem 1.2rem;margin:1.2rem 0;background:var(--bg2);border-radius:4px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:1.2rem 0}
+th,td{padding:.6rem .8rem;border:1px solid var(--border);text-align:left;vertical-align:top}
+th{background:var(--bg2);color:var(--fg)}
+.doc-figure{margin:1.5rem 0;text-align:center}
+.doc-figure img{max-width:100%;height:auto;border:1px solid var(--border);border-radius:8px}
+.doc-figure figcaption{margin-top:.4rem;font-size:.85rem;color:var(--fg2)}
+.tip{background:var(--bg2);border-left:4px solid var(--accent);padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:4px}
+.feature-box{background:var(--bg2);border-left:4px solid var(--accent);border-radius:6px;padding:1rem 1.4rem;margin:1.2rem 0}
+.feature-box h4{margin:0 0 .4rem;color:var(--accent)}
+.feature-box p{margin:0}
+@media (max-width:860px){
+  .nav-btn{display:block}
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .sidebar{display:none;position:fixed;inset:var(--header-h) 0 0 0;height:auto;z-index:15;width:100%}
+  #nav-toggle:checked~.layout .sidebar{display:block}
+  .content{padding:1.25rem 1rem 3rem}
+  h1{font-size:1.6rem}
+  .search{max-width:none}
+}
+</style>
+</head>
+<body>
+<input type="checkbox" id="nav-toggle">
+<header>
+  <label for="nav-toggle" class="nav-btn" aria-label="메뉴">☰</label>
+  <a href="../../../" class="logo">LINE Developers</a>
+  <div class="search"><input id="nav-search" type="search" placeholder="문서 검색..." aria-label="문서 검색"></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" aria-label="문서 목차"><div class="nav-section"><div class="nav-title">문서</div><ul><li><details><summary><span>기본</span></summary><ul><li><a href="../../basics/channel-access-token/">채널 액세스 토큰</a></li><li><a href="../../basics/line-api-status/">LINE Platform 가용성 확인 (LINE API Status)</a></li><li><a href="../../basics/user-profile/">사용자 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LIFF</span></summary><ul><li><a href="../../liff/overview/">LIFF 개요</a></li><li><a href="../../liff/getting-started/">채널 생성하기</a></li><li><a href="../../liff/cli-tool-create-liff-app/">Create LIFF App로 LIFF 앱 개발 환경 구축하기</a></li><li><a href="../../liff/developing-liff-apps/">LIFF 앱 개발하기</a></li><li><a href="../../liff/development-guidelines/">LIFF 앱 개발 가이드라인</a></li><li><a href="../../liff/differences-between-liff-browser-and-external-browser/">LIFF 브라우저와 외부 브라우저의 차이</a></li><li><a href="../../liff/differences-between-liff-browser-and-line-in-app-browser/">LIFF 브라우저와 LINE 인앱 브라우저의 차이</a></li><li><a href="../../liff/liff-cli/">LIFF CLI</a></li><li><a href="../../liff/liff-plugin/">LIFF 플러그인</a></li><li><a href="../../liff/minimizing-liff-browser/">LIFF 브라우저 최소화</a></li><li><a href="../../liff/opening-liff-app/">LIFF 앱 열기</a></li><li><a href="../../liff/pluggable-sdk/">플러거블 SDK</a></li><li><a href="../../liff/registering-liff-apps/">채널에 LIFF 앱 추가하기</a></li><li><a href="../../liff/release-notes/">릴리스 노트</a></li><li><a href="../../liff/trying-liff-app/">LIFF 스타터 앱 체험하기</a></li><li><a href="../../liff/using-user-profile/">LIFF 앱 및 서버에서 사용자 데이터 사용하기</a></li><li><a href="../../liff/versioning-policy/">버전 정책</a></li></ul></details></li><li><details><summary><span>LINE Ads API</span></summary><ul><li><a href="../../line-ads-api/about/">LINE Ads API 소개</a></li><li><a href="../../line-ads-api/development-guidelines/">LINE Ads API 개발 가이드라인</a></li></ul></details></li><li><a href="../../line-conversion-api/">LINE Conversion API</a></li><li><details><summary><span>LINE Developers 콘솔</span></summary><ul><li><a href="../../line-developers-console/overview/">LINE Developers Console 개요</a></li><li><a href="../../line-developers-console/best-practices-for-provider-and-channel-management/">프로바이더 및 채널 관리 모범 사례</a></li><li><a href="../../line-developers-console/delete-developer-account/">개발자 계정 삭제하기</a></li><li><a href="../../line-developers-console/login-account/">LINE Developers Console에 로그인하기</a></li><li><a href="../../line-developers-console/managing-roles/">역할 관리하기</a></li><li><a href="../../line-developers-console/notification/">이메일 또는 알림 센터로 알림 받기</a></li></ul></details></li><li><details><summary><span>LINE 로그인</span></summary><ul><li><a href="../../line-login/overview/">LINE Login 개요</a></li><li><a href="../../line-login/getting-started/">LINE Login 시작하기</a></li><li><a href="../../line-login/development-guidelines/">LINE Login 개발 가이드라인</a></li><li><a href="../../line-login/how-to-handle-auto-login-failure/">자동 로그인 실패 처리 방법</a></li><li><a href="../../line-login/integrate-line-login/">웹 앱에 LINE Login 연동하기</a></li><li><a href="../../line-login/integrate-line-login-v2/">웹 앱에 LINE Login(v2.0) 연동하기</a></li><li><a href="../../line-login/integrate-pkce/">LINE Login의 PKCE 지원</a></li><li><a href="../../line-login/link-a-bot/">로그인 시 LINE 공식 계정을 친구로 추가하기(친구 추가 옵션)</a></li><li><a href="../../line-login/login-button/">LINE Login 버튼 디자인 가이드라인</a></li><li><a href="../../line-login/managing-access-tokens/">액세스 토큰 관리</a></li><li><a href="../../line-login/managing-access-tokens-v2/">액세스 토큰 관리(LINE Login v2.0)</a></li><li><a href="../../line-login/managing-authorized-apps/">승인된 앱 관리하기</a></li><li><a href="../../line-login/managing-users/">사용자 관리</a></li><li><a href="../../line-login/managing-users-v2/">사용자 관리(LINE Login v2.0)</a></li><li><a href="../../line-login/secure-login-process/">앱과 서버 간의 안전한 로그인 프로세스 만들기</a></li><li><a href="../../line-login/security-checklist/">LINE Login 보안 체크리스트</a></li><li><a href="../../line-login/using-line-url-scheme/">LINE URL scheme을 사용하여 LINE 기능 이용하기</a></li><li><a href="../../line-login/verify-id-token/">ID 토큰에서 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LINE 로그인 SDK</span></summary><ul><li><details><summary><span>Android SDK</span></summary><ul><li><a href="../../line-login-sdks/android-sdk/overview/">LINE SDK for Android 개요</a></li><li><a href="../../line-login-sdks/android-sdk/handling-errors/">오류 처리</a></li><li><a href="../../line-login-sdks/android-sdk/integrate-line-login/">Android 앱에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/android-sdk/link-a-bot/">SDK로 친구 추가 옵션 활성화하기</a></li><li><a href="../../line-login-sdks/android-sdk/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../line-login-sdks/android-sdk/managing-users/">사용자 관리하기</a></li><li><a href="../../line-login-sdks/android-sdk/release-notes/">LINE SDK for Android 릴리스 노트</a></li><li><a href="../../line-login-sdks/android-sdk/try-line-login/">샘플 앱 체험하기</a></li></ul></details></li><li><a href="../../line-login-sdks/flutter-sdk/">Flutter SDK</a></li><li><details><summary><span>iOS SDK</span></summary><ul><li><a href="../../line-login-sdks/ios-sdk/release-notes/">LINE SDK for iOS 릴리스 노트</a></li><li><details><summary><span>Swift</span></summary><ul><li><a href="../../line-login-sdks/ios-sdk/swift/overview/">LINE SDK for iOS Swift 개요</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/error-handling/">오류 처리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/integrate-line-login/">iOS 앱에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/link-a-bot/">SDK로 추가 친구 옵션 활성화하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/managing-users/">사용자 관리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/migration-guide/">SDK 업그레이드하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/setting-up-project/">프로젝트 설정하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/universal-links-support/">유니버설 링크 사용하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/using-objc/">Objective-C 코드에서 SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>Unity SDK</span></summary><ul><li><a href="../../line-login-sdks/unity-sdk/overview/">LINE SDK for Unity 개요</a></li><li><a href="../../line-login-sdks/unity-sdk/integrate-line-login/">Unity 게임에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/unity-sdk/project-setup/">프로젝트 설정하기</a></li><li><a href="../../line-login-sdks/unity-sdk/release-notes/">LINE SDK for Unity 릴리스 노트</a></li><li><a href="../../line-login-sdks/unity-sdk/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../line-login-sdks/unity-sdk/using-sdk/">결과 처리와 기타 API에 LINE SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>LINE 미니앱</span></summary><ul><li><a href="../../line-mini-app/quickstart/">LINE MINI App 시작하기</a></li><li><details><summary><span>Design</span></summary><ul><li><a href="../../line-mini-app/design/landscape/">LINE MINI App의 안전 영역</a></li><li><a href="../../line-mini-app/design/line-mini-app-icon/">LINE MINI App 아이콘 사양 및 가이드라인</a></li><li><a href="../../line-mini-app/design/loading-icon/">로딩 아이콘</a></li></ul></details></li><li><details><summary><span>Develop</span></summary><ul><li><a href="../../line-mini-app/develop/add-to-home-screen/">LINE MINI App의 바로가기를 사용자 기기의 홈 화면에 추가하기</a></li><li><a href="../../line-mini-app/develop/channel-consent-simplification/">LINE MINI App 인증 흐름</a></li><li><a href="../../line-mini-app/develop/configure-console/">LINE MINI App 사용자에게 표시되는 설정</a></li><li><a href="../../line-mini-app/develop/custom-path/">커스텀 경로 설정하기</a></li><li><a href="../../line-mini-app/develop/develop-overview/">시작하기</a></li><li><a href="../../line-mini-app/develop/external-browser/">외부 브라우저에서 LINE MINI App 열기</a></li><li><a href="../../line-mini-app/develop/payment/">결제 처리하기</a></li><li><a href="../../line-mini-app/develop/performance-guidelines/">성능 가이드라인</a></li><li><a href="../../line-mini-app/develop/permanent-links/">영구 링크 만들기</a></li><li><a href="../../line-mini-app/develop/service-messages/">서비스 메시지 보내기</a></li><li><a href="../../line-mini-app/develop/share-messages/">커스텀 액션 버튼 구현하기</a></li><li><a href="../../line-mini-app/develop/share-messages-standard/">가이드라인을 따르는 JSON 파일 예시</a></li><li><a href="../../line-mini-app/develop/web-to-mini-app/">운영 중인 웹 앱을 LINE MINI App으로 구현하기</a></li></ul></details></li><li><a href="../../line-mini-app/development-guidelines/">LINE MINI App 개발 가이드라인</a></li><li><details><summary><span>Discover</span></summary><ul><li><a href="../../line-mini-app/discover/introduction/">LINE MINI App 소개</a></li><li><a href="../../line-mini-app/discover/builtin-features/">기본 제공 기능</a></li><li><a href="../../line-mini-app/discover/console-guide/">LINE MINI App용 LINE Developers Console 가이드</a></li><li><a href="../../line-mini-app/discover/custom-features/">커스텀 기능</a></li><li><a href="../../line-mini-app/discover/native-mini/">네이티브 앱과 LINE MINI App의 차이</a></li><li><a href="../../line-mini-app/discover/specifications/">LINE MINI App 사양</a></li><li><a href="../../line-mini-app/discover/ui-components/">LINE MINI App UI 컴포넌트</a></li></ul></details></li><li><details><summary><span>In App Purchase</span></summary><ul><li><a href="../../line-mini-app/in-app-purchase/overview/">인앱 결제 개요</a></li><li><a href="../../line-mini-app/in-app-purchase/apple-mini-apps-partner-program/">Mini Apps Partner Program을 통한 App Store 수수료 인하</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-guidelines/">인앱 결제 개발 가이드라인</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-product-id/">인앱 결제로 구매 가능한 아이템의 상품 ID 목록</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-settings/">인앱 결제 설정</a></li><li><a href="../../line-mini-app/in-app-purchase/implement-in-app-purchase/">인앱 결제 기능 연동</a></li><li><a href="../../line-mini-app/in-app-purchase/request-iap-review/">인앱 결제 사용 신청</a></li></ul></details></li><li><details><summary><span>Quick Fill</span></summary><ul><li><a href="../../line-mini-app/quick-fill/overview/">공통 프로필 Quick-fill 개요</a></li><li><a href="../../line-mini-app/quick-fill/design-regulations/">공통 프로필 Quick-fill 디자인 규정</a></li></ul></details></li><li><details><summary><span>Service</span></summary><ul><li><a href="../../line-mini-app/service/add-friend-option/">LINE MINI App에서 LINE 공식 계정을 친구로 추가하기 (친구 추가 옵션)</a></li><li><a href="../../line-mini-app/service/business-manager-link/">LINE MINI App 채널을 Business Manager 조직에 연결하기</a></li><li><a href="../../line-mini-app/service/line-mini-app-ads/">LINE MINI App에 광고 게재하기</a></li><li><a href="../../line-mini-app/service/line-mini-app-oa/">LINE 공식 계정 활용하기</a></li><li><a href="../../line-mini-app/service/service-operation/">서비스 운영하기</a></li><li><a href="../../line-mini-app/service/update-service/">인증된 MINI App 업데이트 후 재심사</a></li></ul></details></li><li><details><summary><span>Submit</span></summary><ul><li><a href="../../line-mini-app/submit/submission-guide/">LINE MINI App 제출하기</a></li></ul></details></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../../line-mini-app/technicalcase/bravetechnology/">&#039;대기 줄 관리 솔루션이 LINE MINI App으로 확장되는 방식: &quot;matoca&quot;와 &quot;yoboca&quot;의 개발 사례&#039;</a></li><li><a href="../../line-mini-app/technicalcase/classmethod/">모바일 주문 시스템 CX ORDER 사례 연구</a></li><li><a href="../../line-mini-app/technicalcase/grandream/">GDL 플랫폼의 기술 사례 연구: 비용 효율성과 유연성을 함께 실현</a></li><li><a href="../../line-mini-app/technicalcase/hakuhodo/">도야마현 아사히마치의 모빌리티 및 건강 증진을 위한 디지털 활성화 프로젝트 &quot;PoHUNT&quot; 개발 사례</a></li><li><a href="../../line-mini-app/technicalcase/kirifuda-morikaranotegami/">놀이를 통한 자연 보호: LINE MINI App으로 출시한 &quot;Letters from the Forest&quot;의 기술 사례 연구</a></li></ul></details></li></ul></details></li><li><details><summary><span>Messaging API</span></summary><ul><li><a href="../../messaging-api/overview/">Messaging API 개요</a></li><li><a href="../../messaging-api/getting-started/">Messaging API 시작하기</a></li><li><a href="../../messaging-api/actions/">액션</a></li><li><a href="../../messaging-api/beacon-device-spec/">LINE Beacon 디바이스 사양</a></li><li><a href="../../messaging-api/building-bot/">봇 만들기</a></li><li><a href="../../messaging-api/check-webhook-error-statistics/">웹훅 오류 원인 및 통계 확인하기</a></li><li><a href="../../messaging-api/create-flex-message-including-video/">동영상이 포함된 Flex Message 만들기</a></li><li><a href="../../messaging-api/development-guidelines/">Messaging API 개발 가이드라인</a></li><li><a href="../../messaging-api/download-bot-designer/">LINE Bot Designer 다운로드</a></li><li><a href="../../messaging-api/flex-message-elements/">Flex Message 요소</a></li><li><a href="../../messaging-api/flex-message-layout/">Flex Message 레이아웃</a></li><li><a href="../../messaging-api/generate-json-web-token/">채널 액세스 토큰 v2.1 발급</a></li><li><a href="../../messaging-api/get-quote-tokens/">인용 토큰 가져오기</a></li><li><a href="../../messaging-api/getting-user-ids/">사용자 ID 가져오기</a></li><li><a href="../../messaging-api/group-chats/">그룹 채팅 및 다인 채팅</a></li><li><a href="../../messaging-api/icon-nickname-switch/">아이콘 및 표시 이름 설정하기</a></li><li><a href="../../messaging-api/line-bot-sdk/">LINE Messaging API SDK</a></li><li><a href="../../messaging-api/linking-accounts/">사용자 계정 연동</a></li><li><a href="../../messaging-api/mark-as-read/">메시지를 읽음으로 표시하기</a></li><li><a href="../../messaging-api/measure-impressions/">노출 수 측정하기</a></li><li><a href="../../messaging-api/message-types/">메시지 타입</a></li><li><a href="../../messaging-api/nodejs-sample/">튜토리얼 - 응답 봇 만들기</a></li><li><a href="../../messaging-api/pricing/">Messaging API 요금</a></li><li><a href="../../messaging-api/receiving-messages/">메시지 수신하기(웹훅)</a></li><li><a href="../../messaging-api/retrying-api-request/">API 요청 재시도</a></li><li><a href="../../messaging-api/rich-menus-overview/">리치 메뉴 개요</a></li><li><a href="../../messaging-api/secure-message-sample/">보안 메시지 생성을 위한 샘플 코드와 데이터</a></li><li><a href="../../messaging-api/send-coupons-to-users/">쿠폰을 만들어 사용자에게 보내기</a></li><li><a href="../../messaging-api/sending-messages/">메시지 보내기</a></li><li><a href="../../messaging-api/sharing-bot/">LINE 공식 계정 친구 늘리기</a></li><li><a href="../../messaging-api/ssl-tls-spec-of-the-webhook-source/">웹훅 소스의 SSL/TLS 사양</a></li><li><a href="../../messaging-api/stop-using-line-official-account/">LINE 공식 계정 사용 중단하기</a></li><li><a href="../../messaging-api/stop-using-messaging-api/">Messaging API 사용 중단하기</a></li><li><a href="../../messaging-api/switch-rich-menus/">리치 메뉴에서 탭 전환하기</a></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../../messaging-api/technicalcase/boldly/">온디맨드 자율주행 버스 예약 시스템의 LINE MINI App 사례</a></li><li><a href="../../messaging-api/technicalcase/evolany-ai/">anybot for ChatGPT 기술 사례 연구: ChatGPT를 적극 활용하여 더 원활한 커뮤니케이션 구현하기</a></li><li><a href="../../messaging-api/technicalcase/heptagon/">이주 및 정착 관련 문의를 처리하는 LINE 봇 개발 사례 연구</a></li><li><a href="../../messaging-api/technicalcase/playnext-lab/">Smart Public Lab 기술 사례 연구: 행정 디지털 전환을 지원하는 LINE 활용 전략</a></li><li><a href="../../messaging-api/technicalcase/resortbaito-dive/">임시직 직원의 만족도를 높이기 위한 &quot;Resort Baito Dive&quot; 개발 사례</a></li><li><a href="../../messaging-api/technicalcase/skillbox/">SkillBox 기술 사례 연구: 이메일 주소가 없는 직원까지 LINE 알림으로 참여도 설문 응답률을 크게 높이다</a></li><li><a href="../../messaging-api/technicalcase/softbank/">인프라를 로우 코드로 도입하기: CNAP으로 개발 효율을 높인 LINE 기반 서비스 개발 사례</a></li></ul></details></li><li><a href="../../messaging-api/text-character-count/">텍스트의 글자 수 세기</a></li><li><a href="../../messaging-api/try-rich-menu/">리치 메뉴 체험하기</a></li><li><a href="../../messaging-api/unit-based-statistics-aggregation/">발송한 메시지의 통계 조회하기</a></li><li><a href="../../messaging-api/use-loading-indicator/">로딩 애니메이션 표시하기</a></li><li><a href="../../messaging-api/use-membership-features/">멤버십 기능 사용하기</a></li><li><a href="../../messaging-api/use-per-user-rich-menus/">사용자별 리치 메뉴 사용하기</a></li><li><a href="../../messaging-api/user-consent/">사용자 프로필 정보 제공 동의</a></li><li><a href="../../messaging-api/using-audience/">오디언스 사용하기</a></li><li><a href="../../messaging-api/using-beacons/">LINE 비콘 사용하기</a></li><li><a href="../../messaging-api/using-bot-designer/">LINE Bot Designer</a></li><li><a href="../../messaging-api/using-flex-message-simulator/">튜토리얼 - Flex Message Simulator로 디지털 명함 만들기</a></li><li><a href="../../messaging-api/using-flex-messages/">Flex Message 보내기</a></li><li><a href="../../messaging-api/using-line-url-scheme/">LINE URL 스킴으로 LINE 기능 사용하기</a></li><li><a href="../../messaging-api/using-quick-reply/">퀵 리플라이 사용하기</a></li><li><a href="../../messaging-api/using-rich-menus/">리치 메뉴 사용하기</a></li><li><a href="../../messaging-api/verify-webhook-signature/">웹훅 서명 검증하기</a></li><li><a href="../../messaging-api/verify-webhook-url/">웹훅 URL 확인하기</a></li></ul></details></li><li><details open><summary><span>파트너 문서</span></summary><ul><li><a href="../overview/">개요</a></li><li><a href="../api-policy-handbook/">LINE API 정책 핸드북</a></li><li><a href="./" class="active" aria-current="page">법인 고객을 위한 개발 가이드라인</a></li><li><a href="../error-notification/">오류 알림</a></li><li><a href="../line-beacon/">LINE Beacon</a></li><li><details><summary><span>Line Notification Messages</span></summary><ul><li><a href="../line-notification-messages/overview/">LINE 알림 메시지 개요</a></li><li><a href="../line-notification-messages/flow-when-receiving-message/">LINE 알림 메시지를 수신할 때의 흐름</a></li><li><a href="../line-notification-messages/message-sending-complete-webhook-event/">웹훅 발송 완료 이벤트</a></li><li><a href="../line-notification-messages/statistics/">LINE 알림 메시지 통계 가져오기</a></li><li><a href="../line-notification-messages/technical-specs/">LINE 알림 메시지 API 기술 사양</a></li><li><a href="../line-notification-messages/template/">LINE 알림 메시지(템플릿)</a></li></ul></details></li><li><a href="../line-profile-plus/">LINE Profile+</a></li><li><a href="../mark-as-read/">Mark as read API(이전 버전)</a></li><li><a href="../mission-stickers/">Mission Sticker API</a></li><li><a href="../module/">모듈</a></li><li><a href="../module-technical-attach-channel/">모듈 채널 연결</a></li><li><a href="../module-technical-chat-control/">채팅 주도권 제어(Chat Control)</a></li><li><a href="../module-technical-console/">모듈 채널 설정 구성</a></li><li><a href="../module-technical-using-messaging-api/">모듈 채널에서 Messaging API 사용하기</a></li><li><a href="../notice/">법인 고객 공지</a></li><li><a href="../provider-page/">Provider page</a></li></ul></details></li></ul></div><div class="nav-section"><div class="nav-title">레퍼런스</div><ul><li><a href="../../../reference/liff/">LIFF API reference</a></li><li><a href="../../../reference/liff-server/">Server API</a></li><li><a href="../../../reference/line-login/">LINE Login v2.1 API reference</a></li><li><a href="../../../reference/line-login-v2/">LINE Login API v2.0 reference</a></li><li><a href="../../../reference/line-mini-app/">LINE MINI App API reference</a></li><li><a href="../../../reference/line-notification-messages/">LINE notification messages API reference</a></li><li><a href="../../../reference/messaging-api/">Messaging API reference</a></li><li><a href="../../../reference/partner-docs/">Options for corporate customers API reference</a></li></ul></div></nav>
+  <main class="content"><article><h1>법인 고객을 위한 개발 가이드라인</h1><p>법인 사용자를 위한 개발 가이드라인입니다. LINE 플랫폼에서 개발할 때 이 가이드라인을 따르세요.</p>
+<p><strong>목차</strong></p>
+<!-- table of contents -->
+<h2>LINE 봇 소개</h2>
+<h3>LINE Developers란?</h3>
+<p>LY Corporation은 외부 기업과 개발자가 LY Corporation 서비스와 연동할 수 있도록 API를 제공합니다. LINE Developers 사이트는 개발자에게 LINE API 사양, 개발 절차를 설명하는 문서, 설정용 콘솔을 제공합니다. 자세한 내용은 <a href="https://developers.line.biz/en/about/" target="_blank" rel="noopener noreferrer">LINE Developers 사이트 소개</a>를 참고하세요.</p>
+<h3>LINE 봇의 작동 방식</h3>
+<p>LINE 봇은 Messaging API를 사용하여 정보를 주고받습니다. 자세한 내용은 Messaging API 문서의 <a href="../../messaging-api/overview/#how-messaging-api-works">작동 방식</a>을 참고하세요.</p>
+<h3>LINE 봇과 채널의 관계</h3>
+<p>LINE 공식 계정의 구성 요소인 봇과 채널의 관계는 다음과 같습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/partner-docs/bot-and-channel-relations-en.webp" alt="봇과 채널의 관계" loading="lazy"><figcaption>봇과 채널의 관계</figcaption></figure></p>
+<h3>다양한 용어 이해하기</h3>
+<p>다양한 용어에 대해서는 <a href="https://developers.line.biz/en/glossary/" target="_blank" rel="noopener noreferrer">용어집</a>을 참고하세요.</p>
+<h3>LINE 봇 개발 절차</h3>
+<ol>
+<li>
+<p>LINE 공식 계정(봇)과 Messaging API 채널을 만듭니다.</p>
+<p>다음 사이트 중 하나에서 만들 수 있습니다.</p>
+<ul>
+<li>LINE 공식 계정 관리자</li>
+<li>LINE AGP</li>
+</ul>
+<p>Messaging API 채널을 만드는 방법은 Messaging API 문서의 <a href="../../messaging-api/getting-started/">Messaging API 시작하기</a>를 참고하세요.</p>
+</li>
+<li>
+<p>다음 시스템과 메커니즘을 준비합니다.</p>
+<ul>
+<li>Messaging API를 호출하는 서버 등의 환경(<a href="./#use-higher-TLS1-2">TLS 1.2 이상</a> 지원)</li>
+<li>웹훅 이벤트를 받는 봇 서버 등의 환경(<a href="./#https-communication-compatible">TLS 1.2 이상</a> 지원)</li>
+</ul>
+<p>Messaging API를 호출하는 서버 등의 환경과 웹훅 이벤트를 받는 봇 서버 등의 환경을 반드시 따로 준비해야 하는 것은 아닙니다.</p>
+</li>
+<li>
+<p>웹훅 이벤트를 받을 봇 서버를 준비하고 구현합니다.</p>
+</li>
+<li>
+<p>LINE Developers Console에서 <strong>Messaging API</strong> &gt; <strong>Webhook settings</strong>로 이동하여 <strong>Webhook URL</strong>에 봇 서버 URL을 설정한 후 <strong>Use Webhook</strong>을 활성화합니다.</p>
+</li>
+<li>
+<p>만든 LINE 공식 계정을 친구로 추가하고 봇 서버가 웹훅 이벤트를 받고 있는지 확인합니다.</p>
+</li>
+</ol>
+<h3>LINE 봇을 출시하기 전에 확인할 사항</h3>
+<p>LINE 봇을 출시하기 전에 반드시 다음 사항을 확인하세요.</p>
+<ol>
+<li>
+<p>LINE Developers Console에 접근해야 하는 멤버에게 채널 <a href="../../line-developers-console/managing-roles/">권한</a>과 LINE 공식 계정 관리자 <a href="https://www.lycbiz.com/jp/manual/OfficialAccountManager/account-settings_permission/" target="_blank" rel="noopener noreferrer">권한</a>(일본어로만 제공됩니다)을 부여했는지 확인합니다.</p>
+</li>
+<li>
+<p>LINE Developers Console의 <strong>Messaging API</strong> &gt; <strong>Webhook settings</strong> &gt; <strong>Webhook URL</strong>에 올바른 URL이 설정되어 있는지, 봇 서버가 웹훅 이벤트를 올바르게 처리할 수 있는지 확인합니다.</p>
+</li>
+<li>
+<p><a href="./#send-api-requests">API 요청 보낼 때의 주의 사항</a>에 설명된 사항을 고려하여 구현합니다.</p>
+</li>
+<li>
+<p><a href="https://vos.line-scdn.net/line-developers/docs/media/partner-docs/LINE_BOT_Security_Guidelines.pdf" target="_blank" rel="noopener noreferrer">LINE BOT 보안 가이드라인</a>(일본어로만 제공됩니다)과 <a href="https://vos.line-scdn.net/line-developers/docs/media/partner-docs/LINE_BOT_Security_Checklist.xlsx" target="_blank" rel="noopener noreferrer">LINE BOT 보안 체크리스트</a>(일본어로만 제공됩니다)의 보안 기준을 준수하거나, 이와 같거나 더 나은 환경을 구축합니다.</p>
+</li>
+</ol>
+<h2>봇 서버에서 웹훅 이벤트를 받을 때의 주의 사항</h2>
+<h3>보안 통신과 봇 서버 환경</h3>
+<h4>TLS 1.2 이상을 지원하는 HTTPS 통신</h4>
+<p>봇 서버가 LINE 플랫폼에서 보낸 웹훅 이벤트를 받을 때는 TLS 1.2 이상을 지원하는 HTTPS 통신을 사용해야 합니다. HTTPS 통신에는 공인 인증 기관이 발급한 SSL 인증서를 사용하세요. SSL 인증서를 구매하거나 <a href="https://letsencrypt.org/" target="_blank" rel="noopener noreferrer">Let’s Encrypt</a>처럼 무료로 발급받은 인증서를 사용할 수 있습니다. 웹훅 설정에 대한 자세한 내용은 Messaging API 문서의 <a href="../../messaging-api/building-bot/#setting-webhook-url">웹훅 URL 설정하기</a>를 참고하세요.</p>
+<h4>보안 가이드라인을 준수하는 환경 구축하기</h4>
+<p>이 보안 가이드라인과 체크리스트는 봇 서버를 구축할 때 충족해야 하는 보안 기준을 설명합니다. LINE 봇을 사용하여 서비스를 제공할 때는 명시된 보안 기준을 준수하거나 이와 같거나 더 나은 환경을 준비하세요.</p>
+<ul>
+<li><a href="https://vos.line-scdn.net/line-developers/docs/media/partner-docs/LINE_BOT_Security_Guidelines.pdf" target="_blank" rel="noopener noreferrer">LINE 봇 보안 가이드라인</a>(일본어로만 제공됩니다)</li>
+<li><a href="https://vos.line-scdn.net/line-developers/docs/media/partner-docs/LINE_BOT_Security_Checklist.xlsx" target="_blank" rel="noopener noreferrer">LINE 봇 보안 체크리스트</a>(일본어로만 제공됩니다)</li>
+</ul>
+<h3>받은 웹훅 이벤트의 검증</h3>
+<p>요청 헤더 <a href="../../../reference/messaging-api/#webhooks"><code>x-line-signature</code></a>에는 받은 웹훅 이벤트가 LINE 플랫폼에서 왔음을 검증하기 위한 서명이 포함되어 있습니다. 봇 서버는 정의된 알고리즘을 사용하여 받은 요청 본문에서 다이제스트 값을 구하고, 이것이 <code>x-line-signature</code> 요청 헤더의 서명과 일치하는지 확인합니다. 서명이 일치함을 확인하면 받은 요청이 LINE 플랫폼이 보낸 올바른 웹훅 이벤트임을 검증할 수 있습니다.</p>
+<p>채널 시크릿은 서명 계산에 사용되는 키입니다. 따라서 채널 시크릿을 다룰 때 주의하세요. 자세한 내용과 코드 예시는 Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#signature-validation">서명 검증</a>을 참고하세요.</p>
+<!-- note start -->
+<p><strong>LINE 플랫폼의 IP 주소는 공개되지 않습니다</strong></p>
+<p>웹훅 요청을 보내는 LINE 플랫폼의 IP 주소는 공개되지 않습니다. 보안을 강화하려면 IP 주소로 접근을 제어하는 대신 <a href="../../../reference/messaging-api/#signature-validation">서명 검증</a>을 사용하세요.</p>
+<!-- note end -->
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/partner-docs/webbhook-signature-verification-en.webp" alt="서명 검증 이미지" loading="lazy"><figcaption>서명 검증 이미지</figcaption></figure></p>
+<h3>대량 및 집중적인 웹훅 이벤트 전달 대응</h3>
+<p>LINE 공식 계정의 특성상 예기치 않게 많은 접근(웹훅 이벤트 전송)이 발생할 수 있습니다. 봇 서버의 처리 능력을 초과하는 웹훅 요청이 전송되면 사용자에게 보내는 메시지가 지연되거나 전달되지 않을 수 있습니다.</p>
+<div class="tip">
+<p><strong>접근이 집중될 가능성이 높은 경우의 예</strong></p>
+<ul>
+<li>LINE 공식 계정의 <a href="https://www.lycbiz.com/jp/manual/OfficialAccountManager/tutorial-step5/" target="_blank" rel="noopener noreferrer">검색 결과 및 추천에 표시</a>(일본어로만 제공됩니다)를 &quot;표시&quot;로 설정한 직후</li>
+<li><a href="https://www.lycbiz.com/jp/service/line-promotion-sticker/" target="_blank" rel="noopener noreferrer">스폰서 스티커</a>(일본어로만 제공됩니다) 등의 조치를 시행한 직후</li>
+<li><a href="../../../reference/messaging-api/#send-broadcast-message">브로드캐스트 메시지</a> 등을 사용하여 모든 친구에게 한 번에 메시지를 보낸 직후(특히 캠페인 등의 조치를 포함한 경우)</li>
+<li>뉴스나 TV 등 미디어에 소개된 직후</li>
+</ul>
+<p>접근은 특히 낮 12시와 오후 5시부터 밤 12시 사이에 집중될 수 있습니다.</p>
+</div>
+<!-- note start -->
+<p><strong>참고</strong></p>
+<ul>
+<li>LY Corporation은 봇 서버에 대해 부하 테스트를 수행할 수 있는 환경을 제공하지 않습니다. LINE 플랫폼을 포함하는 방식으로 부하 테스트를 하지 마세요.</li>
+<li>친구 수가 많은(100만 명 이상) LINE 공식 계정에서 사용자 반응이 큰 캠페인 등의 공지 메시지를 보내면 LINE 플랫폼 전체의 성능에 영향을 줄 수 있습니다. 이런 경우에는 한꺼번에 메시지를 보내지 말고, 사용자 접근이 집중되지 않도록 단계적으로 메시지를 보내는 등의 조치를 취하세요.</li>
+</ul>
+<!-- note end -->
+<h3>웹훅 ON/OFF 설정</h3>
+<p>LINE Developers Console의 <strong>Messaging API settings</strong> &gt; <strong>Webhook settings</strong>에서 <strong>Use webhook</strong>을 켜거나 끌 수 있습니다. 또한 LINE 공식 계정 관리자의 <strong>Settings</strong> &gt; <strong>Response settings</strong> 섹션에서 <strong>Webhooks</strong>를 켜거나 끌 수 있습니다.</p>
+<!-- note start -->
+<p><strong>웹훅 사용을 시작할 때의 주의 사항</strong></p>
+<p>웹훅 설정을 활성화할 때는 대상 LINE 공식 계정에 설정을 적용하기 전에 검증용 계정으로 테스트 환경에서 동작을 확인하세요.</p>
+<!-- note end -->
+<div class="tip">
+<p><strong>웹훅 설정 동기화</strong></p>
+<p>LINE Developers Console과 LINE 공식 계정 관리자에서 한 웹훅 설정은 서로 동기화됩니다.</p>
+</div>
+<h3>웹훅 ON/OFF 및 자동 응답 메시지 설정</h3>
+<p>LINE 공식 계정 관리자의 <strong>Webhooks</strong> 설정과 <strong>Response mode</strong> 및 <strong>Greeting message</strong> 설정을 조합한 내용입니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th><strong>Webhooks</strong></th>
+<th><strong>Response mode</strong> 및 <strong>Greeting message</strong></th>
+<th>설정 가능 여부</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>사용</td>
+<td>사용</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>사용</td>
+<td>사용 안 함</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>사용 안 함</td>
+<td>사용</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>사용 안 함</td>
+<td>사용 안 함</td>
+<td>❌</td>
+</tr>
+</tbody>
+</table></div>
+<!-- note start -->
+<p><strong>허용되지 않는 설정 조합</strong></p>
+<p>사용자에게 더 나은 경험을 제공하기 위해, <strong>Webhooks</strong>와 LINE 공식 계정 관리자의 <strong>Response mode</strong> 및 <strong>Greeting message</strong> 설정을 모두 사용하지 않는 설정은 허용되지 않습니다. 이러한 설정은 LINE 공식 계정이 사용자에게 메시지를 보내지 못하게 하기 때문입니다.</p>
+<!-- note end -->
+<!-- note start -->
+<p><strong>인사 메시지가 전송되는 경우</strong></p>
+<p>LINE 공식 계정 관리자의 <strong>Greeting message</strong>는 LINE 공식 계정을 추가할 때 자동으로 전송되는 메시지입니다. <strong>Greeting message</strong>는 차단 해제 시에도 전송됩니다.</p>
+<!-- note end -->
+<h3>웹훅 요청을 받을 때의 처리 흐름</h3>
+<p>봇 서버가 웹훅 이벤트를 받은 후 2초 이내에 HTTP 상태 코드 <code>200</code>으로 응답하세요.</p>
+<p>봇 서버가 웹훅 요청을 받을 때 웹훅 요청의 처리가 후속 처리를 지연시키지 않도록 이벤트 처리를 비동기로 처리하는 것을 권장합니다. 이벤트 처리를 비동기로 하는 경우, 이벤트의 컨텍스트를 유지하면서 처리할 수 있도록 구현하세요.</p>
+<p>다음 이미지는 비동기 처리를 나타냅니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/partner-docs/flow-when-receiving-a-webhook-en.png" alt="웹훅 요청을 받을 때의 처리 흐름" loading="lazy"><figcaption>웹훅 요청을 받을 때의 처리 흐름</figcaption></figure></p>
+<h3>웹훅 요청 전송 시 문제가 발생한 경우</h3>
+<p>인증된 프로바이더 아래의 Messaging API 채널의 경우, 웹훅 이벤트를 받은 후 2초 이내에 HTTP 상태 코드 <code>2xx</code>를 보내지 않으면 채널 관리자에게 <a href="../../messaging-api/check-webhook-error-statistics/#check-error-reason"><code>request_timeout</code></a> <a href="../error-notification/">오류 알림</a>이 전송됩니다.</p>
+<!-- note start -->
+<p><strong>오류 알림 기능 사용에 관하여</strong></p>
+<p>오류 알림 기능은 인증된 프로바이더 아래의 Messaging API 채널에서만 사용할 수 있습니다.</p>
+<!-- note end -->
+<h3>기타 주의 사항</h3>
+<h4>하나의 웹훅에는 여러 웹훅 이벤트 객체가 포함될 수 있습니다</h4>
+<p>LINE 플랫폼에서 보낸 웹훅에는 여러 웹훅 이벤트 객체가 포함될 수 있습니다. 또한 웹훅 하나에 항상 한 명의 사용자만 있는 것은 아니므로, 사람 A의 <a href="../../../reference/messaging-api/#message-event">메시지 이벤트</a>와 사람 B의 <a href="../../../reference/messaging-api/#follow-event">팔로우 이벤트</a>가 같은 웹훅에 포함될 수도 있습니다.</p>
+<p>여러 웹훅 이벤트 객체가 포함된 웹훅을 받더라도 봇 서버가 모든 이벤트를 올바르게 처리할 수 있도록 하세요. 웹훅 이벤트 객체에 대한 자세한 내용은 Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#webhook-event-objects">웹훅 이벤트 객체</a>를 참고하세요.</p>
+<h4>웹훅 이벤트 객체의 구조 변경에 대응하기</h4>
+<p>Messaging API 기능이 추가되거나 변경되면 웹훅 이벤트 객체에 속성이 추가될 수 있습니다. 새로운 속성을 가진 웹훅 이벤트 객체를 받더라도 문제가 발생하지 않도록 봇 서버를 구현하세요. 웹훅 이벤트 객체에 대한 자세한 내용은 Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#webhook-event-objects">웹훅 이벤트 객체</a>를 참고하세요.</p>
+<h4>웹훅 요청에 포함된 헤더에 대하여</h4>
+<p>Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#request-headers">요청 헤더</a>를 참고하세요.</p>
+<h4>예기치 않은 채팅 전송 처리에 대하여</h4>
+<p>LINE 공식 계정에 채팅과 그에 해당하는 웹훅 이벤트를 보내는 것을 사용자에게 제한할 수는 없습니다. 특정 사용자가 예기치 않은 채팅을 보내는 경우에 대비하여, 상황에 따라 처리를 변경할 수 있도록 시스템을 구현하세요.</p>
+<h2>API 요청을 보낼 때의 주의 사항</h2>
+<h3>채널 액세스 토큰 발급</h3>
+<p>Messaging API 요청은 사용자가 채널을 사용할 권한이 있는지 확인하기 위해 <a href="../../basics/channel-access-token/">채널 액세스 토큰</a>을 사용합니다. 현재 유효 기간과 발급 방법이 다른 <a href="../../basics/channel-access-token/#channel-access-token-types">네 가지 유형의 채널 액세스 토큰</a>을 제공합니다.</p>
+<!-- note start -->
+<p><strong>장기 채널 액세스 토큰에 관하여</strong></p>
+<p>LINE Developers Console에서 매우 긴 유효 기간을 가진 장기 채널 액세스 토큰을 발급할 수 있지만, 보안상의 이유로 장기 채널 액세스 토큰 발급은 권장하지 않습니다. 채널 액세스 토큰을 발급할 때는 유효 기간이 30일인 단기 채널 액세스 토큰, 사용자가 만료 기간을 지정할 수 있는 채널 액세스 토큰(채널 액세스 토큰 v2.1), 또는 상태 비저장(stateless) 채널 액세스 토큰을 사용하는 것을 권장합니다.</p>
+<!-- note end -->
+<h3>채널 액세스 토큰 재발급</h3>
+<p>단기 채널 액세스 토큰, 사용자가 만료 기간을 지정한 채널 액세스 토큰, 상태 비저장 채널 액세스 토큰은 유효 기간이 있으며, 만료되면 더 이상 사용할 수 없습니다. 또한 한 번 발급된 채널 액세스 토큰의 유효 기간은 연장(갱신)할 수 없습니다. 따라서 남은 유효 기간을 고려하고, 정기적으로 새 채널 액세스 토큰을 재발급하는 프로세스를 구축해야 합니다.</p>
+<p>채널 액세스 토큰은 여러 개 발급할 수 있지만, 채널 액세스 토큰 유형에 따라 발급할 수 있는 개수에 제한이 있습니다. 여러 서버나 시스템에서 Messaging API를 사용하는 경우에는 각 서버나 시스템이 사용하는 채널 액세스 토큰을 올바르게 관리하세요.</p>
+<p>단기 채널 액세스 토큰이나 사용자가 만료 기간을 지정한 채널 액세스 토큰의 경우, 새 채널 액세스 토큰을 발급한 후 더 이상 사용하지 않는 기존 채널 액세스 토큰을 폐기하는 것을 권장합니다. 자세한 내용은 LINE 플랫폼 기본 사항의 <a href="../../basics/channel-access-token/#how-to-operate-channel-access-token">채널 액세스 토큰 운영 예시</a>를 참고하세요.</p>
+<h3>채널 액세스 토큰 최대 발급 한도</h3>
+<p>채널 액세스 토큰 유형별 최대 발급 한도는 다음과 같습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>유형</th>
+<th>최대 발급 한도</th>
+<th>최대 한도를 초과했을 때의 동작</th>
+<th>채널 액세스 토큰이 무효화되는 조건</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>단기 채널 액세스 토큰</td>
+<td>30</td>
+<td>발급 순서대로 기존 단기 채널 액세스 토큰을 무효화합니다</td>
+<td><ul><li>유효 기간이 만료됨</li><li>최대 발급 한도를 초과함</li><li>채널 액세스 토큰 폐기(revoke API) 실행</li></ul></td>
+</tr>
+<tr>
+<td>장기 채널 액세스 토큰</td>
+<td>1</td>
+<td>기존 장기 채널 액세스 토큰이 비활성화됩니다</td>
+<td><ul><li>최대 발급 한도를 초과함</li><li>채널 액세스 토큰 폐기(revoke API) 실행</li></ul></td>
+</tr>
+<tr>
+<td>사용자가 만료 기간을 지정한 액세스 토큰(채널 액세스 토큰 v2.1)</td>
+<td>30</td>
+<td>API 오류가 발생하며 추가 토큰을 발급할 수 없습니다</td>
+<td><ul><li>유효 기간이 만료됨</li><li>채널 액세스 토큰 폐기(revoke API) 실행</li></ul></td>
+</tr>
+<tr>
+<td>상태 비저장(stateless) 채널 액세스 토큰</td>
+<td>제한 없음</td>
+<td>-</td>
+<td><ul><li>유효 기간이 만료됨</li></ul></td>
+</tr>
+</tbody>
+</table></div>
+<h3>메시지 전송 요청</h3>
+<p>메시지 전송에 성공하면 HTTP 상태 코드 <code>200</code>(narrowcast API에서만 <code>202</code>)과 함께 빈 JSON 객체가 반환됩니다.</p>
+<p>메시지 전송에 실패하면 오류 메시지 등의 JSON 데이터가 포함된 응답 본문이 <a href="../../../reference/messaging-api/#error-responses">오류 응답</a>으로 반환됩니다.</p>
+<!-- note start -->
+<p><strong>오류 응답에 관하여</strong></p>
+<p>오류 응답에 포함된 오류 메시지는 보장되지 않으며 사전 통지 없이 변경될 수 있습니다. 오류가 발생하면 받은 HTTP 상태 코드에 따라 예외 처리를 하세요.</p>
+<!-- note end -->
+<div class="tip">
+<p><strong>로그 저장하기</strong></p>
+<p>Messaging API에 요청할 때는 요청한 API와 받은 응답의 로그를 일정 기간 저장하세요. 로그 저장에 대한 자세한 내용은 Messaging API 문서의 <a href="../../messaging-api/development-guidelines/#save-logs">로그 저장하기</a>를 참고하세요.</p>
+</div>
+<h3>메시지 전송 요청 재시도</h3>
+<p>LINE 플랫폼에 장애가 없더라도 봇 서버의 네트워크 연결 상태 등의 이유로 다음 문제가 발생할 수 있습니다.</p>
+<ul>
+<li>API 요청이 성공적으로 완료되지 않음</li>
+<li>LINE 플랫폼으로부터 응답을 올바르게 받을 수 없음</li>
+</ul>
+<p>이런 경우 같은 API 요청을 연속으로 보내면, 첫 번째 API 요청이 성공적으로 접수되었다면 사용자는 같은 메시지를 두 번 받게 됩니다. 이를 방지하려면 재시도 키(<code>X-Line-Retry-Key</code>)를 구현하여 요청을 안전하게 재시도하세요. 메시지 전송 요청에 대한 자세한 내용은 Messaging API 문서의 <a href="../../messaging-api/retrying-api-request/">실패한 API 요청 재시도하기</a>를 참고하세요.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/partner-docs/retrying-a-failed-api-request-en.webp" alt="실패한 API 요청 재시도" loading="lazy"><figcaption>실패한 API 요청 재시도</figcaption></figure></p>
+<h3>요청 제한</h3>
+<p>LINE 봇이 한 번의 요청으로 보낼 수 있는 메시지 길이와, 일정 시간 내에 보낼 수 있는 메시지 수에는 제한이 있습니다.</p>
+<h4>텍스트 메시지 제한</h4>
+<p><a href="../../../reference/messaging-api/#text-message">텍스트 메시지</a>와 <a href="../../../reference/messaging-api/#text-message-v2">텍스트 메시지(v2)</a>에 지정할 수 있는 최대 문자 수는 5000자입니다.</p>
+<h4>요청 크기 제한</h4>
+<p>최대 요청 크기는 2MB입니다.</p>
+<h4>요청 빈도 제한</h4>
+<p>Messaging API는 각 엔드포인트에 <a href="../../../reference/messaging-api/#rate-limits">요청 빈도 제한</a>을 적용합니다.</p>
+<p>프로덕션 계정이나 테스트 계정을 사용하든 관계없이, 동작 테스트를 목적으로 <a href="../../messaging-api/development-guidelines/#prohibiting-mass-requests-to-line-platform">대량 요청을 보내는 것은 금지되어 있습니다</a>. 메시지 전송에 대해 부하 테스트를 수행할 때는 LINE 플랫폼을 포함하지 마세요.</p>
+<h3>메시지를 보내는 방법</h3>
+<p>메시지를 보내는 방법에 대한 자세한 내용은 다음 문서를 참고하세요.</p>
+<ul>
+<li><a href="../../messaging-api/sending-messages/#reply-messages">사용자의 메시지와 액션에 응답하기(응답 메시지)</a></li>
+<li><a href="../../messaging-api/sending-messages/#send-messages-at-any-time">언제든지 메시지 보내기</a></li>
+</ul>
+<div class="tip">
+<p><strong>응답 토큰의 유효 기간</strong></p>
+<p><a href="../../messaging-api/sending-messages/#reply-messages">응답 메시지</a>에 사용되는 응답 토큰의 유효 기간에 대한 자세한 내용은 Messaging API 레퍼런스의 <a href="../../../reference/messaging-api/#send-reply-message-reply-token">응답 토큰</a>을 참고하세요.</p>
+</div>
+<h3>HTTPS(TLS 1.2 이상) 사용하기</h3>
+<p>Messaging API를 호출한 시스템과 LINE API 서버 간의 통신은 반드시 HTTPS(TLS 1.2 이상)로 해야 합니다. 또한 Messaging API로 <a href="../../messaging-api/message-types/#image-messages">이미지 메시지</a>나 <a href="../../../reference/messaging-api/#f-image">이미지 컴포넌트</a>가 포함된 Flex Message를 보내는 경우, 파일을 저장하는 서버도 HTTPS(TLS 1.2 이상) 통신을 지원해야 합니다.</p>
+<h3>대량 접근 처리하기</h3>
+<p>메시지를 보내는 사용자 수와 메시지 내용에 따라 메시지에 포함된 URL, 이미지 등의 콘텐츠에 대량의 접근이 발생할 수 있습니다.</p>
+<p>이런 경우에 대비하여 CDN이나 로드 밸런서 같은 부하 분산 메커니즘을 사용하거나, 메시지를 단계적으로 보내 콘텐츠를 저장한 서버가 대량 접근으로 다운되지 않도록 하세요.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/partner-docs/large-volume-of-requests-en.webp" alt="대량 요청" loading="lazy"><figcaption>대량 요청</figcaption></figure></p>
+<h2>LINE 로그인 사용 시 주의 사항</h2>
+<p>LINE 로그인을 사용하면 웹 서비스와 네이티브 앱에서 사용자의 LINE 계정 정보를 활용하는 로그인 기능을 구현할 수 있습니다.</p>
+<p>예를 들어 웹 앱에 LINE 로그인을 통합하고 얻은 정보를 회사의 회원 정보와 연결하면, Messaging API를 사용하여 사용자에게 더 개인화된 메시지를 보낼 수 있습니다.</p>
+<p>LINE 로그인에 대한 자세한 내용은 <a href="../../line-login/overview/">LINE 로그인 개요</a>를 참고하세요.</p>
+<h3>LINE 로그인 인증 및 검증 과정</h3>
+<p>웹 앱용 LINE 로그인(웹 로그인)의 과정은 <a href="https://datatracker.ietf.org/doc/html/rfc6749" target="_blank" rel="noopener noreferrer">OAuth 2.0</a> 인가 코드 그랜트 흐름과 <a href="https://openid.net/specs/openid-connect-core-1_0.html" target="_blank" rel="noopener noreferrer">OpenID® Connect</a> 프로토콜을 기반으로 합니다. 웹 앱용 LINE 로그인에 대한 자세한 내용은 LINE 로그인 문서의 <a href="../../line-login/integrate-line-login/#login-flow">로그인 흐름</a>을 참고하세요.</p>
+<h3>콜백 URL에 관하여</h3>
+<p>콜백 URL(<code>redirect_uri</code>)은 사용자가 LINE 로그인을 위한 인증 및 승인 작업을 마친 후 <a href="../../line-login/integrate-line-login/#receiving-the-authorization-code-or-error-response-with-a-web-app">웹 앱에서 인가 코드 또는 오류 응답을 받는 URL</a>로 사용됩니다. 콜백 URL은 LINE Developers Console의 채널 설정에 있는 <strong>LINE Login</strong>에서 설정할 수 있습니다.</p>
+<p>콜백 URL에 대한 자세한 내용은 LINE 로그인 문서의 <a href="../../line-login/integrate-line-login/#setting-callback-url">콜백 URL 설정하기</a>를 참고하세요.</p>
+<!-- note start -->
+<p><strong>콜백 URL을 설정할 때의 주의 사항</strong></p>
+<ul>
+<li>콜백 URL은 최대 400개까지 등록할 수 있습니다.</li>
+<li>쿼리 파라미터가 포함된 URL도 콜백 URL로 등록할 수 있습니다.</li>
+<li>인가 요청 시 지정하는 <code>redirect_uri</code>는 콜백 URL로 등록된 URL을 URL 인코딩한 문자열입니다. 임의의 쿼리 파라미터를 추가할 수 있습니다.
+<ul>
+<li>콜백 URL로 <code>https://example.com</code>을 등록하고, 인가 요청 시 <code>redirect_uri</code>에 <code>https://example.com?key=value</code>를 지정할 수 있습니다.</li>
+</ul>
+</li>
+</ul>
+<!-- note end -->
+<h3>웹 앱에서 인가 응답 또는 오류 응답 받기</h3>
+<p>사용자의 인증 및 승인 과정이 끝나면 사용자는 콜백 URL로 리디렉션됩니다.</p>
+<p>사용자가 앱에 접근을 허용하면 인가 코드가 포함된 인가 응답이 반환됩니다. 하지만 사용자가 앱에 접근을 허용하지 않으면 오류 응답이 반환됩니다. 자세한 내용은 LINE 로그인 문서의 <a href="../../line-login/integrate-line-login/#receiving-the-authorization-code-or-error-response-with-a-web-app">웹 앱에서 인가 응답 또는 오류 응답 받기</a>를 참고하세요.</p>
+<h3>액세스 토큰 발급</h3>
+<p>액세스 토큰은 LINE 로그인 인가 요청으로 얻은 인가 코드를 사용하여 발급됩니다. 액세스 토큰 발급에 대한 자세한 내용은 LINE 로그인 v2.1 API 레퍼런스의 <a href="../../../reference/line-login/#issue-access-token">액세스 토큰 발급</a>을 참고하세요.</p>
+<!-- note start -->
+<p><strong>액세스 토큰 발급 시 주의 사항</strong></p>
+<ul>
+<li>액세스 토큰을 발급할 때 지정하는 <code>redirect_uri</code> 파라미터는 인가 요청 시 지정한 값과 같아야 합니다.</li>
+<li>인가 코드는 액세스 토큰 발급 성공 여부와 관계없이 한 번만 사용할 수 있습니다.</li>
+</ul>
+<!-- note end -->
+<h3>ID 토큰 검증</h3>
+<p>ID 토큰은 scope에 <code>openid</code>를 지정하여 LINE 로그인 인가 요청을 보내고 얻은 토큰 엔드포인트의 <a href="../../line-login/integrate-line-login/#response">페이로드</a>에 포함됩니다. 얻은 ID 토큰을 검증하면 사용자의 프로필 정보를 얻을 수 있습니다. 자세한 내용은 LINE 로그인 문서의 <a href="../../line-login/verify-id-token/">ID 토큰에서 프로필 정보 가져오기</a>를 참고하세요.</p>
+<h3>기타 LINE 로그인 API</h3>
+<p>얻은 액세스 토큰을 사용하면 사용자와 LINE 공식 계정 간의 친구 관계를 확인하고 사용자의 프로필 정보를 가져올 수 있습니다. LINE 로그인 API에 대한 자세한 내용은 <a href="../../../reference/line-login/">LINE 로그인 v2.1 API 레퍼런스</a>를 참고하세요.</p>
+<h3>LINE 로그인으로 얻은 정보와 회사가 관리하는 정보 연결하기(ID 연동)</h3>
+<p>LINE 로그인으로 얻은 사용자 정보(사용자 ID 등)를 회사가 관리하는 회원 정보와 연결하면 더 개인화된 메시지를 제공할 수 있습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/partner-docs/flow-for-linking-ids-en.webp" alt="ID 연동 흐름" loading="lazy"><figcaption>ID 연동 흐름</figcaption></figure></p>
+<!-- note start -->
+<p><strong>회원 정보와의 연결 및 관리에 관하여</strong></p>
+<ul>
+<li>LY Corporation은 LINE 로그인으로 얻은 사용자 정보를 회사가 관리하는 회원 정보와 연결하는 방법을 제공하지 않습니다.</li>
+<li>회원 정보 등을 연결할 때는 위조를 방지하도록 보안을 고려하여 시스템을 설계하세요.</li>
+<li>LINE 플랫폼의 사용자 정보와 회원 정보 등의 연결을 해제하는 흐름을 마련하세요.</li>
+<li>LINE 앱의 <strong>Settings</strong> &gt; <strong>Account</strong> &gt; <strong>Authorized apps</strong>에서 <strong>Unlink</strong>를 선택하면 LINE 로그인의 &quot;채널 동의&quot;는 철회되지만 사용자 정보의 연결은 해제되지 않습니다. LINE 로그인으로 얻은 정보와 회사가 관리하는 정보를 연결하는 과정은 고객이 별도로 처리해야 합니다.</li>
+</ul>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/partner-docs/unlink.png" alt="연결 해제" loading="lazy"><figcaption>연결 해제</figcaption></figure></p>
+<!-- note end -->
+<h3>친구 추가 옵션</h3>
+<p>LINE 로그인을 사용하면 사용자가 로그인할 때 LINE 공식 계정을 친구로 추가하는 옵션을 사용할 수 있습니다. 이를 친구 추가 옵션이라고 합니다. 친구 추가 옵션에 사용할 LINE 공식 계정은 LINE Developers Console에서 설정할 수 있습니다. 자세한 내용은 LINE 로그인 문서의 <a href="../../line-login/link-a-bot/">로그인 시 LINE 공식 계정을 친구로 추가하기(친구 추가 옵션)</a>를 참고하세요.</p>
+<!-- note start -->
+<p><strong>친구 추가 옵션 사용 시 주의 사항</strong></p>
+<ul>
+<li>연결할 수 있는 LINE 공식 계정은 LINE 로그인 채널과 관련된 계정으로 제한됩니다. 예를 들어 회사 A의 LINE 공식 계정을 회사 A와 관련 없는 회사 B의 LINE 로그인 채널에 연결하지 마세요.</li>
+<li>설정 변경은 즉시 반영되므로, 의도하지 않은 LINE 공식 계정(테스트 등)을 실수로 설정하지 않도록 주의해서 작업하세요.</li>
+<li>LINE 로그인 채널이 인증된 프로바이더 아래에 있는 경우, LINE 로그인 동의 화면의 <strong>Add Friend (Unblock)</strong> 옵션이 기본으로 선택(체크)되어 있습니다.</li>
+</ul>
+<!-- note end -->
+<h3>state 검증</h3>
+<p>LINE 로그인 인가를 요청할 때 지정하는 <code>state</code> 파라미터는 <a href="https://en.wikipedia.org/wiki/Cross-site_request_forgery" target="_blank" rel="noopener noreferrer">사이트 간 요청 위조(Cross-Site Request Forgery)</a>를 방지하기 위해 필요합니다. 웹 앱에서 인가 요청 세션마다 무작위로 생성하고, <a href="../../line-login/integrate-line-login/#receiving-the-authorization-code-or-error-response-with-a-web-app">인가 응답 또는 오류 응답을 받을 때</a> 검증하세요.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/partner-docs/state-verification-en.webp" alt="state 검증" loading="lazy"><figcaption>state 검증</figcaption></figure></p>
+<h2>LINE Front-end Framework(LIFF)</h2>
+<p>LINE Front-end Framework(LIFF)는 LY Corporation이 제공하는 웹 앱 플랫폼입니다. 이 플랫폼에서 실행되는 웹 앱을 LIFF 앱이라고 합니다.</p>
+<p>LIFF 앱을 사용하면 LINE 플랫폼에서 LINE 사용자 ID와 기타 정보를 가져올 수 있습니다. LIFF 앱은 이 정보를 사용하여 사용자 정보를 활용하는 기능을 제공하거나 사용자를 대신하여 메시지를 보낼 수 있습니다.</p>
+<p>LIFF 앱에 대한 자세한 내용은 <a href="../../liff/overview/">LIFF 개요</a>를 참고하세요.</p>
+<h2>기타 기능</h2>
+<h3>대상 브라우저 설정 방법</h3>
+<p>채팅방이나 LINE 인앱 브라우저에서 URL에 접근할 때, 특수 쿼리 파라미터를 붙여 URL을 열면 URL을 여는 브라우저를 외부 브라우저로 바꿀 수 있습니다. 쿼리 파라미터에 대한 자세한 내용은 <a href="../../line-login/using-line-url-scheme/#opening-url-in-external-browser">외부 브라우저에서 URL 열기</a>를 참고하세요.</p>
+<h3>URL 스킴에 관하여</h3>
+<p>LINE 공식 계정과의 채팅방에서 사용할 수 있는 URL 스킴을 제공합니다. URL 스킴에 대한 자세한 내용은 <a href="../../line-login/using-line-url-scheme/">LINE URL 스킴으로 LINE 기능 사용하기</a>를 참고하세요.</p>
+<h3>채널 권한에 관하여</h3>
+<p>LINE 로그인 채널과 LINE MINI App 채널은 생성 직후 상태가 &quot;개발 중(Developing)&quot;입니다. “개발 중” 상태의 채널에서 LINE에 로그인하거나 LIFF 앱에 접근하려면 해당 채널의 관리자(admin) 또는 테스터(tester) 권한이 있는 LINE 계정이 필요합니다.</p>
+<p>권한에 대한 자세한 내용은 LINE Developers Console 문서의 <a href="../../line-developers-console/managing-roles/#roles-for-channel">채널 역할</a>을 참고하세요.</p>
+<h3>Messaging API에서 사용할 수 있는 스티커와 이모지</h3>
+<p>Messaging API에서 스티커는 <a href="https://developers.line.biz/en/docs/messaging-api/sticker-list/#sticker-definitions" target="_blank" rel="noopener noreferrer">패키지 ID와 스티커 ID 같은 식별자</a>를 사용하여 주고받습니다.</p>
+<h4>Messaging API로 스티커 보내기</h4>
+<p>Messaging API로 보낼 수 있는 스티커에 대한 자세한 내용은 Messaging API 문서의 <a href="https://developers.line.biz/en/docs/messaging-api/sticker-list/" target="_blank" rel="noopener noreferrer">스티커</a>를 참고하세요.</p>
+<h4>사용자가 보낸 스티커 확인하기</h4>
+<p>사용자가 LINE 공식 계정에 스티커를 보내면, 보낸 스티커의 패키지 ID와 스티커 ID가 <a href="../../../reference/messaging-api/#wh-sticker">웹훅 메시지 이벤트</a>로 전송됩니다.</p>
+<p>받은 웹훅 이벤트의 스티커 ID를 사용하여 보낸 스티커의 이미지를 가져오는 방법은 공개하지 않습니다. 이 서비스는 <a href="https://www.lycbiz.com/jp/partner/technology/line/" target="_blank" rel="noopener noreferrer">테크놀로지 파트너</a>(일본어로만 제공됩니다)가 사용자와 직접 상호작용할 수 있는 채팅 도구(CRM 도구 등)를 만드는 경우나, LY Corporation이 적절하다고 판단하는 경우에만 제공합니다. 자세한 내용은 담당자에게 문의하세요.</p>
+<h4>LINE 이모지 보내기</h4>
+<p><a href="../../../reference/messaging-api/#text-message">텍스트 메시지</a> 또는 <a href="../../../reference/messaging-api/#text-message-v2">텍스트 메시지(v2)</a>를 보낼 때 LINE 이모지를 함께 보낼 수 있습니다. LINE 이모지에 대한 자세한 내용은 Messaging API 문서의 <a href="https://developers.line.biz/en/docs/messaging-api/emoji-list/" target="_blank" rel="noopener noreferrer">LINE 이모지</a>를 참고하세요.</p>
+<h4>LINE 이모지 받기</h4>
+<p>사용자가 LINE 공식 계정에 LINE 이모지를 보내면, 메시지 이벤트의 텍스트 객체에 있는 <a href="../../../reference/messaging-api/#wh-text">emojis 객체</a>에 배열로 저장됩니다.</p>
+<!-- note start -->
+<p><strong>보낸 LINE 이모지가 emojis 속성에 포함되지 않을 수 있습니다</strong></p>
+<ul>
+<li>Android용 LINE에서 보낸 기본 LINE 이모지는 포함되지 않습니다.</li>
+<li>유니코드로 정의된 이모지와 이전 버전의 LINE 이모지는 올바르게 가져오지 못할 수 있습니다.</li>
+</ul>
+<!-- note end -->
+</article></main>
+</div>
+<script>
+(function(){
+  var a=document.querySelector('.sidebar a.active');
+  if(a)a.scrollIntoView({block:'center'});
+  var input=document.getElementById('nav-search');
+  if(!input)return;
+  var items=[].slice.call(document.querySelectorAll('.sidebar li'));
+  input.addEventListener('input',function(){
+    var q=input.value.trim().toLowerCase();
+    items.forEach(function(li){
+      if(!q){li.classList.remove('hidden');return;}
+      var own=(li.querySelector(':scope > a, :scope > details > summary')||li).textContent.toLowerCase();
+      var hit=own.indexOf(q)!==-1||li.textContent.toLowerCase().indexOf(q)!==-1;
+      li.classList.toggle('hidden',!hit);
+      if(hit){var d=li.querySelector(':scope > details');if(d)d.open=true;}
+    });
+  });
+})();
+</script>
+</body>
+</html>

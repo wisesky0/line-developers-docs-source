@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>튜토리얼 - 응답 봇 만들기 | LINE Developers</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#fff;--fg:#1a1a1a;--fg2:#595959;--border:#e5e5e5;--bg2:#f5f5f7;--accent:#0066ff;--code-bg:#f3f4f6;--hover:rgba(0,102,255,.07);--header-h:57px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Neo','Noto Sans KR',Roboto,sans-serif;line-height:1.6;margin:0}
+header{position:sticky;top:0;z-index:20;height:var(--header-h);background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;padding:0 1.25rem}
+.logo{font-weight:700;font-size:1.2rem;color:var(--fg);text-decoration:none;white-space:nowrap}
+.search{flex:1;max-width:320px;margin-left:auto}
+.search input{width:100%;padding:.45rem .75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--fg);font-size:.875rem}
+.search input:focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--bg)}
+.nav-btn{display:none;cursor:pointer;font-size:1.3rem;line-height:1;padding:.25rem .4rem;border:1px solid var(--border);border-radius:6px}
+#nav-toggle{position:absolute;opacity:0;pointer-events:none}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr)}
+.sidebar{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto;border-right:1px solid var(--border);background:var(--bg2);padding:.75rem 0 2rem;font-size:.875rem}
+.sidebar ul{list-style:none;margin:0;padding:0}
+.sidebar ul ul{padding-left:.9rem;border-left:1px solid var(--border);margin-left:1.1rem}
+.nav-title{padding:.9rem 1.25rem .35rem;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg2)}
+.sidebar a,.sidebar summary>span{display:inline-block;padding:.28rem .5rem;color:var(--fg2);text-decoration:none;border-radius:4px}
+.sidebar li>a{display:block;margin:0 .5rem 0 1rem}
+.sidebar a:hover{color:var(--accent);background:var(--hover)}
+.sidebar a.active{color:var(--accent);background:var(--hover);font-weight:600}
+.sidebar summary{cursor:pointer;padding:.1rem .75rem .1rem 1rem;list-style-position:inside}
+.sidebar summary>span{font-weight:600;color:var(--fg)}
+.sidebar summary a{padding-left:.2rem}
+.sidebar li.hidden{display:none}
+.content{min-width:0;padding:2rem 2.5rem 4rem}
+article{max-width:880px;margin:0 auto}
+h1,h2,h3,h4{line-height:1.3;color:var(--fg);text-wrap:balance}
+h1{font-size:2.1rem;margin:0 0 1rem}
+h2{font-size:1.5rem;margin:2.2rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.2rem;margin:1.6rem 0 .6rem}
+p,li{color:var(--fg2);line-height:1.75}
+a{color:var(--accent)}
+code{background:var(--code-bg);padding:.15em .4em;border-radius:3px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;line-height:1.5}
+pre code{background:none;padding:0;color:var(--fg)}
+blockquote{border-left:4px solid var(--accent);padding:.6rem 1.2rem;margin:1.2rem 0;background:var(--bg2);border-radius:4px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:1.2rem 0}
+th,td{padding:.6rem .8rem;border:1px solid var(--border);text-align:left;vertical-align:top}
+th{background:var(--bg2);color:var(--fg)}
+.doc-figure{margin:1.5rem 0;text-align:center}
+.doc-figure img{max-width:100%;height:auto;border:1px solid var(--border);border-radius:8px}
+.doc-figure figcaption{margin-top:.4rem;font-size:.85rem;color:var(--fg2)}
+.tip{background:var(--bg2);border-left:4px solid var(--accent);padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:4px}
+.feature-box{background:var(--bg2);border-left:4px solid var(--accent);border-radius:6px;padding:1rem 1.4rem;margin:1.2rem 0}
+.feature-box h4{margin:0 0 .4rem;color:var(--accent)}
+.feature-box p{margin:0}
+@media (max-width:860px){
+  .nav-btn{display:block}
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .sidebar{display:none;position:fixed;inset:var(--header-h) 0 0 0;height:auto;z-index:15;width:100%}
+  #nav-toggle:checked~.layout .sidebar{display:block}
+  .content{padding:1.25rem 1rem 3rem}
+  h1{font-size:1.6rem}
+  .search{max-width:none}
+}
+</style>
+</head>
+<body>
+<input type="checkbox" id="nav-toggle">
+<header>
+  <label for="nav-toggle" class="nav-btn" aria-label="메뉴">☰</label>
+  <a href="../../../" class="logo">LINE Developers</a>
+  <div class="search"><input id="nav-search" type="search" placeholder="문서 검색..." aria-label="문서 검색"></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" aria-label="문서 목차"><div class="nav-section"><div class="nav-title">문서</div><ul><li><details><summary><span>기본</span></summary><ul><li><a href="../../basics/channel-access-token/">채널 액세스 토큰</a></li><li><a href="../../basics/line-api-status/">LINE Platform 가용성 확인 (LINE API Status)</a></li><li><a href="../../basics/user-profile/">사용자 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LIFF</span></summary><ul><li><a href="../../liff/overview/">LIFF 개요</a></li><li><a href="../../liff/getting-started/">채널 생성하기</a></li><li><a href="../../liff/cli-tool-create-liff-app/">Create LIFF App로 LIFF 앱 개발 환경 구축하기</a></li><li><a href="../../liff/developing-liff-apps/">LIFF 앱 개발하기</a></li><li><a href="../../liff/development-guidelines/">LIFF 앱 개발 가이드라인</a></li><li><a href="../../liff/differences-between-liff-browser-and-external-browser/">LIFF 브라우저와 외부 브라우저의 차이</a></li><li><a href="../../liff/differences-between-liff-browser-and-line-in-app-browser/">LIFF 브라우저와 LINE 인앱 브라우저의 차이</a></li><li><a href="../../liff/liff-cli/">LIFF CLI</a></li><li><a href="../../liff/liff-plugin/">LIFF 플러그인</a></li><li><a href="../../liff/minimizing-liff-browser/">LIFF 브라우저 최소화</a></li><li><a href="../../liff/opening-liff-app/">LIFF 앱 열기</a></li><li><a href="../../liff/pluggable-sdk/">플러거블 SDK</a></li><li><a href="../../liff/registering-liff-apps/">채널에 LIFF 앱 추가하기</a></li><li><a href="../../liff/release-notes/">릴리스 노트</a></li><li><a href="../../liff/trying-liff-app/">LIFF 스타터 앱 체험하기</a></li><li><a href="../../liff/using-user-profile/">LIFF 앱 및 서버에서 사용자 데이터 사용하기</a></li><li><a href="../../liff/versioning-policy/">버전 정책</a></li></ul></details></li><li><details><summary><span>LINE Ads API</span></summary><ul><li><a href="../../line-ads-api/about/">LINE Ads API 소개</a></li><li><a href="../../line-ads-api/development-guidelines/">LINE Ads API 개발 가이드라인</a></li></ul></details></li><li><a href="../../line-conversion-api/">LINE Conversion API</a></li><li><details><summary><span>LINE Developers 콘솔</span></summary><ul><li><a href="../../line-developers-console/overview/">LINE Developers Console 개요</a></li><li><a href="../../line-developers-console/best-practices-for-provider-and-channel-management/">프로바이더 및 채널 관리 모범 사례</a></li><li><a href="../../line-developers-console/delete-developer-account/">개발자 계정 삭제하기</a></li><li><a href="../../line-developers-console/login-account/">LINE Developers Console에 로그인하기</a></li><li><a href="../../line-developers-console/managing-roles/">역할 관리하기</a></li><li><a href="../../line-developers-console/notification/">이메일 또는 알림 센터로 알림 받기</a></li></ul></details></li><li><details><summary><span>LINE 로그인</span></summary><ul><li><a href="../../line-login/overview/">LINE Login 개요</a></li><li><a href="../../line-login/getting-started/">LINE Login 시작하기</a></li><li><a href="../../line-login/development-guidelines/">LINE Login 개발 가이드라인</a></li><li><a href="../../line-login/how-to-handle-auto-login-failure/">자동 로그인 실패 처리 방법</a></li><li><a href="../../line-login/integrate-line-login/">웹 앱에 LINE Login 연동하기</a></li><li><a href="../../line-login/integrate-line-login-v2/">웹 앱에 LINE Login(v2.0) 연동하기</a></li><li><a href="../../line-login/integrate-pkce/">LINE Login의 PKCE 지원</a></li><li><a href="../../line-login/link-a-bot/">로그인 시 LINE 공식 계정을 친구로 추가하기(친구 추가 옵션)</a></li><li><a href="../../line-login/login-button/">LINE Login 버튼 디자인 가이드라인</a></li><li><a href="../../line-login/managing-access-tokens/">액세스 토큰 관리</a></li><li><a href="../../line-login/managing-access-tokens-v2/">액세스 토큰 관리(LINE Login v2.0)</a></li><li><a href="../../line-login/managing-authorized-apps/">승인된 앱 관리하기</a></li><li><a href="../../line-login/managing-users/">사용자 관리</a></li><li><a href="../../line-login/managing-users-v2/">사용자 관리(LINE Login v2.0)</a></li><li><a href="../../line-login/secure-login-process/">앱과 서버 간의 안전한 로그인 프로세스 만들기</a></li><li><a href="../../line-login/security-checklist/">LINE Login 보안 체크리스트</a></li><li><a href="../../line-login/using-line-url-scheme/">LINE URL scheme을 사용하여 LINE 기능 이용하기</a></li><li><a href="../../line-login/verify-id-token/">ID 토큰에서 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LINE 로그인 SDK</span></summary><ul><li><details><summary><span>Android SDK</span></summary><ul><li><a href="../../line-login-sdks/android-sdk/overview/">LINE SDK for Android 개요</a></li><li><a href="../../line-login-sdks/android-sdk/handling-errors/">오류 처리</a></li><li><a href="../../line-login-sdks/android-sdk/integrate-line-login/">Android 앱에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/android-sdk/link-a-bot/">SDK로 친구 추가 옵션 활성화하기</a></li><li><a href="../../line-login-sdks/android-sdk/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../line-login-sdks/android-sdk/managing-users/">사용자 관리하기</a></li><li><a href="../../line-login-sdks/android-sdk/release-notes/">LINE SDK for Android 릴리스 노트</a></li><li><a href="../../line-login-sdks/android-sdk/try-line-login/">샘플 앱 체험하기</a></li></ul></details></li><li><a href="../../line-login-sdks/flutter-sdk/">Flutter SDK</a></li><li><details><summary><span>iOS SDK</span></summary><ul><li><a href="../../line-login-sdks/ios-sdk/release-notes/">LINE SDK for iOS 릴리스 노트</a></li><li><details><summary><span>Swift</span></summary><ul><li><a href="../../line-login-sdks/ios-sdk/swift/overview/">LINE SDK for iOS Swift 개요</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/error-handling/">오류 처리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/integrate-line-login/">iOS 앱에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/link-a-bot/">SDK로 추가 친구 옵션 활성화하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/managing-users/">사용자 관리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/migration-guide/">SDK 업그레이드하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/setting-up-project/">프로젝트 설정하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/universal-links-support/">유니버설 링크 사용하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/using-objc/">Objective-C 코드에서 SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>Unity SDK</span></summary><ul><li><a href="../../line-login-sdks/unity-sdk/overview/">LINE SDK for Unity 개요</a></li><li><a href="../../line-login-sdks/unity-sdk/integrate-line-login/">Unity 게임에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/unity-sdk/project-setup/">프로젝트 설정하기</a></li><li><a href="../../line-login-sdks/unity-sdk/release-notes/">LINE SDK for Unity 릴리스 노트</a></li><li><a href="../../line-login-sdks/unity-sdk/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../line-login-sdks/unity-sdk/using-sdk/">결과 처리와 기타 API에 LINE SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>LINE 미니앱</span></summary><ul><li><a href="../../line-mini-app/quickstart/">LINE MINI App 시작하기</a></li><li><details><summary><span>Design</span></summary><ul><li><a href="../../line-mini-app/design/landscape/">LINE MINI App의 안전 영역</a></li><li><a href="../../line-mini-app/design/line-mini-app-icon/">LINE MINI App 아이콘 사양 및 가이드라인</a></li><li><a href="../../line-mini-app/design/loading-icon/">로딩 아이콘</a></li></ul></details></li><li><details><summary><span>Develop</span></summary><ul><li><a href="../../line-mini-app/develop/add-to-home-screen/">LINE MINI App의 바로가기를 사용자 기기의 홈 화면에 추가하기</a></li><li><a href="../../line-mini-app/develop/channel-consent-simplification/">LINE MINI App 인증 흐름</a></li><li><a href="../../line-mini-app/develop/configure-console/">LINE MINI App 사용자에게 표시되는 설정</a></li><li><a href="../../line-mini-app/develop/custom-path/">커스텀 경로 설정하기</a></li><li><a href="../../line-mini-app/develop/develop-overview/">시작하기</a></li><li><a href="../../line-mini-app/develop/external-browser/">외부 브라우저에서 LINE MINI App 열기</a></li><li><a href="../../line-mini-app/develop/payment/">결제 처리하기</a></li><li><a href="../../line-mini-app/develop/performance-guidelines/">성능 가이드라인</a></li><li><a href="../../line-mini-app/develop/permanent-links/">영구 링크 만들기</a></li><li><a href="../../line-mini-app/develop/service-messages/">서비스 메시지 보내기</a></li><li><a href="../../line-mini-app/develop/share-messages/">커스텀 액션 버튼 구현하기</a></li><li><a href="../../line-mini-app/develop/share-messages-standard/">가이드라인을 따르는 JSON 파일 예시</a></li><li><a href="../../line-mini-app/develop/web-to-mini-app/">운영 중인 웹 앱을 LINE MINI App으로 구현하기</a></li></ul></details></li><li><a href="../../line-mini-app/development-guidelines/">LINE MINI App 개발 가이드라인</a></li><li><details><summary><span>Discover</span></summary><ul><li><a href="../../line-mini-app/discover/introduction/">LINE MINI App 소개</a></li><li><a href="../../line-mini-app/discover/builtin-features/">기본 제공 기능</a></li><li><a href="../../line-mini-app/discover/console-guide/">LINE MINI App용 LINE Developers Console 가이드</a></li><li><a href="../../line-mini-app/discover/custom-features/">커스텀 기능</a></li><li><a href="../../line-mini-app/discover/native-mini/">네이티브 앱과 LINE MINI App의 차이</a></li><li><a href="../../line-mini-app/discover/specifications/">LINE MINI App 사양</a></li><li><a href="../../line-mini-app/discover/ui-components/">LINE MINI App UI 컴포넌트</a></li></ul></details></li><li><details><summary><span>In App Purchase</span></summary><ul><li><a href="../../line-mini-app/in-app-purchase/overview/">인앱 결제 개요</a></li><li><a href="../../line-mini-app/in-app-purchase/apple-mini-apps-partner-program/">Mini Apps Partner Program을 통한 App Store 수수료 인하</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-guidelines/">인앱 결제 개발 가이드라인</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-product-id/">인앱 결제로 구매 가능한 아이템의 상품 ID 목록</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-settings/">인앱 결제 설정</a></li><li><a href="../../line-mini-app/in-app-purchase/implement-in-app-purchase/">인앱 결제 기능 연동</a></li><li><a href="../../line-mini-app/in-app-purchase/request-iap-review/">인앱 결제 사용 신청</a></li></ul></details></li><li><details><summary><span>Quick Fill</span></summary><ul><li><a href="../../line-mini-app/quick-fill/overview/">공통 프로필 Quick-fill 개요</a></li><li><a href="../../line-mini-app/quick-fill/design-regulations/">공통 프로필 Quick-fill 디자인 규정</a></li></ul></details></li><li><details><summary><span>Service</span></summary><ul><li><a href="../../line-mini-app/service/add-friend-option/">LINE MINI App에서 LINE 공식 계정을 친구로 추가하기 (친구 추가 옵션)</a></li><li><a href="../../line-mini-app/service/business-manager-link/">LINE MINI App 채널을 Business Manager 조직에 연결하기</a></li><li><a href="../../line-mini-app/service/line-mini-app-ads/">LINE MINI App에 광고 게재하기</a></li><li><a href="../../line-mini-app/service/line-mini-app-oa/">LINE 공식 계정 활용하기</a></li><li><a href="../../line-mini-app/service/service-operation/">서비스 운영하기</a></li><li><a href="../../line-mini-app/service/update-service/">인증된 MINI App 업데이트 후 재심사</a></li></ul></details></li><li><details><summary><span>Submit</span></summary><ul><li><a href="../../line-mini-app/submit/submission-guide/">LINE MINI App 제출하기</a></li></ul></details></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../../line-mini-app/technicalcase/bravetechnology/">&#039;대기 줄 관리 솔루션이 LINE MINI App으로 확장되는 방식: &quot;matoca&quot;와 &quot;yoboca&quot;의 개발 사례&#039;</a></li><li><a href="../../line-mini-app/technicalcase/classmethod/">모바일 주문 시스템 CX ORDER 사례 연구</a></li><li><a href="../../line-mini-app/technicalcase/grandream/">GDL 플랫폼의 기술 사례 연구: 비용 효율성과 유연성을 함께 실현</a></li><li><a href="../../line-mini-app/technicalcase/hakuhodo/">도야마현 아사히마치의 모빌리티 및 건강 증진을 위한 디지털 활성화 프로젝트 &quot;PoHUNT&quot; 개발 사례</a></li><li><a href="../../line-mini-app/technicalcase/kirifuda-morikaranotegami/">놀이를 통한 자연 보호: LINE MINI App으로 출시한 &quot;Letters from the Forest&quot;의 기술 사례 연구</a></li></ul></details></li></ul></details></li><li><details open><summary><span>Messaging API</span></summary><ul><li><a href="../overview/">Messaging API 개요</a></li><li><a href="../getting-started/">Messaging API 시작하기</a></li><li><a href="../actions/">액션</a></li><li><a href="../beacon-device-spec/">LINE Beacon 디바이스 사양</a></li><li><a href="../building-bot/">봇 만들기</a></li><li><a href="../check-webhook-error-statistics/">웹훅 오류 원인 및 통계 확인하기</a></li><li><a href="../create-flex-message-including-video/">동영상이 포함된 Flex Message 만들기</a></li><li><a href="../development-guidelines/">Messaging API 개발 가이드라인</a></li><li><a href="../download-bot-designer/">LINE Bot Designer 다운로드</a></li><li><a href="../flex-message-elements/">Flex Message 요소</a></li><li><a href="../flex-message-layout/">Flex Message 레이아웃</a></li><li><a href="../generate-json-web-token/">채널 액세스 토큰 v2.1 발급</a></li><li><a href="../get-quote-tokens/">인용 토큰 가져오기</a></li><li><a href="../getting-user-ids/">사용자 ID 가져오기</a></li><li><a href="../group-chats/">그룹 채팅 및 다인 채팅</a></li><li><a href="../icon-nickname-switch/">아이콘 및 표시 이름 설정하기</a></li><li><a href="../line-bot-sdk/">LINE Messaging API SDK</a></li><li><a href="../linking-accounts/">사용자 계정 연동</a></li><li><a href="../mark-as-read/">메시지를 읽음으로 표시하기</a></li><li><a href="../measure-impressions/">노출 수 측정하기</a></li><li><a href="../message-types/">메시지 타입</a></li><li><a href="./" class="active" aria-current="page">튜토리얼 - 응답 봇 만들기</a></li><li><a href="../pricing/">Messaging API 요금</a></li><li><a href="../receiving-messages/">메시지 수신하기(웹훅)</a></li><li><a href="../retrying-api-request/">API 요청 재시도</a></li><li><a href="../rich-menus-overview/">리치 메뉴 개요</a></li><li><a href="../secure-message-sample/">보안 메시지 생성을 위한 샘플 코드와 데이터</a></li><li><a href="../send-coupons-to-users/">쿠폰을 만들어 사용자에게 보내기</a></li><li><a href="../sending-messages/">메시지 보내기</a></li><li><a href="../sharing-bot/">LINE 공식 계정 친구 늘리기</a></li><li><a href="../ssl-tls-spec-of-the-webhook-source/">웹훅 소스의 SSL/TLS 사양</a></li><li><a href="../stop-using-line-official-account/">LINE 공식 계정 사용 중단하기</a></li><li><a href="../stop-using-messaging-api/">Messaging API 사용 중단하기</a></li><li><a href="../switch-rich-menus/">리치 메뉴에서 탭 전환하기</a></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../technicalcase/boldly/">온디맨드 자율주행 버스 예약 시스템의 LINE MINI App 사례</a></li><li><a href="../technicalcase/evolany-ai/">anybot for ChatGPT 기술 사례 연구: ChatGPT를 적극 활용하여 더 원활한 커뮤니케이션 구현하기</a></li><li><a href="../technicalcase/heptagon/">이주 및 정착 관련 문의를 처리하는 LINE 봇 개발 사례 연구</a></li><li><a href="../technicalcase/playnext-lab/">Smart Public Lab 기술 사례 연구: 행정 디지털 전환을 지원하는 LINE 활용 전략</a></li><li><a href="../technicalcase/resortbaito-dive/">임시직 직원의 만족도를 높이기 위한 &quot;Resort Baito Dive&quot; 개발 사례</a></li><li><a href="../technicalcase/skillbox/">SkillBox 기술 사례 연구: 이메일 주소가 없는 직원까지 LINE 알림으로 참여도 설문 응답률을 크게 높이다</a></li><li><a href="../technicalcase/softbank/">인프라를 로우 코드로 도입하기: CNAP으로 개발 효율을 높인 LINE 기반 서비스 개발 사례</a></li></ul></details></li><li><a href="../text-character-count/">텍스트의 글자 수 세기</a></li><li><a href="../try-rich-menu/">리치 메뉴 체험하기</a></li><li><a href="../unit-based-statistics-aggregation/">발송한 메시지의 통계 조회하기</a></li><li><a href="../use-loading-indicator/">로딩 애니메이션 표시하기</a></li><li><a href="../use-membership-features/">멤버십 기능 사용하기</a></li><li><a href="../use-per-user-rich-menus/">사용자별 리치 메뉴 사용하기</a></li><li><a href="../user-consent/">사용자 프로필 정보 제공 동의</a></li><li><a href="../using-audience/">오디언스 사용하기</a></li><li><a href="../using-beacons/">LINE 비콘 사용하기</a></li><li><a href="../using-bot-designer/">LINE Bot Designer</a></li><li><a href="../using-flex-message-simulator/">튜토리얼 - Flex Message Simulator로 디지털 명함 만들기</a></li><li><a href="../using-flex-messages/">Flex Message 보내기</a></li><li><a href="../using-line-url-scheme/">LINE URL 스킴으로 LINE 기능 사용하기</a></li><li><a href="../using-quick-reply/">퀵 리플라이 사용하기</a></li><li><a href="../using-rich-menus/">리치 메뉴 사용하기</a></li><li><a href="../verify-webhook-signature/">웹훅 서명 검증하기</a></li><li><a href="../verify-webhook-url/">웹훅 URL 확인하기</a></li></ul></details></li><li><details><summary><span>파트너 문서</span></summary><ul><li><a href="../../partner-docs/overview/">개요</a></li><li><a href="../../partner-docs/api-policy-handbook/">LINE API 정책 핸드북</a></li><li><a href="../../partner-docs/development-guidelines/">법인 고객을 위한 개발 가이드라인</a></li><li><a href="../../partner-docs/error-notification/">오류 알림</a></li><li><a href="../../partner-docs/line-beacon/">LINE Beacon</a></li><li><details><summary><span>Line Notification Messages</span></summary><ul><li><a href="../../partner-docs/line-notification-messages/overview/">LINE 알림 메시지 개요</a></li><li><a href="../../partner-docs/line-notification-messages/flow-when-receiving-message/">LINE 알림 메시지를 수신할 때의 흐름</a></li><li><a href="../../partner-docs/line-notification-messages/message-sending-complete-webhook-event/">웹훅 발송 완료 이벤트</a></li><li><a href="../../partner-docs/line-notification-messages/statistics/">LINE 알림 메시지 통계 가져오기</a></li><li><a href="../../partner-docs/line-notification-messages/technical-specs/">LINE 알림 메시지 API 기술 사양</a></li><li><a href="../../partner-docs/line-notification-messages/template/">LINE 알림 메시지(템플릿)</a></li></ul></details></li><li><a href="../../partner-docs/line-profile-plus/">LINE Profile+</a></li><li><a href="../../partner-docs/mark-as-read/">Mark as read API(이전 버전)</a></li><li><a href="../../partner-docs/mission-stickers/">Mission Sticker API</a></li><li><a href="../../partner-docs/module/">모듈</a></li><li><a href="../../partner-docs/module-technical-attach-channel/">모듈 채널 연결</a></li><li><a href="../../partner-docs/module-technical-chat-control/">채팅 주도권 제어(Chat Control)</a></li><li><a href="../../partner-docs/module-technical-console/">모듈 채널 설정 구성</a></li><li><a href="../../partner-docs/module-technical-using-messaging-api/">모듈 채널에서 Messaging API 사용하기</a></li><li><a href="../../partner-docs/notice/">법인 고객 공지</a></li><li><a href="../../partner-docs/provider-page/">Provider page</a></li></ul></details></li></ul></div><div class="nav-section"><div class="nav-title">레퍼런스</div><ul><li><a href="../../../reference/liff/">LIFF API reference</a></li><li><a href="../../../reference/liff-server/">Server API</a></li><li><a href="../../../reference/line-login/">LINE Login v2.1 API reference</a></li><li><a href="../../../reference/line-login-v2/">LINE Login API v2.0 reference</a></li><li><a href="../../../reference/line-mini-app/">LINE MINI App API reference</a></li><li><a href="../../../reference/line-notification-messages/">LINE notification messages API reference</a></li><li><a href="../../../reference/messaging-api/">Messaging API reference</a></li><li><a href="../../../reference/partner-docs/">Options for corporate customers API reference</a></li></ul></div></nav>
+  <main class="content"><article><h1>튜토리얼 - 응답 봇 만들기</h1><p>이 튜토리얼에서는 Messaging API와 Node.js를 사용하여 응답 봇으로 메시지를 보내는 방법을 배웁니다.</p>
+<p>Messaging API를 사용하면 서비스와 LINE 사용자 간에 양방향 통신이 가능합니다. Messaging API가 제공하는 다양한 기능을 활용하여 사용자와의 상호작용을 높일 수 있습니다. 이러한 기능에는 여러 유형의 메시지 보내기, 사용자 프로필 가져오기, 사용자가 보낸 콘텐츠 가져오기 등 <a href="../overview/#what-you-can-do">그 밖에도 많은 기능</a>이 포함됩니다.</p>
+<p>이 튜토리얼의 결과물은 사용자의 메시지에 자동으로 응답하는 앱입니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/node-js-sample/sample-bot-test.webp" alt="샘플 봇과의 대화" loading="lazy"><figcaption>샘플 봇과의 대화</figcaption></figure></p>
+<h2>시작하기 전에</h2>
+<p>이 튜토리얼은 JavaScript와 Node.js에 대한 기본 지식이 있다고 가정합니다. 튜토리얼을 진행하기 전에 <a href="../overview/">Messaging API 개요</a>를 읽어 보는 것을 권장합니다.</p>
+<div class="tip">
+<p><strong>이 튜토리얼은 SDK를 사용하지 않습니다</strong></p>
+<p>Messaging API를 배울 수 있도록, 이 튜토리얼에서는 LY Corporation이 제공하는 SDK 없이 Node.js로 Messaging API를 사용하는 방법을 보여 줍니다. Node.js로 프로젝트를 더 빠르게 만들고 코드 줄 수를 줄이려면 <a href="https://line.github.io/line-bot-sdk-nodejs/" target="_blank" rel="noopener noreferrer">Node.js용 LINE Messaging API SDK</a>를 사용해 보세요.</p>
+</div>
+<h3>준비</h3>
+<p>이 튜토리얼에서 응답 봇을 만들려면 먼저 아래와 같이 필요한 시스템에 등록하고 도구를 설치하세요.</p>
+<p>다음 계정을 등록하세요.</p>
+<ul>
+<li>
+<p><a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a> 계정: LINE 계정 또는 비즈니스 계정으로 LINE Developers Console에 로그인하세요. 개발자 계정이 없다면 <a href="../../line-developers-console/login-account/#register-as-developer">개발자 계정을 만드세요</a>.</p>
+</li>
+<li>
+<p><a href="https://www.heroku.com/" target="_blank" rel="noopener noreferrer">Heroku</a> 계정</p>
+<!-- note start -->
+<p><strong>Heroku의 무료 요금제가 종료되었습니다</strong></p>
+<p>Heroku의 무료 요금제는 2022년 11월 27일부로 종료되었습니다. 무료로 이 튜토리얼을 진행하려면 다른 플랫폼을 사용하세요. 자세한 내용은 <a href="https://www.heroku.com/blog/next-chapter/" target="_blank" rel="noopener noreferrer">Heroku의 다음 장(Heroku’s Next Chapter)</a>을 참고하세요.</p>
+<!-- note end -->
+</li>
+</ul>
+<p>다음 도구를 설치하세요.</p>
+<ul>
+<li><a href="https://nodejs.org/en" target="_blank" rel="noopener noreferrer">Node.js</a></li>
+<li><a href="https://devcenter.heroku.com/articles/heroku-cli" target="_blank" rel="noopener noreferrer">Heroku CLI</a></li>
+<li><a href="https://git-scm.com/install/" target="_blank" rel="noopener noreferrer">Git</a></li>
+</ul>
+<h2>1. Heroku 설정하기</h2>
+<p>Heroku CLI에 로그인하세요. 터미널 또는 명령줄 도구에서 다음 명령을 실행합니다.</p>
+<pre><code class="language-sh">heroku login
+</code></pre>
+<p>튜토리얼용 디렉터리를 만들고 해당 디렉터리로 이동하세요. Git을 초기화하고 Heroku로 앱을 만듭니다. <code>{Name of your app}</code>은 <code>msg-api-tutorial-{YYYYMMDD}</code>와 같이 고유한 이름으로 바꾸세요.</p>
+<pre><code class="language-sh"><span class="hljs-built_in">mkdir</span> sample-app
+<span class="hljs-built_in">cd</span> sample-app
+git init
+heroku create {Name of your app}
+</code></pre>
+<p>앱이 정상적으로 만들어지면 <code>https://{Name of your app}.herokuapp.com/</code> 형식의 Heroku URL이 생성됩니다. 이 URL은 튜토리얼 뒷부분에서 필요하므로 보관해 두세요. 브라우저에서 Heroku URL을 열면 환영 페이지가 표시됩니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/node-js-sample/welcome-page.png" alt="환영 페이지" loading="lazy"><figcaption>환영 페이지</figcaption></figure></p>
+<h2>2. 프로젝트 설정하기</h2>
+<p>npm이 프로젝트를 인식하도록 <code>package.json</code> 파일이 필요합니다. 이 파일에는 프로젝트의 메타데이터가 들어 있고 의존성을 정의합니다. <code>npm init</code> 명령으로 npm 패키지를 초기화하면서 이 파일을 만드세요. 이 튜토리얼에서는 특별한 설정이 필요하지 않으므로 <code>-y</code> 옵션을 지정하여 설정 중 나오는 질문을 모두 건너뜁니다.</p>
+<pre><code class="language-sh">npm init -y
+</code></pre>
+<p>그 결과 다음과 비슷한 <code>package.json</code> 파일이 만들어집니다.</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;sample-app&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1.0.0&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;main&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;index.js&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;scripts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;test&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;keywords&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;author&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;license&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ISC&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>다음으로 start 스크립트를 지정하세요. 이렇게 하면 Heroku와 같은 서버 플랫폼이 서버를 시작할 때 어떤 파일을 사용해야 하는지 알 수 있습니다. 이 튜토리얼에서는 <code>index.js</code>를 서버 설정 파일로 사용합니다. 텍스트 편집기에서 <code>package.json</code>을 열고 <code>&quot;start&quot;</code> 속성에 <code>&quot;node index.js&quot;</code>를 지정하세요.</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;sample-app&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1.0.0&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;main&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;index.js&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;scripts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;start&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;node index.js&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;test&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;keywords&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;author&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;license&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ISC&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>아래 명령으로 <a href="https://expressjs.com/" target="_blank" rel="noopener noreferrer">Express.js</a> 패키지를 설치하세요. Express.js는 이 프로젝트에서 사용할 가벼운 Node.js 웹 서버 프레임워크입니다.</p>
+<pre><code class="language-sh">npm install express
+</code></pre>
+<p>Express.js가 설치되면 <code>package.json</code>에 패키지 의존성이 추가됩니다. 동시에 <code>node_modules</code>라는 디렉터리가 생성됩니다. 이 디렉터리에는 로컬에 설치된 패키지가 들어 있으며, 이 디렉터리의 내용은 Heroku에 푸시하지 않으려고 합니다. 이 디렉터리를 제외하려면 <code>.gitignore</code> 파일을 만드세요.</p>
+<pre><code class="language-sh"><span class="hljs-built_in">touch</span> .gitignore
+</code></pre>
+<p>텍스트 편집기에서 만든 <code>.gitignore</code> 파일을 열고, 아래와 같이 제외할 디렉터리의 이름을 추가하세요.</p>
+<pre><code>node_modules/
+</code></pre>
+<p>이렇게 하면 지정한 디렉터리가 푸시되지 않습니다.</p>
+<h2>3. 봇 구현하기</h2>
+<p>설정을 마쳤으므로 응답 봇을 구현해 보겠습니다.</p>
+<ol>
+<li><a href="./#global-config">전역 설정</a></li>
+<li><a href="./#middleware-config">미들웨어 설정</a></li>
+<li><a href="./#routing-config">라우팅 설정</a></li>
+<li><a href="./#send-reply">응답 보내기</a></li>
+</ol>
+<h3>3-1. 전역 설정하기</h3>
+<p>서버 설정을 위한 기본 JavaScript 파일인 <code>index.js</code>를 만들어 봅시다.</p>
+<pre><code class="language-sh"><span class="hljs-built_in">touch</span> index.js
+</code></pre>
+<p>만든 <code>index.js</code> 파일에 설치한 패키지 <code>express</code>를 가져와 인스턴스를 생성하는 코드를 추가하세요. 또한 봇으로 들어오는 HTTP 요청을 처리하기 위해 <code>https</code> 패키지도 가져옵니다. 이 패키지는 Node.js에 기본으로 포함되어 있으므로 따로 설치할 필요는 없습니다.</p>
+<p>텍스트 편집기에서 <code>index.js</code>를 열고 다음 코드 블록을 추가하세요.</p>
+<pre><code class="language-javascript"><span class="hljs-keyword">const</span> https = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;https&quot;</span>);
+<span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;express&quot;</span>);
+<span class="hljs-keyword">const</span> app = <span class="hljs-title function_">express</span>();
+</code></pre>
+<p>이제 설정 과정을 간단하게 하고 자격 증명을 안전하게 보관하기 위해 환경 변수를 추가하세요. <code>process.env.PORT</code> 변수는 서버가 리슨할 포트를 지정합니다. <code>process.env.LINE_ACCESS_TOKEN</code>에는 Messaging API를 호출하는 데 필요한 <a href="https://developers.line.biz/en/glossary/#channel-access-token" target="_blank" rel="noopener noreferrer">채널 액세스 토큰</a>이 들어 있습니다. <code>index.js</code>에서 가져온 패키지 아래에 다음 설정을 추가하세요.</p>
+<pre><code class="language-javascript"><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">PORT</span> = process.<span class="hljs-property">env</span>.<span class="hljs-property">PORT</span> || <span class="hljs-number">3000</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-variable constant_">TOKEN</span> = process.<span class="hljs-property">env</span>.<span class="hljs-property">LINE_ACCESS_TOKEN</span>;
+</code></pre>
+<h3>3-2. 미들웨어 설정하기</h3>
+<p>앞서 설치하고 가져온 Express.js는 미들웨어 웹 프레임워크입니다. 미들웨어 함수는 요청-응답 주기의 흐름을 결정합니다.</p>
+<p>이 튜토리얼에서는 Express.js 함수 <code>express.json()</code>과 <code>express.urlencoded()</code>를 사용합니다. 이 함수들은 들어오는 요청 객체를 각각 JSON 및 문자열 또는 배열 형식으로 인식하는 미리 정의된 미들웨어 함수입니다. 미들웨어 함수를 로드하려면 <code>app.use()</code>를 호출하세요. <code>index.js</code> 파일에 다음 코드 블록을 추가하세요.</p>
+<pre><code class="language-javascript">app.<span class="hljs-title function_">use</span>(express.<span class="hljs-title function_">json</span>());
+app.<span class="hljs-title function_">use</span>(
+  express.<span class="hljs-title function_">urlencoded</span>({
+    <span class="hljs-attr">extended</span>: <span class="hljs-literal">true</span>,
+  })
+);
+</code></pre>
+<h3>3-3. 라우팅 설정하기</h3>
+<p>이제 봇 서버에 기본 라우팅 로직을 추가해 봅시다. 상태 확인(health check)이 실패하지 않도록, 도메인의 루트(<code>/</code>)로 HTTP GET 요청이 오면 상태 코드 <code>200</code>을 반환하겠습니다. <code>index.js</code> 파일에 다음 코드 블록을 추가하세요.</p>
+<pre><code class="language-javascript">app.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;/&quot;</span>, <span class="hljs-function">(<span class="hljs-params">req, res</span>) =&gt;</span> {
+  res.<span class="hljs-title function_">sendStatus</span>(<span class="hljs-number">200</span>);
+});
+</code></pre>
+<p>다음으로 <code>app.listen()</code> 함수로 서버에 리스너를 설정합니다. 리스너의 포트는 앞에서 설정한 <code>PORT</code> 환경 변수로 지정합니다. 다른 포트 번호를 지정하지 않으면 설정된 값인 <code>3000</code>에서 리슨합니다. <code>index.js</code>에 다음 코드를 추가하세요.</p>
+<pre><code class="language-javascript">app.<span class="hljs-title function_">listen</span>(<span class="hljs-variable constant_">PORT</span>, <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`Example app listening at http://localhost:<span class="hljs-subst">${PORT}</span>`</span>);
+});
+</code></pre>
+<p>이제 서버가 리슨할 수 있으므로, LINE 플랫폼이 웹훅 URL로 보내는 요청을 처리하는 코드를 추가하겠습니다. 사용자가 봇과 상호작용하면, LINE 플랫폼은 봇 서버가 호스팅하는 웹훅 URL로 요청(웹훅 이벤트)을 보냅니다. 이러한 요청을 처리하려면 <code>app.post()</code>로 요청을 라우팅하세요. <code>index.js</code> 파일의 <code>app.get()</code>과 <code>app.listen()</code> 함수 사이에 다음 코드를 추가하세요.</p>
+<pre><code class="language-javascript">app.<span class="hljs-title function_">post</span>(<span class="hljs-string">&quot;/webhook&quot;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) {
+  res.<span class="hljs-title function_">send</span>(<span class="hljs-string">&quot;HTTP POST request sent to the webhook URL!&quot;</span>);
+});
+</code></pre>
+<p>이 코드는 <code>/webhook</code> 엔드포인트로 HTTP POST 요청이 오면 봇 서버가 <code>HTTP POST request sent to the webhook URL!</code>이라는 HTTP 응답을 반환하도록 합니다.</p>
+<p>지금까지 작성한 <code>index.js</code>는 다음과 비슷할 것입니다.</p>
+<pre><code class="language-javascript"><span class="hljs-keyword">const</span> https = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;https&quot;</span>);
+<span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;express&quot;</span>);
+<span class="hljs-keyword">const</span> app = <span class="hljs-title function_">express</span>();
+<span class="hljs-keyword">const</span> <span class="hljs-variable constant_">PORT</span> = process.<span class="hljs-property">env</span>.<span class="hljs-property">PORT</span> || <span class="hljs-number">3000</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-variable constant_">TOKEN</span> = process.<span class="hljs-property">env</span>.<span class="hljs-property">LINE_ACCESS_TOKEN</span>;
+
+app.<span class="hljs-title function_">use</span>(express.<span class="hljs-title function_">json</span>());
+app.<span class="hljs-title function_">use</span>(
+  express.<span class="hljs-title function_">urlencoded</span>({
+    <span class="hljs-attr">extended</span>: <span class="hljs-literal">true</span>,
+  })
+);
+
+app.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;/&quot;</span>, <span class="hljs-function">(<span class="hljs-params">req, res</span>) =&gt;</span> {
+  res.<span class="hljs-title function_">sendStatus</span>(<span class="hljs-number">200</span>);
+});
+
+app.<span class="hljs-title function_">post</span>(<span class="hljs-string">&quot;/webhook&quot;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) {
+  res.<span class="hljs-title function_">send</span>(<span class="hljs-string">&quot;HTTP POST request sent to the webhook URL!&quot;</span>);
+});
+
+app.<span class="hljs-title function_">listen</span>(<span class="hljs-variable constant_">PORT</span>, <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`Example app listening at http://localhost:<span class="hljs-subst">${PORT}</span>`</span>);
+});
+</code></pre>
+<h3>3-4. 응답 보내기</h3>
+<p>이제 응답 봇의 핵심 기능인 사용자 메시지에 대한 응답을 보내는 부분을 구현할 차례입니다. 가장 먼저 해야 할 일은 사용자가 메시지를 보냈을 때를 감지하는 것입니다. 웹훅 URL에서 <code>type</code> 속성이 <code>message</code>로 설정된 <a href="../../../reference/messaging-api/#message-event">message 이벤트</a>를 받으면 이를 감지할 수 있습니다.</p>
+<!-- warning start -->
+<p><strong>프로덕션 환경에 봇을 공개하려면 서명을 검증하세요</strong></p>
+<p>불특정 다수의 사용자를 대상으로 이 샘플 봇을 프로덕션 환경에 공개한다면 서명 검증이 필요합니다. 요청 헤더 <code>x-line-signature</code>의 서명을 검증하여 HTTP 요청이 LINE 플랫폼에서 보낸 것인지 확인하세요.</p>
+<p>서명을 검증하는 방법에 대한 자세한 내용은 <a href="../receiving-messages/#verify-signature">서명 검증</a>을 참고하세요.</p>
+<!-- warning end -->
+<p>사용자에게 응답을 보내려면 <a href="../../../reference/messaging-api/#send-reply-message">응답 메시지 보내기</a> 엔드포인트를 사용합니다. <code>index.js</code> 파일의 <code>app.post()</code>에서 응답 메시지 보내기 엔드포인트(<code>https://api.line.me/v2/bot/message/reply</code>)를 호출하세요. <code>app.post</code>를 아래 코드로 바꾸세요. 자세한 설명은 아래 코드의 주석을 확인하세요.</p>
+<pre><code class="language-javascript">app.<span class="hljs-title function_">post</span>(<span class="hljs-string">&quot;/webhook&quot;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) {
+  res.<span class="hljs-title function_">send</span>(<span class="hljs-string">&quot;HTTP POST request sent to the webhook URL!&quot;</span>);
+  <span class="hljs-comment">// 사용자가 봇에 메시지를 보내면 응답 메시지를 보냅니다</span>
+  <span class="hljs-keyword">if</span> (req.<span class="hljs-property">body</span>.<span class="hljs-property">events</span>[<span class="hljs-number">0</span>].<span class="hljs-property">type</span> === <span class="hljs-string">&quot;message&quot;</span>) {
+    <span class="hljs-comment">// API 서버로 보낼 응답 토큰과 메시지 데이터는 문자열로 변환해야 합니다</span>
+    <span class="hljs-keyword">const</span> dataString = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>({
+      <span class="hljs-comment">// 응답 토큰 정의</span>
+      <span class="hljs-attr">replyToken</span>: req.<span class="hljs-property">body</span>.<span class="hljs-property">events</span>[<span class="hljs-number">0</span>].<span class="hljs-property">replyToken</span>,
+      <span class="hljs-comment">// 응답 메시지 정의</span>
+      <span class="hljs-attr">messages</span>: [
+        {
+          <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;text&quot;</span>,
+          <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;Hello, user&quot;</span>,
+        },
+        {
+          <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;text&quot;</span>,
+          <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;May I help you?&quot;</span>,
+        },
+      ],
+    });
+
+    <span class="hljs-comment">// 요청 헤더. 사양은 Messaging API 레퍼런스를 참고하세요</span>
+    <span class="hljs-keyword">const</span> headers = {
+      <span class="hljs-string">&quot;Content-Type&quot;</span>: <span class="hljs-string">&quot;application/json&quot;</span>,
+      <span class="hljs-title class_">Authorization</span>: <span class="hljs-string">&quot;Bearer &quot;</span> + <span class="hljs-variable constant_">TOKEN</span>,
+    };
+
+    <span class="hljs-comment">// Node.js 문서의 http.request 메서드에 정의된 대로, 요청에 전달할 옵션</span>
+    <span class="hljs-keyword">const</span> webhookOptions = {
+      <span class="hljs-attr">hostname</span>: <span class="hljs-string">&quot;api.line.me&quot;</span>,
+      <span class="hljs-attr">path</span>: <span class="hljs-string">&quot;/v2/bot/message/reply&quot;</span>,
+      <span class="hljs-attr">method</span>: <span class="hljs-string">&quot;POST&quot;</span>,
+      <span class="hljs-attr">headers</span>: headers,
+      <span class="hljs-attr">body</span>: dataString,
+    };
+
+    <span class="hljs-comment">// message 타입의 HTTP POST 요청이 /webhook 엔드포인트로 오면,</span>
+    <span class="hljs-comment">// webhookOptions 변수에 정의된 https://api.line.me/v2/bot/message/reply로</span>
+    <span class="hljs-comment">// HTTP POST 요청을 보냅니다.</span>
+
+    <span class="hljs-comment">// 요청 정의</span>
+    <span class="hljs-keyword">const</span> request = https.<span class="hljs-title function_">request</span>(webhookOptions, <span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+      res.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;data&quot;</span>, <span class="hljs-function">(<span class="hljs-params">d</span>) =&gt;</span> {
+        process.<span class="hljs-property">stdout</span>.<span class="hljs-title function_">write</span>(d);
+      });
+    });
+
+    <span class="hljs-comment">// 오류 처리</span>
+    <span class="hljs-comment">// request.on()은 API 서버로 요청을 보내는 동안 오류가 발생하면 호출되는 함수입니다.</span>
+    request.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;error&quot;</span>, <span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(err);
+    });
+
+    <span class="hljs-comment">// 마지막으로 요청과 정의한 데이터를 보냅니다</span>
+    request.<span class="hljs-title function_">write</span>(dataString);
+    request.<span class="hljs-title function_">end</span>();
+  }
+});
+</code></pre>
+<h2>4. Messaging API 채널 준비하기</h2>
+<p>Messaging API를 사용하려면 Messaging API 채널이 있어야 하고 웹훅 URL을 등록해야 합니다. 아직 채널이 없다면 <a href="../getting-started/">채널을 만드세요</a>.</p>
+<p>LINE Developers Console의 Messaging API 채널 페이지에서 <strong>Messaging API</strong> 탭을 열고 <a href="../../basics/channel-access-token/">채널 액세스 토큰</a>을 발급하세요. 이 토큰은 <a href="./#deploy-on-heroku">봇을 Heroku에 배포</a>할 때 사용합니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/node-js-sample/channel-access-token-en.png" alt="Messaging API 채널의 채널 액세스 토큰 영역" loading="lazy"><figcaption>Messaging API 채널의 채널 액세스 토큰 영역</figcaption></figure></p>
+<p>다음으로 웹훅 URL을 등록하세요. <strong>Messaging API</strong> 탭에서, <a href="./#set-up-heroku">Heroku 설정하기</a> 섹션에서 얻은 Heroku URL을 기반으로 서버가 웹훅을 리슨하는 URL을 입력하세요. URL 형식은 <code>https://{Name of your app}.herokuapp.com/webhook</code>입니다. <strong>Webhook URL</strong>이 <code>https://{Name of your app}.herokuapp.com/</code>이 아니라는 점에 유의하세요.</p>
+<div class="tip">
+<p><strong>Heroku URL을 잊어버렸나요?</strong></p>
+<p>Heroku URL을 잊어버렸거나 분실했다면 <a href="https://dashboard.heroku.com/" target="_blank" rel="noopener noreferrer">Heroku 대시보드</a>에서 URL을 확인할 수 있습니다.</p>
+</div>
+<p>마지막으로 <strong>Use webhook</strong> 설정을 활성화하세요.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/node-js-sample/enable-webhook-en.png" alt="&quot;Enable webhook&quot; setting in Messaging API tab" loading="lazy"><figcaption>&quot;Enable webhook&quot; setting in Messaging API tab</figcaption></figure></p>
+<p>봇을 테스트하려면 <strong>Messaging API</strong> 탭에 있는 QR 코드를 스캔하여 봇과 연결된 LINE 공식 계정을 LINE에서 친구로 추가하세요. 테스트할 때는 <strong>Auto-reply messages</strong>와 <strong>Greeting messages</strong> 설정을 비활성화하세요.</p>
+<p>이제 Messaging API 채널이 준비되었습니다!</p>
+<h2>5. Heroku에 배포하기</h2>
+<p>앞서 <a href="./#global-config">전역 설정</a> 섹션에서 채널 액세스 토큰으로 사용할 환경 변수 <code>LINE_ACCESS_TOKEN</code>을 설정했습니다. Heroku에 배포한 앱이 올바르게 작동하려면 환경 변수 <code>LINE_ACCESS_TOKEN</code>을 설정하고 등록해야 합니다.</p>
+<p>채널 액세스 토큰을 환경 변수로 등록하려면 터미널 또는 명령줄 도구에서 이 명령을 실행하세요. <a href="./#prepare-channel">Messaging API 채널 준비하기</a> 섹션에서 얻은 채널 액세스 토큰으로 <code>LINE_ACCESS_TOKEN</code>을 설정합니다.</p>
+<pre><code class="language-sh">heroku config:<span class="hljs-built_in">set</span> LINE_ACCESS_TOKEN={enter your channel access token here}
+</code></pre>
+<p>이제 앱을 배포할 준비가 되었습니다! 코드를 Heroku에 푸시하세요. 터미널 또는 명령줄 도구에서 다음 명령을 실행합니다.</p>
+<pre><code class="language-sh">git add .
+git commit -m <span class="hljs-string">&quot;First commit&quot;</span>
+git push heroku main
+</code></pre>
+<h3>웹훅 URL 확인하기</h3>
+<p>봇을 테스트하기 전에 웹훅이 작동하는지 확인하겠습니다. <a href="./#prepare-channel">Messaging API 채널 준비하기</a> 섹션에서 만든 채널의 <strong>Messaging API</strong> 탭으로 이동하세요. <strong>Webhook URL</strong>의 <strong>Verify</strong>를 클릭하여 웹훅이 작동하는지 확인하세요. 웹훅 URL에 문제가 없다면 &quot;Success&quot;라는 메시지가 표시됩니다. 작동하는 봇을 만든 것입니다.</p>
+<h3>봇 사용해 보기</h3>
+<p>LINE에서 봇에 메시지를 보내 보세요. 모든 것이 올바르게 설정되었다면 아래와 같이 봇으로부터 메시지를 받게 됩니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/messaging-api/node-js-sample/sample-bot-test.webp" alt="LINE 채팅방에서 샘플 봇과의 대화" loading="lazy"><figcaption>LINE 채팅방에서 샘플 봇과의 대화</figcaption></figure></p>
+<h3>샘플 봇 문제 해결하기</h3>
+<p>봇이 작동하지 않는다면 다음 명령으로 Heroku 로그를 확인하세요.</p>
+<pre><code class="language-sh">heroku logs --<span class="hljs-built_in">tail</span>
+</code></pre>
+<h2>다음 단계</h2>
+<p>Messaging API로 계속 학습해 보세요. 다음 과제는 봇에 기능을 더 추가하는 것입니다.</p>
+<ul>
+<li><a href="../../../reference/messaging-api/#rich-menu">리치 메뉴</a>를 추가하여 사용자에게 탭할 수 있는 옵션을 보여 주세요.</li>
+<li>사용자가 액션을 트리거할 때 받는 <a href="../../../reference/messaging-api/#action-objects">액션 객체</a>에 따라 사용자에게 응답하세요.</li>
+<li><a href="../../../reference/messaging-api/#get-profile">사용자 프로필을 가져오고</a> 프로필 정보를 기반으로 맞춤 메시지를 보내세요.</li>
+</ul>
+<p>이 튜토리얼의 시작 부분에서 소개한 것처럼, <a href="https://line.github.io/line-bot-sdk-nodejs/" target="_blank" rel="noopener noreferrer">Node.js용 LINE Messaging API SDK</a>를 사용하면 봇을 훨씬 빠르게 만들 수 있습니다. 한번 사용해 보세요!</p>
+<h2>더 알아보기</h2>
+<ul>
+<li><a href="../../../reference/messaging-api/">Messaging API 레퍼런스</a></li>
+<li><a href="../overview/">Messaging API 개요</a></li>
+<li><a href="https://nodejs.org/api/https.html#https_https_request_options_callback" target="_blank" rel="noopener noreferrer">https.request 사양(Node.js)</a></li>
+</ul>
+</article></main>
+</div>
+<script>
+(function(){
+  var a=document.querySelector('.sidebar a.active');
+  if(a)a.scrollIntoView({block:'center'});
+  var input=document.getElementById('nav-search');
+  if(!input)return;
+  var items=[].slice.call(document.querySelectorAll('.sidebar li'));
+  input.addEventListener('input',function(){
+    var q=input.value.trim().toLowerCase();
+    items.forEach(function(li){
+      if(!q){li.classList.remove('hidden');return;}
+      var own=(li.querySelector(':scope > a, :scope > details > summary')||li).textContent.toLowerCase();
+      var hit=own.indexOf(q)!==-1||li.textContent.toLowerCase().indexOf(q)!==-1;
+      li.classList.toggle('hidden',!hit);
+      if(hit){var d=li.querySelector(':scope > details');if(d)d.open=true;}
+    });
+  });
+})();
+</script>
+</body>
+</html>

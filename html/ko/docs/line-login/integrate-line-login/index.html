@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>웹 앱에 LINE Login 연동하기 | LINE Developers</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#fff;--fg:#1a1a1a;--fg2:#595959;--border:#e5e5e5;--bg2:#f5f5f7;--accent:#0066ff;--code-bg:#f3f4f6;--hover:rgba(0,102,255,.07);--header-h:57px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f0f0f;--fg:#f5f5f5;--fg2:#a6a6a6;--border:#2d2d2d;--bg2:#1a1a1a;--accent:#4d94ff;--code-bg:#1e1e1e;--hover:rgba(77,148,255,.12);color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Neo','Noto Sans KR',Roboto,sans-serif;line-height:1.6;margin:0}
+header{position:sticky;top:0;z-index:20;height:var(--header-h);background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;padding:0 1.25rem}
+.logo{font-weight:700;font-size:1.2rem;color:var(--fg);text-decoration:none;white-space:nowrap}
+.search{flex:1;max-width:320px;margin-left:auto}
+.search input{width:100%;padding:.45rem .75rem;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--fg);font-size:.875rem}
+.search input:focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--bg)}
+.nav-btn{display:none;cursor:pointer;font-size:1.3rem;line-height:1;padding:.25rem .4rem;border:1px solid var(--border);border-radius:6px}
+#nav-toggle{position:absolute;opacity:0;pointer-events:none}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr)}
+.sidebar{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto;border-right:1px solid var(--border);background:var(--bg2);padding:.75rem 0 2rem;font-size:.875rem}
+.sidebar ul{list-style:none;margin:0;padding:0}
+.sidebar ul ul{padding-left:.9rem;border-left:1px solid var(--border);margin-left:1.1rem}
+.nav-title{padding:.9rem 1.25rem .35rem;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg2)}
+.sidebar a,.sidebar summary>span{display:inline-block;padding:.28rem .5rem;color:var(--fg2);text-decoration:none;border-radius:4px}
+.sidebar li>a{display:block;margin:0 .5rem 0 1rem}
+.sidebar a:hover{color:var(--accent);background:var(--hover)}
+.sidebar a.active{color:var(--accent);background:var(--hover);font-weight:600}
+.sidebar summary{cursor:pointer;padding:.1rem .75rem .1rem 1rem;list-style-position:inside}
+.sidebar summary>span{font-weight:600;color:var(--fg)}
+.sidebar summary a{padding-left:.2rem}
+.sidebar li.hidden{display:none}
+.content{min-width:0;padding:2rem 2.5rem 4rem}
+article{max-width:880px;margin:0 auto}
+h1,h2,h3,h4{line-height:1.3;color:var(--fg);text-wrap:balance}
+h1{font-size:2.1rem;margin:0 0 1rem}
+h2{font-size:1.5rem;margin:2.2rem 0 1rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.2rem;margin:1.6rem 0 .6rem}
+p,li{color:var(--fg2);line-height:1.75}
+a{color:var(--accent)}
+code{background:var(--code-bg);padding:.15em .4em;border-radius:3px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;line-height:1.5}
+pre code{background:none;padding:0;color:var(--fg)}
+blockquote{border-left:4px solid var(--accent);padding:.6rem 1.2rem;margin:1.2rem 0;background:var(--bg2);border-radius:4px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:1.2rem 0}
+th,td{padding:.6rem .8rem;border:1px solid var(--border);text-align:left;vertical-align:top}
+th{background:var(--bg2);color:var(--fg)}
+.doc-figure{margin:1.5rem 0;text-align:center}
+.doc-figure img{max-width:100%;height:auto;border:1px solid var(--border);border-radius:8px}
+.doc-figure figcaption{margin-top:.4rem;font-size:.85rem;color:var(--fg2)}
+.tip{background:var(--bg2);border-left:4px solid var(--accent);padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:4px}
+.feature-box{background:var(--bg2);border-left:4px solid var(--accent);border-radius:6px;padding:1rem 1.4rem;margin:1.2rem 0}
+.feature-box h4{margin:0 0 .4rem;color:var(--accent)}
+.feature-box p{margin:0}
+@media (max-width:860px){
+  .nav-btn{display:block}
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .sidebar{display:none;position:fixed;inset:var(--header-h) 0 0 0;height:auto;z-index:15;width:100%}
+  #nav-toggle:checked~.layout .sidebar{display:block}
+  .content{padding:1.25rem 1rem 3rem}
+  h1{font-size:1.6rem}
+  .search{max-width:none}
+}
+</style>
+</head>
+<body>
+<input type="checkbox" id="nav-toggle">
+<header>
+  <label for="nav-toggle" class="nav-btn" aria-label="메뉴">☰</label>
+  <a href="../../../" class="logo">LINE Developers</a>
+  <div class="search"><input id="nav-search" type="search" placeholder="문서 검색..." aria-label="문서 검색"></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" aria-label="문서 목차"><div class="nav-section"><div class="nav-title">문서</div><ul><li><details><summary><span>기본</span></summary><ul><li><a href="../../basics/channel-access-token/">채널 액세스 토큰</a></li><li><a href="../../basics/line-api-status/">LINE Platform 가용성 확인 (LINE API Status)</a></li><li><a href="../../basics/user-profile/">사용자 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LIFF</span></summary><ul><li><a href="../../liff/overview/">LIFF 개요</a></li><li><a href="../../liff/getting-started/">채널 생성하기</a></li><li><a href="../../liff/cli-tool-create-liff-app/">Create LIFF App로 LIFF 앱 개발 환경 구축하기</a></li><li><a href="../../liff/developing-liff-apps/">LIFF 앱 개발하기</a></li><li><a href="../../liff/development-guidelines/">LIFF 앱 개발 가이드라인</a></li><li><a href="../../liff/differences-between-liff-browser-and-external-browser/">LIFF 브라우저와 외부 브라우저의 차이</a></li><li><a href="../../liff/differences-between-liff-browser-and-line-in-app-browser/">LIFF 브라우저와 LINE 인앱 브라우저의 차이</a></li><li><a href="../../liff/liff-cli/">LIFF CLI</a></li><li><a href="../../liff/liff-plugin/">LIFF 플러그인</a></li><li><a href="../../liff/minimizing-liff-browser/">LIFF 브라우저 최소화</a></li><li><a href="../../liff/opening-liff-app/">LIFF 앱 열기</a></li><li><a href="../../liff/pluggable-sdk/">플러거블 SDK</a></li><li><a href="../../liff/registering-liff-apps/">채널에 LIFF 앱 추가하기</a></li><li><a href="../../liff/release-notes/">릴리스 노트</a></li><li><a href="../../liff/trying-liff-app/">LIFF 스타터 앱 체험하기</a></li><li><a href="../../liff/using-user-profile/">LIFF 앱 및 서버에서 사용자 데이터 사용하기</a></li><li><a href="../../liff/versioning-policy/">버전 정책</a></li></ul></details></li><li><details><summary><span>LINE Ads API</span></summary><ul><li><a href="../../line-ads-api/about/">LINE Ads API 소개</a></li><li><a href="../../line-ads-api/development-guidelines/">LINE Ads API 개발 가이드라인</a></li></ul></details></li><li><a href="../../line-conversion-api/">LINE Conversion API</a></li><li><details><summary><span>LINE Developers 콘솔</span></summary><ul><li><a href="../../line-developers-console/overview/">LINE Developers Console 개요</a></li><li><a href="../../line-developers-console/best-practices-for-provider-and-channel-management/">프로바이더 및 채널 관리 모범 사례</a></li><li><a href="../../line-developers-console/delete-developer-account/">개발자 계정 삭제하기</a></li><li><a href="../../line-developers-console/login-account/">LINE Developers Console에 로그인하기</a></li><li><a href="../../line-developers-console/managing-roles/">역할 관리하기</a></li><li><a href="../../line-developers-console/notification/">이메일 또는 알림 센터로 알림 받기</a></li></ul></details></li><li><details open><summary><span>LINE 로그인</span></summary><ul><li><a href="../overview/">LINE Login 개요</a></li><li><a href="../getting-started/">LINE Login 시작하기</a></li><li><a href="../development-guidelines/">LINE Login 개발 가이드라인</a></li><li><a href="../how-to-handle-auto-login-failure/">자동 로그인 실패 처리 방법</a></li><li><a href="./" class="active" aria-current="page">웹 앱에 LINE Login 연동하기</a></li><li><a href="../integrate-line-login-v2/">웹 앱에 LINE Login(v2.0) 연동하기</a></li><li><a href="../integrate-pkce/">LINE Login의 PKCE 지원</a></li><li><a href="../link-a-bot/">로그인 시 LINE 공식 계정을 친구로 추가하기(친구 추가 옵션)</a></li><li><a href="../login-button/">LINE Login 버튼 디자인 가이드라인</a></li><li><a href="../managing-access-tokens/">액세스 토큰 관리</a></li><li><a href="../managing-access-tokens-v2/">액세스 토큰 관리(LINE Login v2.0)</a></li><li><a href="../managing-authorized-apps/">승인된 앱 관리하기</a></li><li><a href="../managing-users/">사용자 관리</a></li><li><a href="../managing-users-v2/">사용자 관리(LINE Login v2.0)</a></li><li><a href="../secure-login-process/">앱과 서버 간의 안전한 로그인 프로세스 만들기</a></li><li><a href="../security-checklist/">LINE Login 보안 체크리스트</a></li><li><a href="../using-line-url-scheme/">LINE URL scheme을 사용하여 LINE 기능 이용하기</a></li><li><a href="../verify-id-token/">ID 토큰에서 프로필 정보 가져오기</a></li></ul></details></li><li><details><summary><span>LINE 로그인 SDK</span></summary><ul><li><details><summary><span>Android SDK</span></summary><ul><li><a href="../../line-login-sdks/android-sdk/overview/">LINE SDK for Android 개요</a></li><li><a href="../../line-login-sdks/android-sdk/handling-errors/">오류 처리</a></li><li><a href="../../line-login-sdks/android-sdk/integrate-line-login/">Android 앱에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/android-sdk/link-a-bot/">SDK로 친구 추가 옵션 활성화하기</a></li><li><a href="../../line-login-sdks/android-sdk/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../line-login-sdks/android-sdk/managing-users/">사용자 관리하기</a></li><li><a href="../../line-login-sdks/android-sdk/release-notes/">LINE SDK for Android 릴리스 노트</a></li><li><a href="../../line-login-sdks/android-sdk/try-line-login/">샘플 앱 체험하기</a></li></ul></details></li><li><a href="../../line-login-sdks/flutter-sdk/">Flutter SDK</a></li><li><details><summary><span>iOS SDK</span></summary><ul><li><a href="../../line-login-sdks/ios-sdk/release-notes/">LINE SDK for iOS 릴리스 노트</a></li><li><details><summary><span>Swift</span></summary><ul><li><a href="../../line-login-sdks/ios-sdk/swift/overview/">LINE SDK for iOS Swift 개요</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/error-handling/">오류 처리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/integrate-line-login/">iOS 앱에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/link-a-bot/">SDK로 추가 친구 옵션 활성화하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/managing-access-tokens/">액세스 토큰 관리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/managing-users/">사용자 관리하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/migration-guide/">SDK 업그레이드하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/setting-up-project/">프로젝트 설정하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/universal-links-support/">유니버설 링크 사용하기</a></li><li><a href="../../line-login-sdks/ios-sdk/swift/using-objc/">Objective-C 코드에서 SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>Unity SDK</span></summary><ul><li><a href="../../line-login-sdks/unity-sdk/overview/">LINE SDK for Unity 개요</a></li><li><a href="../../line-login-sdks/unity-sdk/integrate-line-login/">Unity 게임에 LINE Login 통합하기</a></li><li><a href="../../line-login-sdks/unity-sdk/project-setup/">프로젝트 설정하기</a></li><li><a href="../../line-login-sdks/unity-sdk/release-notes/">LINE SDK for Unity 릴리스 노트</a></li><li><a href="../../line-login-sdks/unity-sdk/try-line-login/">스타터 앱 체험하기</a></li><li><a href="../../line-login-sdks/unity-sdk/using-sdk/">결과 처리와 기타 API에 LINE SDK 사용하기</a></li></ul></details></li></ul></details></li><li><details><summary><span>LINE 미니앱</span></summary><ul><li><a href="../../line-mini-app/quickstart/">LINE MINI App 시작하기</a></li><li><details><summary><span>Design</span></summary><ul><li><a href="../../line-mini-app/design/landscape/">LINE MINI App의 안전 영역</a></li><li><a href="../../line-mini-app/design/line-mini-app-icon/">LINE MINI App 아이콘 사양 및 가이드라인</a></li><li><a href="../../line-mini-app/design/loading-icon/">로딩 아이콘</a></li></ul></details></li><li><details><summary><span>Develop</span></summary><ul><li><a href="../../line-mini-app/develop/add-to-home-screen/">LINE MINI App의 바로가기를 사용자 기기의 홈 화면에 추가하기</a></li><li><a href="../../line-mini-app/develop/channel-consent-simplification/">LINE MINI App 인증 흐름</a></li><li><a href="../../line-mini-app/develop/configure-console/">LINE MINI App 사용자에게 표시되는 설정</a></li><li><a href="../../line-mini-app/develop/custom-path/">커스텀 경로 설정하기</a></li><li><a href="../../line-mini-app/develop/develop-overview/">시작하기</a></li><li><a href="../../line-mini-app/develop/external-browser/">외부 브라우저에서 LINE MINI App 열기</a></li><li><a href="../../line-mini-app/develop/payment/">결제 처리하기</a></li><li><a href="../../line-mini-app/develop/performance-guidelines/">성능 가이드라인</a></li><li><a href="../../line-mini-app/develop/permanent-links/">영구 링크 만들기</a></li><li><a href="../../line-mini-app/develop/service-messages/">서비스 메시지 보내기</a></li><li><a href="../../line-mini-app/develop/share-messages/">커스텀 액션 버튼 구현하기</a></li><li><a href="../../line-mini-app/develop/share-messages-standard/">가이드라인을 따르는 JSON 파일 예시</a></li><li><a href="../../line-mini-app/develop/web-to-mini-app/">운영 중인 웹 앱을 LINE MINI App으로 구현하기</a></li></ul></details></li><li><a href="../../line-mini-app/development-guidelines/">LINE MINI App 개발 가이드라인</a></li><li><details><summary><span>Discover</span></summary><ul><li><a href="../../line-mini-app/discover/introduction/">LINE MINI App 소개</a></li><li><a href="../../line-mini-app/discover/builtin-features/">기본 제공 기능</a></li><li><a href="../../line-mini-app/discover/console-guide/">LINE MINI App용 LINE Developers Console 가이드</a></li><li><a href="../../line-mini-app/discover/custom-features/">커스텀 기능</a></li><li><a href="../../line-mini-app/discover/native-mini/">네이티브 앱과 LINE MINI App의 차이</a></li><li><a href="../../line-mini-app/discover/specifications/">LINE MINI App 사양</a></li><li><a href="../../line-mini-app/discover/ui-components/">LINE MINI App UI 컴포넌트</a></li></ul></details></li><li><details><summary><span>In App Purchase</span></summary><ul><li><a href="../../line-mini-app/in-app-purchase/overview/">인앱 결제 개요</a></li><li><a href="../../line-mini-app/in-app-purchase/apple-mini-apps-partner-program/">Mini Apps Partner Program을 통한 App Store 수수료 인하</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-guidelines/">인앱 결제 개발 가이드라인</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-product-id/">인앱 결제로 구매 가능한 아이템의 상품 ID 목록</a></li><li><a href="../../line-mini-app/in-app-purchase/iap-settings/">인앱 결제 설정</a></li><li><a href="../../line-mini-app/in-app-purchase/implement-in-app-purchase/">인앱 결제 기능 연동</a></li><li><a href="../../line-mini-app/in-app-purchase/request-iap-review/">인앱 결제 사용 신청</a></li></ul></details></li><li><details><summary><span>Quick Fill</span></summary><ul><li><a href="../../line-mini-app/quick-fill/overview/">공통 프로필 Quick-fill 개요</a></li><li><a href="../../line-mini-app/quick-fill/design-regulations/">공통 프로필 Quick-fill 디자인 규정</a></li></ul></details></li><li><details><summary><span>Service</span></summary><ul><li><a href="../../line-mini-app/service/add-friend-option/">LINE MINI App에서 LINE 공식 계정을 친구로 추가하기 (친구 추가 옵션)</a></li><li><a href="../../line-mini-app/service/business-manager-link/">LINE MINI App 채널을 Business Manager 조직에 연결하기</a></li><li><a href="../../line-mini-app/service/line-mini-app-ads/">LINE MINI App에 광고 게재하기</a></li><li><a href="../../line-mini-app/service/line-mini-app-oa/">LINE 공식 계정 활용하기</a></li><li><a href="../../line-mini-app/service/service-operation/">서비스 운영하기</a></li><li><a href="../../line-mini-app/service/update-service/">인증된 MINI App 업데이트 후 재심사</a></li></ul></details></li><li><details><summary><span>Submit</span></summary><ul><li><a href="../../line-mini-app/submit/submission-guide/">LINE MINI App 제출하기</a></li></ul></details></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../../line-mini-app/technicalcase/bravetechnology/">&#039;대기 줄 관리 솔루션이 LINE MINI App으로 확장되는 방식: &quot;matoca&quot;와 &quot;yoboca&quot;의 개발 사례&#039;</a></li><li><a href="../../line-mini-app/technicalcase/classmethod/">모바일 주문 시스템 CX ORDER 사례 연구</a></li><li><a href="../../line-mini-app/technicalcase/grandream/">GDL 플랫폼의 기술 사례 연구: 비용 효율성과 유연성을 함께 실현</a></li><li><a href="../../line-mini-app/technicalcase/hakuhodo/">도야마현 아사히마치의 모빌리티 및 건강 증진을 위한 디지털 활성화 프로젝트 &quot;PoHUNT&quot; 개발 사례</a></li><li><a href="../../line-mini-app/technicalcase/kirifuda-morikaranotegami/">놀이를 통한 자연 보호: LINE MINI App으로 출시한 &quot;Letters from the Forest&quot;의 기술 사례 연구</a></li></ul></details></li></ul></details></li><li><details><summary><span>Messaging API</span></summary><ul><li><a href="../../messaging-api/overview/">Messaging API 개요</a></li><li><a href="../../messaging-api/getting-started/">Messaging API 시작하기</a></li><li><a href="../../messaging-api/actions/">액션</a></li><li><a href="../../messaging-api/beacon-device-spec/">LINE Beacon 디바이스 사양</a></li><li><a href="../../messaging-api/building-bot/">봇 만들기</a></li><li><a href="../../messaging-api/check-webhook-error-statistics/">웹훅 오류 원인 및 통계 확인하기</a></li><li><a href="../../messaging-api/create-flex-message-including-video/">동영상이 포함된 Flex Message 만들기</a></li><li><a href="../../messaging-api/development-guidelines/">Messaging API 개발 가이드라인</a></li><li><a href="../../messaging-api/download-bot-designer/">LINE Bot Designer 다운로드</a></li><li><a href="../../messaging-api/flex-message-elements/">Flex Message 요소</a></li><li><a href="../../messaging-api/flex-message-layout/">Flex Message 레이아웃</a></li><li><a href="../../messaging-api/generate-json-web-token/">채널 액세스 토큰 v2.1 발급</a></li><li><a href="../../messaging-api/get-quote-tokens/">인용 토큰 가져오기</a></li><li><a href="../../messaging-api/getting-user-ids/">사용자 ID 가져오기</a></li><li><a href="../../messaging-api/group-chats/">그룹 채팅 및 다인 채팅</a></li><li><a href="../../messaging-api/icon-nickname-switch/">아이콘 및 표시 이름 설정하기</a></li><li><a href="../../messaging-api/line-bot-sdk/">LINE Messaging API SDK</a></li><li><a href="../../messaging-api/linking-accounts/">사용자 계정 연동</a></li><li><a href="../../messaging-api/mark-as-read/">메시지를 읽음으로 표시하기</a></li><li><a href="../../messaging-api/measure-impressions/">노출 수 측정하기</a></li><li><a href="../../messaging-api/message-types/">메시지 타입</a></li><li><a href="../../messaging-api/nodejs-sample/">튜토리얼 - 응답 봇 만들기</a></li><li><a href="../../messaging-api/pricing/">Messaging API 요금</a></li><li><a href="../../messaging-api/receiving-messages/">메시지 수신하기(웹훅)</a></li><li><a href="../../messaging-api/retrying-api-request/">API 요청 재시도</a></li><li><a href="../../messaging-api/rich-menus-overview/">리치 메뉴 개요</a></li><li><a href="../../messaging-api/secure-message-sample/">보안 메시지 생성을 위한 샘플 코드와 데이터</a></li><li><a href="../../messaging-api/send-coupons-to-users/">쿠폰을 만들어 사용자에게 보내기</a></li><li><a href="../../messaging-api/sending-messages/">메시지 보내기</a></li><li><a href="../../messaging-api/sharing-bot/">LINE 공식 계정 친구 늘리기</a></li><li><a href="../../messaging-api/ssl-tls-spec-of-the-webhook-source/">웹훅 소스의 SSL/TLS 사양</a></li><li><a href="../../messaging-api/stop-using-line-official-account/">LINE 공식 계정 사용 중단하기</a></li><li><a href="../../messaging-api/stop-using-messaging-api/">Messaging API 사용 중단하기</a></li><li><a href="../../messaging-api/switch-rich-menus/">리치 메뉴에서 탭 전환하기</a></li><li><details><summary><span>Technicalcase</span></summary><ul><li><a href="../../messaging-api/technicalcase/boldly/">온디맨드 자율주행 버스 예약 시스템의 LINE MINI App 사례</a></li><li><a href="../../messaging-api/technicalcase/evolany-ai/">anybot for ChatGPT 기술 사례 연구: ChatGPT를 적극 활용하여 더 원활한 커뮤니케이션 구현하기</a></li><li><a href="../../messaging-api/technicalcase/heptagon/">이주 및 정착 관련 문의를 처리하는 LINE 봇 개발 사례 연구</a></li><li><a href="../../messaging-api/technicalcase/playnext-lab/">Smart Public Lab 기술 사례 연구: 행정 디지털 전환을 지원하는 LINE 활용 전략</a></li><li><a href="../../messaging-api/technicalcase/resortbaito-dive/">임시직 직원의 만족도를 높이기 위한 &quot;Resort Baito Dive&quot; 개발 사례</a></li><li><a href="../../messaging-api/technicalcase/skillbox/">SkillBox 기술 사례 연구: 이메일 주소가 없는 직원까지 LINE 알림으로 참여도 설문 응답률을 크게 높이다</a></li><li><a href="../../messaging-api/technicalcase/softbank/">인프라를 로우 코드로 도입하기: CNAP으로 개발 효율을 높인 LINE 기반 서비스 개발 사례</a></li></ul></details></li><li><a href="../../messaging-api/text-character-count/">텍스트의 글자 수 세기</a></li><li><a href="../../messaging-api/try-rich-menu/">리치 메뉴 체험하기</a></li><li><a href="../../messaging-api/unit-based-statistics-aggregation/">발송한 메시지의 통계 조회하기</a></li><li><a href="../../messaging-api/use-loading-indicator/">로딩 애니메이션 표시하기</a></li><li><a href="../../messaging-api/use-membership-features/">멤버십 기능 사용하기</a></li><li><a href="../../messaging-api/use-per-user-rich-menus/">사용자별 리치 메뉴 사용하기</a></li><li><a href="../../messaging-api/user-consent/">사용자 프로필 정보 제공 동의</a></li><li><a href="../../messaging-api/using-audience/">오디언스 사용하기</a></li><li><a href="../../messaging-api/using-beacons/">LINE 비콘 사용하기</a></li><li><a href="../../messaging-api/using-bot-designer/">LINE Bot Designer</a></li><li><a href="../../messaging-api/using-flex-message-simulator/">튜토리얼 - Flex Message Simulator로 디지털 명함 만들기</a></li><li><a href="../../messaging-api/using-flex-messages/">Flex Message 보내기</a></li><li><a href="../../messaging-api/using-line-url-scheme/">LINE URL 스킴으로 LINE 기능 사용하기</a></li><li><a href="../../messaging-api/using-quick-reply/">퀵 리플라이 사용하기</a></li><li><a href="../../messaging-api/using-rich-menus/">리치 메뉴 사용하기</a></li><li><a href="../../messaging-api/verify-webhook-signature/">웹훅 서명 검증하기</a></li><li><a href="../../messaging-api/verify-webhook-url/">웹훅 URL 확인하기</a></li></ul></details></li><li><details><summary><span>파트너 문서</span></summary><ul><li><a href="../../partner-docs/overview/">개요</a></li><li><a href="../../partner-docs/api-policy-handbook/">LINE API 정책 핸드북</a></li><li><a href="../../partner-docs/development-guidelines/">법인 고객을 위한 개발 가이드라인</a></li><li><a href="../../partner-docs/error-notification/">오류 알림</a></li><li><a href="../../partner-docs/line-beacon/">LINE Beacon</a></li><li><details><summary><span>Line Notification Messages</span></summary><ul><li><a href="../../partner-docs/line-notification-messages/overview/">LINE 알림 메시지 개요</a></li><li><a href="../../partner-docs/line-notification-messages/flow-when-receiving-message/">LINE 알림 메시지를 수신할 때의 흐름</a></li><li><a href="../../partner-docs/line-notification-messages/message-sending-complete-webhook-event/">웹훅 발송 완료 이벤트</a></li><li><a href="../../partner-docs/line-notification-messages/statistics/">LINE 알림 메시지 통계 가져오기</a></li><li><a href="../../partner-docs/line-notification-messages/technical-specs/">LINE 알림 메시지 API 기술 사양</a></li><li><a href="../../partner-docs/line-notification-messages/template/">LINE 알림 메시지(템플릿)</a></li></ul></details></li><li><a href="../../partner-docs/line-profile-plus/">LINE Profile+</a></li><li><a href="../../partner-docs/mark-as-read/">Mark as read API(이전 버전)</a></li><li><a href="../../partner-docs/mission-stickers/">Mission Sticker API</a></li><li><a href="../../partner-docs/module/">모듈</a></li><li><a href="../../partner-docs/module-technical-attach-channel/">모듈 채널 연결</a></li><li><a href="../../partner-docs/module-technical-chat-control/">채팅 주도권 제어(Chat Control)</a></li><li><a href="../../partner-docs/module-technical-console/">모듈 채널 설정 구성</a></li><li><a href="../../partner-docs/module-technical-using-messaging-api/">모듈 채널에서 Messaging API 사용하기</a></li><li><a href="../../partner-docs/notice/">법인 고객 공지</a></li><li><a href="../../partner-docs/provider-page/">Provider page</a></li></ul></details></li></ul></div><div class="nav-section"><div class="nav-title">레퍼런스</div><ul><li><a href="../../../reference/liff/">LIFF API reference</a></li><li><a href="../../../reference/liff-server/">Server API</a></li><li><a href="../../../reference/line-login/">LINE Login v2.1 API reference</a></li><li><a href="../../../reference/line-login-v2/">LINE Login API v2.0 reference</a></li><li><a href="../../../reference/line-mini-app/">LINE MINI App API reference</a></li><li><a href="../../../reference/line-notification-messages/">LINE notification messages API reference</a></li><li><a href="../../../reference/messaging-api/">Messaging API reference</a></li><li><a href="../../../reference/partner-docs/">Options for corporate customers API reference</a></li></ul></div></nav>
+  <main class="content"><article><h1>웹 앱에 LINE Login 연동하기</h1><p><a href="../overview/">LINE Login v2.1</a>은 <a href="https://openid.net/developers/how-connect-works/" target="_blank" rel="noopener noreferrer">OpenID Connect</a> 프로토콜을 지원하며, ID 토큰으로 사용자 데이터를 가져올 수 있습니다. 이 가이드에서는 웹 앱에 LINE Login을 구현하는 방법을 설명합니다.</p>
+<p>LINE Login을 지원하도록 업데이트할 기존 앱이 없다면 샘플 앱을 사용하여 따라 할 수 있습니다. 자세한 내용은 <a href="../getting-started/">LINE Login 시작하기</a>를 참고하십시오.</p>
+<!-- note start -->
+<p><strong>Note</strong></p>
+<ul>
+<li>LINE Login v2.0을 웹 앱에 연동하는 경우에는 <a href="../integrate-line-login-v2/">웹 앱에 LINE Login(v2.0) 연동하기</a>를 참고하십시오.</li>
+<li>개발 환경에서 LINE SDK를 사용할 수 있다면 LINE SDK로 LINE Login을 연동하는 것을 강력히 권장합니다. 네이티브 앱에는 이 페이지의 절차를 사용하지 않는 것을 권장합니다. LINE SDK 사용에 대한 자세한 내용은 <a href="../overview/#native-app">네이티브 앱과 연동하기</a>를 참고하십시오.</li>
+</ul>
+<!-- note end -->
+<h2>로그인 흐름</h2>
+<p>웹 앱의 LINE Login 프로세스(웹 로그인)는 <a href="https://datatracker.ietf.org/doc/html/rfc6749" target="_blank" rel="noopener noreferrer">OAuth 2.0 authorization code grant flow</a>와 <a href="https://openid.net/developers/how-connect-works/" target="_blank" rel="noopener noreferrer">OpenID Connect</a> 프로토콜을 기반으로 합니다. 웹 로그인 흐름의 개요는 아래와 같습니다.</p>
+<p>웹 앱은 순서도에서 자신에게 해당하는 로그인 흐름 부분을 구현해야 합니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/line-login/web-login-flow.svg" alt="Web login flow" loading="lazy"><figcaption>Web login flow</figcaption></figure></p>
+<h2>채널 만들기</h2>
+<p><a href="../getting-started/#step-1-create-channel">LINE Login 채널을 만들고</a> 웹 앱에서 사용할 수 있도록 설정합니다.</p>
+<ul>
+<li><a href="./#setting-callback-url">콜백 URL 설정하기</a></li>
+<li><a href="./#applying-for-email-permission">사용자의 이메일 주소 접근 권한 신청하기</a></li>
+</ul>
+<h3>콜백 URL 설정하기</h3>
+<p>사용자가 인증되고 웹 앱을 승인하면 인증 코드와 <code>state</code>가 콜백 URL로 전송됩니다.</p>
+<p><a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에서 채널 설정의 <strong>LINE Login</strong> 탭으로 이동하여 콜백 URL을 설정하십시오. 줄을 추가하여 채널마다 여러 개의 콜백 URL을 지정할 수 있습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/line-login/integrate-login-web/redirect-settings-en.png" alt="Redirect settings" loading="lazy"><figcaption>Redirect settings</figcaption></figure></p>
+<h3>사용자의 이메일 주소 접근 권한 신청하기</h3>
+<p>LINE Login v2.1을 사용하면 LINE Login으로 앱에 로그인한 모든 사용자의 이메일 주소를 가져올 수 있습니다.</p>
+<p>웹 앱으로 사용자의 이메일 주소를 가져오려면 먼저 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에서 해당 권한을 신청해야 합니다.</p>
+<ol>
+<li>
+<p><strong>Basic settings</strong> 탭의 <strong>OpenID Connect</strong>에서 <strong>Apply</strong>를 클릭합니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/line-login/integrate-login-web/apply-email.png" alt="Requesting permission to access the user&#039;s email address" loading="lazy"><figcaption>Requesting permission to access the user&#039;s email address</figcaption></figure></p>
+</li>
+<li>
+<p>약관에 동의하고, 사용자의 이메일 주소를 수집한다는 사실과 그 용도를 설명하는 화면의 스크린샷을 업로드합니다.</p>
+<p>신청서가 승인되면 <strong>Email address permission</strong> 아래에 &quot;Applied&quot;가 표시됩니다.</p>
+</li>
+</ol>
+<h2>사용자 인증 및 인증 요청하기</h2>
+<p>LINE Platform을 통해 사용자를 인증하고 앱을 승인받는 과정을 시작합니다. 사용자가 LINE Login 버튼을 클릭하면 아래 예시와 같이 필요한 쿼리 파라미터를 포함한 인증 URL로 리디렉션합니다.</p>
+<pre><code>https://access.line.me/oauth2/v2.1/authorize?response_type=code&amp;client_id=1234567890&amp;redirect_uri=https%3A%2F%2Fexample.com%2Fauth%3Fkey%3Dvalue&amp;state=12345abcde&amp;scope=profile%20openid&amp;nonce=09876xyz
+</code></pre>
+<p>인증 URL에는 다음 쿼리 파라미터를 전달할 수 있습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>파라미터</th>
+<th>타입</th>
+<th>필수 여부</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>response_type</code></td>
+<td>String</td>
+<td>필수</td>
+<td><code>code</code></td>
+</tr>
+<tr>
+<td><code>client_id</code></td>
+<td>String</td>
+<td>필수</td>
+<td>LINE Login 채널 ID입니다. <a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에서 확인할 수 있습니다.</td>
+</tr>
+<tr>
+<td><code>redirect_uri</code></td>
+<td>String</td>
+<td>필수</td>
+<td><a href="https://developers.line.biz/console/" target="_blank" rel="noopener noreferrer">LINE Developers Console</a>에 등록된 콜백 URL을 URL 인코딩한 문자열입니다. 임의의 쿼리 파라미터를 추가할 수 있습니다.</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td>String</td>
+<td>필수</td>
+<td><a href="https://wikipedia.org/wiki/Cross-site_request_forgery" target="_blank" rel="noopener noreferrer">사이트 간 요청 위조(cross-site request forgery)</a>를 방지하기 위해 사용하는 고유한 영숫자 문자열입니다. <strong>웹 앱은 로그인 세션마다 무작위 값을 생성해야 합니다.</strong> URL 인코딩된 문자열이어서는 안 됩니다.</td>
+</tr>
+<tr>
+<td><code>scope</code></td>
+<td>String</td>
+<td>필수</td>
+<td>사용자에게 요청하는 권한입니다. 자세한 내용은 <a href="./#scopes">Scopes</a>를 참고하십시오.</td>
+</tr>
+<tr>
+<td><code>nonce</code></td>
+<td>String</td>
+<td>선택</td>
+<td><a href="https://en.wikipedia.org/wiki/Replay_attack" target="_blank" rel="noopener noreferrer">재전송 공격(replay attack)</a>을 방지하기 위해 사용하는 문자열입니다. 이 값은 <a href="../verify-id-token/#id-tokens">ID 토큰</a>에 포함되어 반환됩니다.</td>
+</tr>
+<tr>
+<td><code>prompt</code></td>
+<td>String</td>
+<td>선택</td>
+<td>인증 또는 승인 화면을 표시할지 여부를 결정하는 설정입니다. 다음 값 중 하나를 설정할 수 있습니다.<ul><li><code>consent</code>: 사용자가 요청된 권한을 이미 모두 부여했더라도 동의 화면을 강제로 표시할 때 사용합니다.</li><li><code>none</code>: <a href="./#line-auto-login">자동 로그인</a>이 활성화되어 있고 사용자가 이미 로그인되어 있으며 대상 채널에 권한 부여에 동의한 상태라면, <a href="./#line-sso-login">Single Sign On(SSO)</a> 인증 화면을 건너뛸 때 사용합니다.</li><li><code>login</code>: 사용자가 이미 로그인되어 있거나 Single Sign On 로그인 세션이 남아 있더라도 인증 화면을 표시할 때 사용합니다. <code>login</code>을 설정하면 자동 로그인이 비활성화됩니다. 응답으로 반환되는 <a href="../verify-id-token/#id-tokens">ID 토큰</a>의 <code>amr</code>에서 사용된 인증 방법을 확인할 수도 있습니다.</li></ul></td>
+</tr>
+<tr>
+<td><code>max_age</code></td>
+<td>Number</td>
+<td>선택</td>
+<td>사용자가 마지막으로 인증된 시점 이후 허용되는 경과 시간(초)입니다. <a href="https://openid.net/specs/openid-connect-core-1_0.html" target="_blank" rel="noopener noreferrer">OpenID Connect Core 1.0</a>의 “Authentication Request” 섹션에 정의된 <code>max_age</code> 파라미터에 해당합니다.</td>
+</tr>
+<tr>
+<td><code>ui_locales</code></td>
+<td>String</td>
+<td>선택</td>
+<td>LINE Login 화면의 표시 언어입니다. <a href="https://datatracker.ietf.org/doc/html/rfc5646" target="_blank" rel="noopener noreferrer">RFC 5646(BCP 47)</a> 언어 태그를 하나 이상 공백으로 구분하여 우선순위 순으로 지정합니다. <a href="https://openid.net/specs/openid-connect-core-1_0.html" target="_blank" rel="noopener noreferrer">OpenID Connect Core 1.0</a>의 “Authentication Request” 섹션에 정의된 <code>ui_locales</code> 파라미터에 해당합니다.</td>
+</tr>
+<tr>
+<td><code>bot_prompt</code></td>
+<td>String</td>
+<td>선택</td>
+<td>로그인하는 동안 LINE 공식 계정을 친구로 추가하는 옵션을 표시합니다. <code>normal</code> 또는 <code>aggressive</code> 중 하나로 설정합니다. 자세한 내용은 <a href="../link-a-bot/">로그인 시 LINE 공식 계정을 친구로 추가하기(친구 추가 옵션)</a>를 참고하십시오.</td>
+</tr>
+<tr>
+<td><code>initial_amr_display</code></td>
+<td>String</td>
+<td>선택</td>
+<td><code>lineqr</code>을 지정하면 <a href="./#mail-or-qrcode-login">이메일 주소로 로그인</a> 대신 <a href="./#mail-or-qrcode-login">QR 코드로 로그인</a>이 기본으로 표시됩니다.</td>
+</tr>
+<tr>
+<td><code>switch_amr</code></td>
+<td>Boolean</td>
+<td>선택</td>
+<td><code>false</code>로 설정하면 &quot;Log in with email&quot;이나 “QR code login” 등 로그인 방법을 변경하는 버튼을 숨깁니다. 기본값은 <code>true</code>입니다.</td>
+</tr>
+<tr>
+<td><code>disable_auto_login</code></td>
+<td>Boolean</td>
+<td>선택</td>
+<td><code>true</code>로 설정하면 <a href="./#line-auto-login">자동 로그인</a>이 비활성화됩니다. 기본값은 <code>false</code>입니다.<br>이 값이 <code>true</code>이면 SSO를 사용할 수 있는 경우 <a href="./#line-sso-login">Single Sign On(SSO) 로그인</a>이 표시되고, 사용할 수 없는 경우 <a href="./#mail-or-qrcode-login">이메일 주소로 로그인</a>이 표시됩니다.</td>
+</tr>
+<tr>
+<td><code>disable_ios_auto_login</code></td>
+<td>Boolean</td>
+<td>선택</td>
+<td><code>true</code>로 설정하면 iOS에서 <a href="./#line-auto-login">자동 로그인</a>이 비활성화됩니다. 기본값은 <code>false</code>입니다. 나중에 추가된 <code>disable_auto_login</code> 파라미터를 사용하는 것을 권장합니다.</td>
+</tr>
+<tr>
+<td><code>code_challenge</code></td>
+<td>String</td>
+<td>선택</td>
+<td>LINE Login에서 PKCE를 지원하는 데 필요한 파라미터입니다. 고유한 <code>code_verifier</code>를 SHA256으로 해시한 다음 Base64URL 형식으로 인코딩한 값입니다. 기본값은 <code>null</code>입니다. 값을 지정하지 않으면 해당 요청은 PKCE를 지원하지 않습니다.<br>PKCE 구현 방법은 LINE Login 문서의 <a href="../integrate-pkce/#how-to-integrate-pkce">LINE Login에 PKCE 구현하기</a>를 참고하십시오.</td>
+</tr>
+<tr>
+<td><code>code_challenge_method</code></td>
+<td>String</td>
+<td>선택</td>
+<td><code>S256</code>(해시 함수 <code>SHA256</code>을 나타냅니다.)<br><code>code_verifier</code>의 변환 방식을 지정합니다. 보안상의 이유로 LINE Login은 <code>S256</code>만 지원합니다.<br>PKCE 구현 방법은 LINE Login 문서의 <a href="../integrate-pkce/#how-to-integrate-pkce">LINE Login에 PKCE 구현하기</a>를 참고하십시오.</td>
+</tr>
+<tr>
+<td><code>response_mode</code></td>
+<td>String</td>
+<td>선택</td>
+<td>인증 응답 파라미터를 웹 앱으로 반환하는 방식을 결정하는 설정입니다. 다음 값 중 하나를 설정할 수 있습니다. 기본값은 <code>query</code>입니다.<ul><li><code>query</code>: 인증 응답 파라미터를 콜백 URL의 쿼리 파라미터로 반환합니다. *1</li><li><code>form_post</code>: 인증 응답 파라미터를 HTTP POST 요청의 본문에 담아 반환합니다. *2</li><li><code>query.jwt</code>: 인증 응답 파라미터를 JWT에 담아 콜백 URL의 쿼리 파라미터로 반환합니다. <code>jwt</code>를 설정했을 때와 같습니다. *3</li><li><code>form_post.jwt</code>: 인증 응답 파라미터를 JWT에 담아 HTTP POST 요청의 본문에 담아 반환합니다. *3</li><li><code>jwt</code>: 인증 응답 파라미터를 JWT에 담아 콜백 URL의 쿼리 파라미터로 반환합니다. <code>query.jwt</code>를 설정했을 때와 같습니다. *3</li></ul>*1 <a href="https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html" target="_blank" rel="noopener noreferrer">OAuth 2.0 Multiple Response Type Encoding Practices</a>의 <a href="https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes" target="_blank" rel="noopener noreferrer">2.1. Response Modes</a> 섹션에 정의된 <code>query</code>에 해당합니다.<br>*2 <a href="https://openid.net/specs/oauth-v2-form-post-response-mode-1_0.html" target="_blank" rel="noopener noreferrer">OAuth 2.0 Form Post Response Mode</a>의 <a href="https://openid.net/specs/oauth-v2-form-post-response-mode-1_0.html#FormPostResponseMode" target="_blank" rel="noopener noreferrer">2. Form Post Response Mode</a> 섹션에 정의된 <code>form_post</code>에 해당합니다.<br>*3 <a href="https://openid.net/specs/openid-financial-api-jarm.html" target="_blank" rel="noopener noreferrer">Financial-grade API: JWT Secured Authorization Response Mode for OAuth 2.0(JARM)</a>의 <a href="https://openid.net/specs/openid-financial-api-jarm.html#response-encoding" target="_blank" rel="noopener noreferrer">4.3. Response Encoding</a> 섹션에 정의된 <code>query.jwt</code>, <code>form_post.jwt</code>, <code>jwt</code>에 해당합니다.</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tip">
+<p><strong>Tip</strong></p>
+<ul>
+<li>웹 앱에 LINE Login 버튼을 추가할 때는 <a href="../login-button/">LINE Login 버튼 디자인 가이드라인</a>을 따르십시오.</li>
+<li>LINE Login 버튼을 표시하지 않고 인증 URL로 직접 링크를 연결할 수도 있습니다.</li>
+<li>사용자의 인증 정보는 웹 앱으로 전송되지 않습니다.</li>
+</ul>
+</div>
+<!-- note start -->
+<p><strong>LIFF 브라우저 내의 인증 요청</strong></p>
+<p>LIFF 브라우저 내에서 LINE Login 인증 요청의 동작은 보장되지 않습니다. 또한 외부 브라우저에서 LIFF 앱을 열 때는 LINE Login을 통한 인증 요청 대신 <a href="../../../reference/liff/#login">liff.login()</a>을 사용하십시오.</p>
+<!-- note end -->
+<h3>Scopes</h3>
+<p><code>scope</code> 파라미터로 다음 scope를 지정할 수 있습니다. 여러 scope를 지정하려면 URL 인코딩된 공백 문자(%20)로 구분하십시오.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>프로필<br>정보</th>
+<th><a href="../verify-id-token/#id-tokens">ID 토큰</a><br>(사용자 ID 포함)</th>
+<th><a href="../verify-id-token/#id-tokens">ID 토큰</a>의<br>표시 이름</th>
+<th><a href="../verify-id-token/#id-tokens">ID 토큰</a>의<br>프로필 이미지 URL</th>
+<th><a href="../verify-id-token/#id-tokens">ID 토큰</a>의<br>이메일 주소</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>profile</code></td>
+<td>✓</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>profile%20openid</code></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>profile%20openid%20email</code></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓ (참고 참조)</td>
+</tr>
+<tr>
+<td><code>openid</code></td>
+<td>-</td>
+<td>✓</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>openid%20email</code></td>
+<td>-</td>
+<td>✓</td>
+<td>-</td>
+<td>-</td>
+<td>✓ (참고 참조)</td>
+</tr>
+</tbody>
+</table></div>
+<p>사용자는 동의 화면에서 지정한 scope를 승인합니다. <code>profile</code> 또는 <code>openid</code> scope를 지정하면 해당 권한이 필수로 표시됩니다. 자세한 내용은 <a href="./#authorization-process">사용자 승인</a>을 참고하십시오.</p>
+<p><strong>참고:</strong> <code>email</code> scope를 지정하고 사용자에게 이메일 주소 접근 권한을 요청하려면 먼저 <a href="./#applying-for-email-permission">사용자 이메일 주소 접근에 대한 신청서</a>를 제출해야 합니다.</p>
+<div class="tip">
+<p><strong>위에 나열되지 않은 scope 요청하기</strong></p>
+<ul>
+<li>LINE Profile+에 사용자가 등록한 정보(이름, 성별, 생년월일, 전화번호, 주소)를 가져오려면 신청 절차를 거쳐야 합니다. 자세한 내용은 법인 고객용 옵션 문서의 <a href="../../partner-docs/line-profile-plus/">LINE Profile+</a>를 참고하십시오.</li>
+<li>사용자가 LINE 공식 계정을 친구로 추가했는지 <a href="../link-a-bot/#use-line-login-api">확인하려면</a> <code>profile</code> scope가 포함된 액세스 토큰이 필요합니다.</li>
+</ul>
+</div>
+<h3>사용자 인증</h3>
+<div class="tip">
+<p><strong>사용자 인증은 LINE Platform에서 직접 처리합니다</strong></p>
+<p>LINE Login을 지원하는 웹 앱은 인증 과정을 직접 구현할 필요가 없습니다.</p>
+</div>
+<p>사용자는 인증 URL로 리디렉션된 후 다음 인증 방법 중 하나를 사용하여 로그인할 수 있습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>인증 방법</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="./#line-auto-login">자동 로그인</a></td>
+<td>사용자 조작 없이 로그인합니다. LINE Login 화면이나 확인 화면이 표시되지 않습니다.</td>
+</tr>
+<tr>
+<td><a href="./#mail-or-qrcode-login">이메일 주소로 로그인</a></td>
+<td>LINE Login 화면에서 이메일 주소와 비밀번호를 입력하여 로그인합니다.</td>
+</tr>
+<tr>
+<td><a href="./#mail-or-qrcode-login">QR 코드로 로그인</a></td>
+<td>LINE Login 화면에 표시된 QR 코드를 스마트폰의 LINE 앱에 있는 QR 코드 리더로 스캔하여 로그인합니다.</td>
+</tr>
+<tr>
+<td><a href="./#line-sso-login">SSO(Single Sign On) 로그인</a></td>
+<td>&quot;Continue as&quot;가 표시된 확인 화면에서 로그인 버튼을 클릭하여 로그인합니다.</td>
+</tr>
+</tbody>
+</table></div>
+<p>자동 로그인을 사용할 수 있는 환경에서는 자동 로그인이 우선 적용됩니다. 자동 로그인을 사용할 수 없는 경우, SSO를 사용할 수 있다면 <a href="./#line-sso-login">Single Sign On(SSO) 로그인</a>이 표시되고, 사용할 수 없다면 <a href="./#mail-or-qrcode-login">이메일 주소로 로그인</a>이 표시됩니다.</p>
+<!-- note start -->
+<p><strong>자동 로그인이 SSO 로그인보다 우선합니다</strong></p>
+<p>자동 로그인과 SSO 로그인이 모두 활성화된 환경에서는 자동 로그인이 우선 적용됩니다. 자세한 내용은 2021년 7월 12일에 게시된 소식 &quot;<a href="https://developers.line.biz/en/news/2021/07/12/auto-login-takes-precedence-over-sso/" target="_blank" rel="noopener noreferrer">Auto login will take precedence over SSO login for LINE Login</a>&quot;을 참고하십시오.</p>
+<p><a href="./#making-an-authorization-request">인증 요청하기</a> 시 인증 URL에 특정 쿼리 파라미터(<code>disable_auto_login</code>)를 추가하면 자동 로그인을 비활성화하여, 사용자가 자동 로그인 대신 SSO 로그인을 사용하도록 할 수 있습니다.</p>
+<!-- note end -->
+<!-- note start -->
+<p><strong>로그인 알림</strong></p>
+<p>로그인한 후에는 LINE 공식 계정에서 로그인 알림이 전송됩니다. 로그인 알림에 대한 자세한 내용은 Help Center의 <a href="https://help.line.me/line/android/pc?lang=en&amp;contentId=20014794" target="_blank" rel="noopener noreferrer">I got a notification about a detected login</a>을 참고하십시오.</p>
+<!-- note end -->
+<div class="tip">
+<p><strong>사용자가 선택한 인증 방법</strong></p>
+<p>ID 토큰을 확인하면 사용자가 선택한 인증 방법을 알 수 있습니다. ID 토큰에 대한 자세한 내용은 <a href="./#get-access-token">액세스 토큰 가져오기</a>의 “Response” 섹션을 참고하십시오.</p>
+</div>
+<h4>자동 로그인</h4>
+<p>사용자 조작 없이 로그인이 활성화됩니다. LINE Login 화면이나 확인 화면은 표시되지 않습니다.</p>
+<p>스마트폰 LINE 앱에 로그인된 상태에서 다음 브라우저 중 하나로 인증 URL에 접속하면 사용자는 자동으로 로그인됩니다.</p>
+<ul>
+<li>LINE의 인앱 브라우저</li>
+<li>LINE 로그인에 사용되는 외부 브라우저</li>
+</ul>
+<p>아래와 같이 로그인하면 LINE 앱이 자동으로 실행되며, 사용자는 아무 조작 없이 로그인됩니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/line-login/integrate-login-web/auto-login-animation.webp" alt="" loading="lazy"><figcaption></figcaption></figure></p>
+<!-- note start -->
+<p><strong>LINE for PC에서는 자동 로그인이 동작하지 않습니다</strong></p>
+<p>자동 로그인을 사용할 수 있는 환경에 대한 자세한 내용은 FAQ의 <a href="https://developers.line.biz/en/faq/#how-does-auto-login-work" target="_blank" rel="noopener noreferrer">자동 로그인은 어떻게 동작하나요?</a>를 참고하십시오.</p>
+<!-- note end -->
+<!-- note start -->
+<p><strong>자동 로그인이 실패할 수 있습니다</strong></p>
+<p>사용자가 시크릿 브라우징이 활성화된 상태에서 웹 앱에 접속하면 자동 로그인이 실패할 수 있습니다.</p>
+<p>그 밖에도 사용자 OS의 사양에 따라 자동 로그인이 실패할 수 있습니다. OS의 사양이 완전히 공개되어 있지 않으므로, LINE Platform이 자동 로그인이 실패하는 조건을 완전히 피하기는 어려울 수 있습니다.</p>
+<p>자세한 내용은 <a href="../how-to-handle-auto-login-failure/">자동 로그인 실패 처리 방법</a>을 참고하십시오.</p>
+<!-- note end -->
+<div class="tip">
+<p><strong>Yahoo! JAPAN 앱에서의 자동 로그인에 대하여</strong></p>
+<p>PKCE를 구현한 LINE Login을 연동한 웹 앱에 Yahoo! JAPAN 앱에서 접속하면 자동 로그인이 활성화됩니다. LINE Login의 PKCE 지원에 대한 자세한 내용은 LINE Login 문서의 <a href="../integrate-pkce/">LINE Login의 PKCE 지원</a>을 참고하십시오.</p>
+</div>
+<h4>이메일 주소 또는 QR 코드로 로그인</h4>
+<p>사용자는 다음 인증 방법 중 하나로 로그인할 수 있습니다.</p>
+<ul>
+<li>이메일 주소로 로그인</li>
+<li>QR 코드로 로그인</li>
+</ul>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/line-login/integrate-login-web/login-with-new-session.png" alt="Login dialog" loading="lazy"><figcaption>Login dialog</figcaption></figure></p>
+<p>이 로그인 방법은 스마트폰 LINE 앱에 로그인하지 않은 상태에서 외부 브라우저로 인증 URL에 처음 접속할 때 사용할 수 있습니다.</p>
+<h4>Single Sign On(SSO) 로그인</h4>
+<p>사용자는 로그인 버튼을 클릭하기만 하면 로그인할 수 있습니다.</p>
+<p><figure class="doc-figure"><img src="https://developers.line.biz/media/line-login/integrate-login-web/sso.png" alt="Confirmation Screen" loading="lazy"><figcaption>Confirmation Screen</figcaption></figure></p>
+<p>사용자가 이전에 LINE에 로그인할 때 사용했던 외부 브라우저에서 인증 URL에 접속하면 SSO를 사용할 수 있습니다.</p>
+<!-- note start -->
+<p><strong>SSO는 쿠키를 사용하는 기능입니다</strong></p>
+<p>웹 애플리케이션에서 LINE Login을 실행하면 쿠키가 <code>access.line.me</code> 도메인 이름으로 저장됩니다. 쿠키가 유효한 동안에는 같은 브라우저에서 로그인할 때 SSO 화면이 표시됩니다.</p>
+<!-- note end -->
+<!-- note start -->
+<p><strong>자동 로그인이 SSO 로그인보다 우선합니다</strong></p>
+<p>자동 로그인과 SSO 로그인이 모두 활성화된 환경에서는 자동 로그인이 우선 적용됩니다. 자세한 내용은 2021년 7월 12일에 게시된 소식 &quot;<a href="https://developers.line.biz/en/news/2021/07/12/auto-login-takes-precedence-over-sso/" target="_blank" rel="noopener noreferrer">Auto login will take precedence over SSO login for LINE Login</a>&quot;을 참고하십시오.</p>
+<p><a href="./#making-an-authorization-request">인증 요청하기</a> 시 인증 URL에 특정 쿼리 파라미터(<code>disable_auto_login</code>)를 추가하면 자동 로그인을 비활성화하여, 사용자가 자동 로그인 대신 SSO 로그인을 사용하도록 할 수 있습니다.</p>
+<!-- note end -->
+<h3>사용자 승인</h3>
+<div class="tip">
+<p><strong>사용자 승인은 LINE Platform에서 직접 처리합니다</strong></p>
+<p>LINE Login을 지원하는 웹 앱은 승인 과정을 직접 구현할 필요가 없습니다.</p>
+</div>
+<p>개발자는 <code>scope</code> 파라미터에 필요한 정보를 지정하고, 사용자는 해당 요청을 승인하도록 요청받습니다.</p>
+<p>사용자가 요청된 권한의 일부 또는 전부를 부여하지 않고 웹 앱에 접속할 수도 있습니다. 웹 앱을 만들 때는 사용자가 인증 URL에 지정한 권한을 부여하지 않을 가능성을 고려해야 합니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>동의 화면</th>
+<th><code>scope</code> 파라미터와 표시 항목</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><figure class="doc-figure"><img src="https://developers.line.biz/media/line-login/integrate-login-web/consent-screen-en.webp" alt="Consent screen" loading="lazy"><figcaption>Consent screen</figcaption></figure></td>
+<td><ul><li><code>profile</code>: 기본 프로필 정보(필수)</li><li><code>openid</code>: 내부 식별자(필수)</li><li><code>email</code>: 이메일 주소</li></ul></td>
+</tr>
+</tbody>
+</table></div>
+<h4>동의 화면을 다시 표시하는 조건</h4>
+<p>사용자가 한 번 동의한 후에도 다음 조건 중 하나에 해당하면 LINE Login으로 로그인할 때 동의 화면이 다시 표시됩니다.</p>
+<ul>
+<li><code>scope</code> 파라미터가 사용자가 마지막으로 동의했을 때 부여되지 않았던 권한을 요청하는 경우</li>
+<li>사용자가 <a href="../managing-authorized-apps/">승인된 앱의 동의를 철회한</a> 후 LINE Login으로 로그인하는 경우</li>
+<li><code>prompt</code> 파라미터가 <code>consent</code>로 설정된 경우</li>
+<li><code>scope</code> 파라미터에 <code>email</code>이 포함되어 있고, 사용자가 마지막으로 동의한 후 일정 기간이 지났거나 사용자의 이메일 주소가 변경된 경우</li>
+</ul>
+<p>위 조건이 모두 해당하지 않으면 사용자 인증이 완료된 후 동의 화면이 표시되지 않고 웹 앱으로 바로 리디렉션됩니다.</p>
+<h2>웹 앱에서 인증 응답 또는 오류 응답 받기</h2>
+<p>사용자가 인증과 승인 과정을 마치면 콜백 URL로 리디렉션됩니다.</p>
+<p>사용자가 앱에 접근 권한을 부여했다면 인증 코드가 포함된 인증 응답이 반환됩니다. 사용자가 앱에 접근 권한을 부여하지 않았다면 오류 응답이 반환됩니다.</p>
+<h3>인증 코드 받기</h3>
+<p>사용자가 인증되고 승인 단계를 마치면 콜백 URL로 리디렉션됩니다. 인증 코드를 포함한 인증 응답 파라미터를 받는 방식은 인증 요청의 <code>response_mode</code> 파라미터 값에 따라 달라집니다. 자세한 내용은 <a href="./#making-an-authorization-request">사용자를 인증하고 인증 요청하기</a>를 참고하십시오.</p>
+<p>인증 응답 파라미터는 다음과 같습니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>파라미터</th>
+<th>타입</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>code</code></td>
+<td>String</td>
+<td>액세스 토큰을 가져오는 데 사용하는 인증 코드입니다. 10분 동안 유효합니다. 이 인증 코드는 한 번만 사용할 수 있습니다.</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td>String</td>
+<td><a href="https://wikipedia.org/wiki/Cross-site_request_forgery" target="_blank" rel="noopener noreferrer">사이트 간 요청 위조</a>를 방지하기 위해 사용하는 고유한 영숫자 문자열입니다. 인증 URL에 지정한 <code>state</code> 파라미터의 값과 일치하는지 확인하십시오.</td>
+</tr>
+<tr>
+<td><code>friendship_status_changed</code></td>
+<td>Boolean</td>
+<td>로그인하는 동안 사용자와 채널에 연결된 LINE 공식 계정 간의 친구 관계 상태가 변경되었으면 <code>true</code>입니다. 그렇지 않으면 <code>false</code>입니다. 이 파라미터는 <a href="./#making-an-authorization-request">사용자를 인증하고 인증 요청을 할 때</a> <code>bot_prompt</code> 쿼리 파라미터를 지정했고, 사용자가 로그인할 때 LINE 공식 계정을 친구로 추가하는 옵션을 받은 경우에만 반환됩니다. 자세한 내용은 <a href="../link-a-bot/">로그인 시 LINE 공식 계정을 친구로 추가하기(친구 추가 옵션)</a>를 참고하십시오.</td>
+</tr>
+<tr>
+<td><code>liffClientId</code></td>
+<td>String</td>
+<td>LINE Login 채널 ID입니다. LIFF 앱에서 <a href="../../../reference/liff/#login"><code>liff.login()</code></a> 메서드를 사용하여 로그인 과정을 수행한 경우에만 반환됩니다. LIFF 앱이 올바르게 동작하도록 이 파라미터를 변경하지 마십시오.</td>
+</tr>
+<tr>
+<td><code>liffRedirectUri</code></td>
+<td>String</td>
+<td>로그인 후 LIFF 앱에 표시되는 URL입니다. <a href="../../../reference/liff/#login"><code>liff.login()</code></a> 메서드의 <code>redirectUri</code> 속성에 지정한 값입니다. LIFF 앱에서 <a href="../../../reference/liff/#login"><code>liff.login()</code></a> 메서드를 사용하여 로그인 과정을 수행한 경우에만 반환됩니다. LIFF 앱이 올바르게 동작하도록 이 파라미터를 변경하지 마십시오.</td>
+</tr>
+</tbody>
+</table></div>
+<p>인증 요청의 <code>query</code> 파라미터를 <code>query.jwt</code>로 설정했을 때 리디렉션 대상 URL 예시:</p>
+<pre><code>https://example.com/callback?code=abcd1234&amp;state=0987poi&amp;friendship_status_changed=true
+</code></pre>
+<p>인증 요청의 <code>response_mode</code> 파라미터를 <code>query.jwt</code> 또는 <code>jwt</code>로 설정했을 때 리디렉션 대상 URL 예시:</p>
+<pre><code>https://example.com/callback?response=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
+</code></pre>
+<h3>오류 응답 받기</h3>
+<p>사용자가 앱에 권한 부여를 거부하거나 요청이 실패하면(<code>client_id</code> 또는 <code>redirect_uri</code> 쿼리 파라미터의 값이 잘못된 경우는 제외) 다음 쿼리 파라미터와 함께 콜백 URL로 리디렉션됩니다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>파라미터</th>
+<th>타입</th>
+<th>필수 여부</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>error</code></td>
+<td>String</td>
+<td>필수</td>
+<td><a href="./#error-codes">오류 코드</a>입니다.</td>
+</tr>
+<tr>
+<td><code>error_description</code></td>
+<td>String</td>
+<td>선택</td>
+<td>오류에 대한 설명입니다.</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td>String</td>
+<td>선택</td>
+<td>인증 URL에 포함된 <code>state</code> 파라미터입니다. 이 값을 사용하여 거부된 프로세스가 무엇인지 확인할 수 있습니다.</td>
+</tr>
+</tbody>
+</table></div>
+<p>리디렉션 대상 URL 예시:</p>
+<pre><code>https://example.com/callback?error=ACCESS_DENIED&amp;error_description=The+resource+owner+denied+the+request.&amp;state=0987poi
+</code></pre>
+<h4>오류 코드</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>오류 코드</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>INVALID_REQUEST</code></td>
+<td>요청에 문제가 있습니다. 인증 URL의 쿼리 파라미터를 확인하십시오.</td>
+</tr>
+<tr>
+<td><code>ACCESS_DENIED</code></td>
+<td>사용자가 동의 화면에서 취소하고 앱에 권한 부여를 거부했습니다.</td>
+</tr>
+<tr>
+<td><code>UNSUPPORTED_RESPONSE_TYPE</code></td>
+<td><code>response_type</code> 쿼리 파라미터 값에 문제가 있습니다. LINE Login은 <code>code</code>만 지원합니다.</td>
+</tr>
+<tr>
+<td><code>INVALID_SCOPE</code></td>
+<td><p><code>scope</code> 쿼리 파라미터 값에 문제가 있습니다. 올바른 값을 지정했는지 확인하십시오.</p><ul><li><code>profile</code> 또는 <code>openid</code>가 필요합니다.</li><li><code>email</code>을 지정하는 경우 <code>openid</code>도 함께 지정해야 합니다.</li></ul></td>
+</tr>
+<tr>
+<td><code>SERVER_ERROR</code></td>
+<td>LINE Login 서버에서 예기치 않은 오류가 발생했습니다.</td>
+</tr>
+<tr>
+<td><code>LOGIN_REQUIRED</code></td>
+<td><code>prompt</code> 파라미터에 <code>none</code>을 지정했지만, 사용자의 기기에서 자동 로그인을 사용할 수 없거나 사용자가 로그인되어 있지 않습니다.</td>
+</tr>
+<tr>
+<td><code>INTERACTION_REQUIRED</code></td>
+<td><code>prompt</code> 파라미터에 <code>none</code>을 지정했지만, 사용자의 기기에서 자동 로그인을 사용할 수 없습니다.</td>
+</tr>
+</tbody>
+</table></div>
+<h2>웹 앱에서 액세스 토큰 가져오기</h2>
+<p>LINE Platform에서 인증 코드와 함께 받은 <code>state</code> 파라미터가 <a href="./#making-an-authorization-request">사용자를 인증하고 인증 요청을 할 때</a> 지정한 <code>state</code> 파라미터와 일치하면 액세스 토큰을 얻을 수 있습니다.</p>
+<p>액세스 토큰을 가져오는 방법에 대한 자세한 내용은 LINE Login v2.1 API 레퍼런스의 <a href="../../../reference/line-login/#issue-access-token">issue access token</a>을 참고하십시오.</p>
+<p>요청 예시:</p>
+<pre><code class="language-sh">curl -v -X POST https://api.line.me/oauth2/v2.1/token \
+-H <span class="hljs-string">&#x27;Content-Type: application/x-www-form-urlencoded&#x27;</span> \
+-d <span class="hljs-string">&#x27;grant_type=authorization_code&#x27;</span> \
+-d <span class="hljs-string">&#x27;code=1234567890abcde&#x27;</span> \
+--data-urlencode <span class="hljs-string">&#x27;redirect_uri=https://example.com/auth?key=value&#x27;</span> \
+-d <span class="hljs-string">&#x27;client_id=1234567890&#x27;</span> \
+-d <span class="hljs-string">&#x27;client_secret=1234567890abcdefghij1234567890ab&#x27;</span>
+</code></pre>
+<h3>응답</h3>
+<p>LINE Platform은 요청을 검증한 후 아래 표와 같이 액세스 토큰과 기타 데이터를 반환합니다.</p>
+<!-- note start -->
+<p><strong>Note</strong></p>
+<p>새로운 LINE Login 기능이나 변경된 기능으로 인해 페이로드 JSON 객체의 구조가 바뀔 수 있습니다. 이러한 변경에는 속성 추가, 속성 순서 변경, 공백 및 줄바꿈의 추가/삭제가 포함될 수 있습니다. 예상치 못한 구조의 페이로드 데이터 객체도 처리할 수 있도록 백엔드를 설계하십시오.</p>
+<!-- note end -->
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>속성</th>
+<th>타입</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>access_token</code></td>
+<td>String</td>
+<td>액세스 토큰입니다. 30일 동안 유효합니다.</td>
+</tr>
+<tr>
+<td><code>expires_in</code></td>
+<td>Number</td>
+<td>액세스 토큰이 만료되기까지 남은 시간(초)입니다.</td>
+</tr>
+<tr>
+<td><code>id_token</code></td>
+<td>String</td>
+<td>사용자 정보를 포함하는 <a href="https://datatracker.ietf.org/doc/html/rfc7519" target="_blank" rel="noopener noreferrer">JSON Web Token(JWT)</a>입니다. scope에 openid를 지정한 경우에만 반환됩니다. 자세한 내용은 <a href="../verify-id-token/">ID 토큰에서 프로필 정보 가져오기</a>를 참고하십시오.</td>
+</tr>
+<tr>
+<td><code>refresh_token</code></td>
+<td>String</td>
+<td>새 액세스 토큰을 가져오는 데 사용하는 토큰입니다. 액세스 토큰이 발급된 후 90일까지 유효합니다.</td>
+</tr>
+<tr>
+<td><code>scope</code></td>
+<td>String</td>
+<td>사용자가 부여한 권한입니다. 다만 <code>email</code> scope는 권한을 부여받았더라도 <code>scope</code> 속성의 값으로 반환되지 않습니다.</td>
+</tr>
+<tr>
+<td><code>token_type</code></td>
+<td>String</td>
+<td><code>Bearer</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>응답 예시:</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;access_token&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;bNl4YEFPI/hjFWhTqexp4MuEw5YPs...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;expires_in&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2592000</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;id_token&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiJ9...&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;refresh_token&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Aa1FdeggRhTnPNNpxr8p&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;scope&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;profile&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;token_type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Bearer&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>자세한 내용은 LINE Login v2.1 API 레퍼런스의 <a href="../../../reference/line-login/#issue-access-token">액세스 토큰 발급</a>을 참고하십시오.</p>
+<h2>ID 토큰에서 프로필 정보 가져오기</h2>
+<p>LINE Platform은 <a href="https://openid.net/developers/how-connect-works/" target="_blank" rel="noopener noreferrer">OpenID Connect</a> 사양을 준수하는 ID 토큰을 발급하므로, LINE Platform에서 사용자의 <a href="https://developers.line.biz/en/glossary/#profile-information" target="_blank" rel="noopener noreferrer">프로필 정보</a>(사용자 ID, 표시 이름, 프로필 사진, 이메일 주소)를 안전하게 가져올 수 있습니다.</p>
+<p>자세한 내용은 <a href="../verify-id-token/">ID 토큰에서 프로필 정보 가져오기</a>를 참고하십시오.</p>
+<h2>다음 단계</h2>
+<p>액세스 토큰을 얻은 후에는 다음 작업에 사용할 수 있습니다.</p>
+<ul>
+<li><a href="../link-a-bot/#use-line-login-api">사용자의 LINE 공식 계정 친구 관계 상태 가져오기</a></li>
+<li><a href="../managing-access-tokens/">액세스 토큰 관리</a></li>
+<li><a href="../managing-users/">사용자 관리</a></li>
+</ul>
+</article></main>
+</div>
+<script>
+(function(){
+  var a=document.querySelector('.sidebar a.active');
+  if(a)a.scrollIntoView({block:'center'});
+  var input=document.getElementById('nav-search');
+  if(!input)return;
+  var items=[].slice.call(document.querySelectorAll('.sidebar li'));
+  input.addEventListener('input',function(){
+    var q=input.value.trim().toLowerCase();
+    items.forEach(function(li){
+      if(!q){li.classList.remove('hidden');return;}
+      var own=(li.querySelector(':scope > a, :scope > details > summary')||li).textContent.toLowerCase();
+      var hit=own.indexOf(q)!==-1||li.textContent.toLowerCase().indexOf(q)!==-1;
+      li.classList.toggle('hidden',!hit);
+      if(hit){var d=li.querySelector(':scope > details');if(d)d.open=true;}
+    });
+  });
+})();
+</script>
+</body>
+</html>
