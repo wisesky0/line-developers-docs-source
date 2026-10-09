@@ -37,7 +37,7 @@
 
 | 단계 | 세부 내용 |
 | --- | --- |
-| 1단계: [인앱 결제 사용 신청](https://developers.line.biz/en/docs/line-mini-app/in-app-purchase/request-iap-review/) | LINE Developers Console의 LINE MINI App 채널에 있는 **In-app purchase** 탭에서 사용을 신청합니다. 신청할 때는 회사 이름을 포함하여 모든 정보를 정확하게 입력해 주십시오.<br>사용자에게 인앱 결제를 제공할 수 있는 것은 검증된 LINE MINI App뿐입니다. 다만 검증되지 않은 MINI App이라도 인앱 결제 사용을 신청할 수는 있습니다. |
+| 1단계: [인앱 결제 사용 신청](https://developers.line.biz/en/docs/line-mini-app/in-app-purchase/request-iap-review/) | LINE Developers Console의 [LINE Developers Console](https://developers.line.biz/console/)의 LINE MINI App 채널에 있는 **In-app purchase** 탭에서 사용을 신청합니다. 신청할 때는 회사 이름을 포함하여 모든 정보를 정확하게 입력해 주십시오.<br>사용자에게 인앱 결제를 제공할 수 있는 것은 검증된 LINE MINI App뿐입니다. 다만 검증되지 않은 MINI App이라도 인앱 결제 사용을 신청할 수는 있습니다. |
 | 2단계: [인앱 결제 설정](https://developers.line.biz/en/docs/line-mini-app/in-app-purchase/iap-settings/) | 인앱 결제 사용 신청의 상태가 "Approved"가 되면 **In-app purchase** 탭 안의 **In-app purchase settings** 탭에서 웹훅 URL과 테스트 결제용 테스터를 등록합니다. |
 | 3단계: Developing 채널에 [인앱 결제 연동](https://developers.line.biz/en/docs/line-mini-app/in-app-purchase/implement-in-app-purchase/) 및 [테스트 결제 진행](https://developers.line.biz/en/docs/line-mini-app/in-app-purchase/implement-in-app-purchase/#test-payment-guide) | LINE MINI App 채널의 Developing 채널에 인앱 결제 기능을 연동하고 테스트 결제를 진행합니다. |
 | 4단계: [검증 심사 신청](https://developers.line.biz/en/docs/line-mini-app/submit/submission-guide/) | LINE Developers Console의 **Review request** 탭에서 검증된 MINI App으로 공개하기 위한 심사를 신청합니다. 신청할 때 **Review request** 탭에서 **Release the in-app purchase feature** 토글 버튼을 켜 주십시오. 같은 화면에서 Mini Apps Partner Program도 신청할 수 있습니다.<br>이미 검증된 MINI App으로 공개된 앱에 인앱 결제를 연동했다면 다시 심사를 받아야 합니다. |

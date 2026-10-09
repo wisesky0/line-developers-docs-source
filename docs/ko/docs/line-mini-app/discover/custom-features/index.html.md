@@ -14,7 +14,7 @@ LINE MINI App에 다음과 같은 기능을 추가하여 사용자 경험을 더
 | [결제 시스템 사용](https://developers.line.biz/en/docs/line-mini-app/discover/custom-features/#using-payment-systems) | ✅ | ✅ |
 | [광고 게재](https://developers.line.biz/en/docs/line-mini-app/discover/custom-features/#place-ads) | ✅ | ✅ |
 
-검증되지 않은 MINI App의 헤더에는 URL의 도메인 이름이 표시되지만, 검증된 MINI App의 헤더에는 도메인 이름 대신 LINE MINI App 이름이 표시됩니다. 자세한 내용은 [LINE MINI App UI 컴포넌트](https://developers.line.biz/en/docs/line-mini-app/discover/ui-components/#header)의 [헤더](https://developers.line.biz/en/docs/line-mini-app/discover/ui-components/#header) 섹션을 참고해 주십시오.
+검증되지 않은 MINI App의 헤더에는 URL의 도메인 이름이 표시되지만, 검증된 MINI App의 헤더에는 도메인 이름 대신 LINE MINI App 이름이 표시됩니다. 자세한 내용은 [LINE MINI App UI 컴포넌트](https://developers.line.biz/en/docs/line-mini-app/discover/ui-components/#header)를 참고해 주십시오.
 
 ## 서비스 메시지 
 
